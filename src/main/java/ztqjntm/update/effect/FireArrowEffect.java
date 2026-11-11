@@ -7,12 +7,14 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.projectile.arrow.AbstractArrow;
 import net.minecraft.world.level.block.BaseFireBlock;
 import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
 
 /**
- * 烈焰箭：命中实体时点燃目标，并在落点周围铺一层 3×3 的火；命中方块时只铺火。
+ * 烈焰箭：命中实体时点燃目标，同时在落点周围铺一层 3×3 的火；命中方块时同样铺火。
+ * <p>
+ * 落点按“命中面外侧”取，射到地面就是地面上方那一层，所以落地一定会烧起来，
+ * 不是只有打中生物才有效果。
  * <p>
  * 火就是普通火（允许蔓延），这是明确要的效果，不属于失误。下雨/水下/doFireTick=false
  * 时原版自己会限制蔓延，这里不额外判断。
@@ -30,7 +32,13 @@ public final class FireArrowEffect implements ArrowEffect {
 
     @Override
     public boolean onHitBlock(ServerLevel level, AbstractArrow arrow, BlockHitResult hit) {
-        ignite(level, hit.getBlockPos());
+        // 以“命中面外侧”那一格为中心：射到地面时是地面上方，射到墙面时是墙边那一格。
+        // 直接用 hit.getBlockPos() 会得到脚下那块实体方块，canBePlacedAt 全部为 false，一格火都放不出来。
+        BlockPos anchor = hit.getBlockPos().relative(hit.getDirection());
+        if (!ignite(level, anchor)) {
+            // 打在悬空方块的侧面/底面时，外侧那一格下面是空的，火站不住；退回命中格上方再试一次。
+            ignite(level, hit.getBlockPos().above());
+        }
         return true;
     }
 
@@ -42,19 +50,24 @@ public final class FireArrowEffect implements ArrowEffect {
         return true;
     }
 
-    /** 以 center 为中心，水平 3×3 逐格放火：目标格可替换，且下方是固体 */
-    private static void ignite(ServerLevel level, BlockPos center) {
+    /**
+     * 以 center 为中心，水平 3×3 逐格放火。
+     * <p>
+     * 用 {@link BaseFireBlock#canBePlacedAt} 判定而不是“可替换 + 下方实体”：它同时处理了
+     * 空气、火焰可存活、灵魂火和传送门，也顺便挡掉了水（水里不能点火）。
+     *
+     * @return 是否至少放成功了一格
+     */
+    private static boolean ignite(ServerLevel level, BlockPos center) {
+        boolean placed = false;
         for (BlockPos pos : BlockPos.betweenClosed(
                 center.offset(-1, 0, -1), center.offset(1, 0, 1))) {
-            BlockState base = level.getBlockState(pos);
-            if (!base.canBeReplaced()) {
-                continue;
-            }
-            BlockPos below = pos.below();
-            if (!level.getBlockState(below).isFaceSturdy(level, below, Direction.UP)) {
+            if (!BaseFireBlock.canBePlacedAt(level, pos, Direction.UP)) {
                 continue;
             }
             level.setBlock(pos, BaseFireBlock.getState(level, pos), Block.UPDATE_ALL);
+            placed = true;
         }
+        return placed;
     }
 }

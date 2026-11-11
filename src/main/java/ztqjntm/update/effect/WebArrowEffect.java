@@ -5,6 +5,7 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.projectile.arrow.AbstractArrow;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
 import ztqjntm.update.block.ModBlocks;
@@ -39,7 +40,9 @@ public final class WebArrowEffect implements ArrowEffect {
     }
 
     private static boolean tryPlace(ServerLevel level, BlockPos pos) {
-        if (!level.getBlockState(pos).canBeReplaced()) {
+        BlockState state = level.getBlockState(pos);
+        // 水/岩浆也是“可替换”的，直接放会把水源吃掉（射进池塘时最明显），这里挡掉
+        if (!state.canBeReplaced() || !state.getFluidState().isEmpty()) {
             return false;
         }
         level.setBlock(pos, ModBlocks.TEMPORARY_COBWEB.defaultBlockState(), Block.UPDATE_ALL);
