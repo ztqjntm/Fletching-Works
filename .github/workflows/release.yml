@@ -316,7 +316,7 @@ jobs:
             CHANGELOG="详见 GitHub Release：https://github.com/${GITHUB_REPOSITORY}/releases/tag/${TAG}"
           fi
 
-          jq -n --arg name "update-ft ${VERSION}" \
+          jq -n --arg name "Fletching Works ${VERSION}" \
                 --arg changelog "$CHANGELOG" \
                 --arg releaseType "$RELEASE_TYPE" \
                 --argjson mc "$MC_ID" \

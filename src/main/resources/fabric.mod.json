@@ -2,8 +2,8 @@
 	"schemaVersion": 1,
 	"id": "update-ft",
 	"version": "${version}",
-	"name": "update-ft",
-	"description": "Update the fletching table, add more arrows, and... more FUN!",
+	"name": "Fletching Works",
+	"description": "Give the fletching table a real GUI, and fifteen arrow types to craft in it.",
 	"authors": [
 		"ztqjntm"
 	],

@@ -3,6 +3,12 @@
 > release 工作流会取 `## [版本]` 到下一个 `## ` 之间的内容，作为 GitHub Release 和 CurseForge 的更新说明。
 > 版本号必须与 `gradle.properties` 的 `mod_version` 完全一致。
 
+## [Unreleased]
+
+### 变更
+
+- 模组显示名改为 **Fletching Works**。mod id、资源命名空间与 jar 前缀仍是 `update-ft`，存档、配方和标签完全兼容。
+
 ## [1.0.2] - 2026-11-11
 
 ### 新增

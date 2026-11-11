@@ -2,6 +2,8 @@
 
 README 面向玩家（`README.md` 英文、`README.zh-CN.md` 中文），这里放实现细节：构建、目录结构、每个文件做什么、关键流程、发布规则。
 
+> 显示名是 **Fletching Works**（`fabric.mod.json` 的 `name`）。mod id、Java 包名、资源命名空间、jar 前缀仍然是 `update-ft`——这些是技术标识，改了会丢存档、让已有配方/标签失效，也会让 release 工作流找不到产物。
+
 ## 环境
 
 - JDK 21（`build.gradle` 里 `options.release = 21`）

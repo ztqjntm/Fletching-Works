@@ -1,4 +1,4 @@
-# Update FT
+# Fletching Works
 
 [English](README.md) | **简体中文**
 
@@ -15,7 +15,7 @@
 <!--
   顶部横幅（可选但建议）：1280×400 的 banner.png 放 docs/images/banner.png，
   有了以后取消下面这行注释。
-  ![Update FT](docs/images/banner.png)
+  ![Fletching Works](docs/images/banner.png)
 -->
 
 ## 为什么装它

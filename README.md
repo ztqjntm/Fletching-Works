@@ -1,4 +1,4 @@
-# Update FT
+# Fletching Works
 
 **English** | [简体中文](README.zh-CN.md)
 
@@ -15,7 +15,7 @@ Right-click a fletching table to open a three-slot crafting UI: **tip + stick + 
 <!--
   Banner (optional but recommended): a 1280×400 banner.png at docs/images/banner.png.
   Uncomment the line below once it exists.
-  ![Update FT](docs/images/banner.png)
+  ![Fletching Works](docs/images/banner.png)
 -->
 
 ## Why install it
