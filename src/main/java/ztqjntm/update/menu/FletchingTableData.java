@@ -7,6 +7,8 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.datafix.DataFixTypes;
 import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.entity.ContainerUser;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
@@ -15,8 +17,10 @@ import net.minecraft.world.level.saveddata.SavedDataType;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * 制箭台里放着的东西，按坐标存在每个 {@link ServerLevel} 的存档数据里。
@@ -60,9 +64,13 @@ public class FletchingTableData extends SavedData {
      * 关界面时要把原料退回玩家（桌上不留东西，免得玩家忘了拿还以为被吞），但两个人同时开着同一张桌子时，
      * 先关的那个人不该把另一位正在用的材料收走——所以等最后一个玩家关闭时再结算。
      * {@link #startOpen} / {@link #stopOpen} 由菜单在构造和 {@code removed()} 里调用。
+     * <p>
+     * 用 {@link Set} 而不是计数器：同一个人重复打开同一张桌子不会重复计数；玩家掉线时
+     * {@code removed()} 有可能没走到，{@link #isViewed()} 会把已经移除的实体剔掉，
+     * 避免“计数永远大于 0、桌子永远不结算”的泄漏。
      */
     public static final class SharedContainer extends SimpleContainer {
-        private int viewers;
+        private final Set<ContainerUser> viewers = new HashSet<>();
 
         private SharedContainer() {
             super(SLOTS);
@@ -70,19 +78,34 @@ public class FletchingTableData extends SavedData {
 
         @Override
         public void startOpen(ContainerUser user) {
-            this.viewers++;
+            if (user != null) {
+                this.viewers.add(user);
+            }
         }
 
         @Override
         public void stopOpen(ContainerUser user) {
-            if (this.viewers > 0) {
-                this.viewers--;
+            if (user != null) {
+                this.viewers.remove(user);
             }
         }
 
-        /** 还有别人开着这张桌子 */
+        /**
+         * 还有别人开着这张桌子；顺手剔掉已经失效的查看者：
+         * 已经不在世界里的实体，以及“当前菜单已经不是这张桌子”的玩家
+         * （例如菜单构造了但 {@code openMenu} 没成功，或者关闭时漏掉了 {@code stopOpen}）。
+         */
         public boolean isViewed() {
-            return this.viewers > 0;
+            this.viewers.removeIf(user -> {
+                if (!(user instanceof Entity entity) || entity.isRemoved()) {
+                    return true;
+                }
+                if (user instanceof Player player) {
+                    return !(player.containerMenu instanceof FletchingTableMenu menu) || !menu.uses(this);
+                }
+                return false;
+            });
+            return !this.viewers.isEmpty();
         }
     }
 
@@ -110,9 +133,9 @@ public class FletchingTableData extends SavedData {
     /**
      * 拿到某个坐标的容器，没有就建一个。
      * <p>
-     * 如果这个坐标已经不是制箭台了（典型情况：桌子被爆炸或活塞弄掉，没走到
-     * {@code PlayerBlockBreakEvents}），先把旧内容物掉在原地再删掉条目——不然它们会一直
-     * 留在存档里，玩家再也取不出来。
+     * 如果这个坐标已经不是制箭台了，先把旧内容物掉在原地再删掉条目，返回一个不进存档的临时容器。
+     * 正常流程里这个分支基本走不到（打开界面前已经确认过是制箭台），真正负责收拾
+     * 爆炸/活塞/结构破坏残条目的是 {@link #sweep(ServerLevel)}。
      */
     public SimpleContainer getOrCreate(ServerLevel level, BlockPos pos) {
         SimpleContainer existing = this.containers.get(pos);
@@ -136,6 +159,36 @@ public class FletchingTableData extends SavedData {
         return created;
     }
 
+    /**
+     * 扫描一遍残条目，给爆炸/活塞/结构破坏兜底。
+     * <p>
+     * 这些破坏方式不会触发 {@code PlayerBlockBreakEvents}，桌子没了但存档条目还在，
+     * 内容物就永远取不出来。这里只检查**已经加载**的区块（不为了清理去加载区块），
+     * 桌子不在就把内容物掉在原地并删条目；区块没加载的留到下次加载后再查。
+     * <p>
+     * 还有人开着这张桌子时先跳过：关界面时 {@code removed()} 会正常结算，别把东西提前倒在地上。
+     */
+    public void sweep(ServerLevel level) {
+        if (this.containers.isEmpty()) {
+            return;
+        }
+        List<BlockPos> stale = new ArrayList<>();
+        this.containers.forEach((pos, container) -> {
+            if (container instanceof SharedContainer shared && shared.isViewed()) {
+                return;
+            }
+            if (!level.isLoaded(pos)) {
+                return;
+            }
+            if (!level.getBlockState(pos).is(Blocks.FLETCHING_TABLE)) {
+                stale.add(pos);
+            }
+        });
+        for (BlockPos pos : stale) {
+            this.dropAndRemove(level, pos);
+        }
+    }
+
     /** 内容已经还给玩家了，只删条目、不再往地上掉东西（正常关界面走这里） */
     public void discard(BlockPos pos) {
         if (this.containers.remove(pos) != null) {
@@ -143,7 +196,7 @@ public class FletchingTableData extends SavedData {
         }
     }
 
-    /** 把某个坐标的内容物掉在原地并删掉条目（拆桌、爆炸后才发现的残条目都走这里） */
+    /** 把某个坐标的内容物掉在原地并删掉条目（玩家拆桌、{@link #sweep(ServerLevel)} 发现的残条目都走这里） */
     public void dropAndRemove(ServerLevel level, BlockPos pos) {
         SimpleContainer container = this.containers.remove(pos);
         if (container == null) {

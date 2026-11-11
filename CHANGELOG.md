@@ -3,6 +3,16 @@
 > release 工作流会取 `## [版本]` 到下一个 `## ` 之间的内容，作为 GitHub Release 和 CurseForge 的更新说明。
 > 版本号必须与 `gradle.properties` 的 `mod_version` 完全一致。
 
+## [Unreleased]
+
+### 修复
+
+- **爆炸/活塞/结构破坏后制箭台残条目**：新增 `FletchingTableData.sweep()`，每 20 tick 扫一次已加载区块，桌子不在就把内容物掉在原地并删条目；不再依赖 `getOrCreate`（它只在同坐标重新打开桌子时才会跑）。
+- **红石脉冲提前被方块顶掉时吞掉原方块**：`preRemoveSideEffects` 有物品形态的方块直接掉原方块物品；雪层没有物品形态、战利品表又要求有破坏实体，单独按 `layers` 掉雪球；其他没有物品形态的方块走掉落表。水和岩浆这类流体没有物品形态，被方块顶掉属于正常置换。
+- **跨维度关闭界面删错条目**：`FletchingTableMenu` 记录建菜单时的 `ServerLevel`，`stillValid()`/`removed()` 都查这个维度；玩家换维度后旧菜单立即失效，不会误删另一维度同坐标的条目。
+- **查看者计数泄漏**：`SharedContainer` 改用 `Set<ContainerUser>`，`isViewed()` 剔除已移除的玩家和“当前菜单已经不是这张桌子”的玩家，避免桌子永远不结算。
+- **文档**：TNT 箭不再写成“可回收”；多人共用同一张桌子时“最后关闭的人拿走全部原料”的规则写进两份 README；开发文档与 TODO 的过期描述同步。
+
 ## [1.0.1] - 2026-11-06
 
 ### 新增

@@ -1,6 +1,7 @@
 package ztqjntm.update;
 
 import net.fabricmc.api.ModInitializer;
+import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.fabricmc.fabric.api.event.player.PlayerBlockBreakEvents;
 import net.fabricmc.fabric.api.event.player.UseBlockCallback;
 import net.minecraft.core.BlockPos;
@@ -64,9 +65,10 @@ public class UpdateFt implements ModInitializer {
 
 					@Override
 					public AbstractContainerMenu createMenu(int containerId, Inventory inventory, Player p) {
-						// 容器按坐标存在存档里：关界面不清空、两个玩家共享、重启还在
+						// 容器按坐标存在存档里：关界面不清空、两个玩家共享、重启还在。
+						// 菜单要记住维度，否则玩家换维度后 stillValid()/removed() 会查错、删错。
 						return new FletchingTableMenu(containerId, inventory,
-								FletchingTableData.get(serverLevel).getOrCreate(serverLevel, pos), pos);
+								FletchingTableData.get(serverLevel).getOrCreate(serverLevel, pos), serverLevel, pos);
 					}
 				});
 			}
@@ -77,10 +79,21 @@ public class UpdateFt implements ModInitializer {
 		});
 
 		// 拆桌：把里面的东西掉在原地并删掉存档条目。
-		// 爆炸/活塞没有对应事件，那种情况由 FletchingTableData#getOrCreate 兜底。
+		// 爆炸/活塞/结构破坏没有对应事件，交给下面的每秒扫描兜底。
 		PlayerBlockBreakEvents.AFTER.register((world, player, pos, state, blockEntity) -> {
 			if (world instanceof ServerLevel serverLevel && state.is(Blocks.FLETCHING_TABLE)) {
 				FletchingTableData.get(serverLevel).dropAndRemove(serverLevel, pos);
+			}
+		});
+
+		// 每 20 tick 扫一次残条目：只查已加载区块，桌子没了就把内容物掉在原地并删条目。
+		// 条目本身只在“界面开着且有东西”时存在，数量很少，这个频率基本没有开销。
+		ServerTickEvents.END_SERVER_TICK.register(server -> {
+			if (server.getTickCount() % 20 != 0) {
+				return;
+			}
+			for (ServerLevel level : server.getAllLevels()) {
+				FletchingTableData.get(level).sweep(level);
 			}
 		});
 	}

@@ -77,7 +77,7 @@ The bonus is added **directly to vanilla's final damage** (vanilla rolls speed a
 <details>
 <summary>Details on the four special arrows</summary>
 
-- **TNT Arrow** — radius 4, no fire, **destroys blocks** (a reusable piece of TNT, essentially). Entity damage is halved, so point-blank shots will not instantly kill you. With `mobGriefing` off it only damages entities and leaves the terrain alone.
+- **TNT Arrow** — radius 4, no fire, **destroys blocks** (TNT strapped to an arrow — it is consumed on impact and cannot be recovered). Entity damage is halved, so point-blank shots will not instantly kill you. With `mobGriefing` off it only damages entities and leaves the terrain alone.
 - **Redstone Arrow** — on hitting a block, it triggers buttons, levers, doors, fence gates, trapdoors, bells, candles and bee nests within 2 blocks (without breaking anything), and places an invisible block on the face it hit that **emits signal strength 15 for 8 ticks** — that is what redstone lamps, pistons, dust, dispensers and rails actually respond to. The arrow itself sticks in the block as usual and can be picked up again.
   - It **swaps out whatever occupies that face and puts it back after 8 ticks**, so snow layers, tall grass, seagrass and flowing water all work — nothing gets eaten.
   - Hitting the same spot again just resets the timer; it does not stack a second block.
@@ -107,7 +107,9 @@ A few rules:
 
 - The output is taken **as a whole batch** (right-click included), so you can never take 1 arrow and pay for a full set of materials.
 - **The table never keeps your items.** Closing the UI hands the inputs back to your inventory (whatever does not fit drops at your feet), so nothing can be forgotten inside.
+- **A table is shared while several players have it open.** Whoever closes it last takes all remaining inputs, including items another player put in; closing earlier does not settle the table or take anyone else's materials.
 - **Breaking the table** while someone has it open drops whatever is inside at its position. The output slot is a preview and never drops.
+- **If the table is destroyed by an explosion or piston**, anything inside drops at its old position within about a second instead of being stranded in the save.
 
 ## Compatibility & known limitations
 

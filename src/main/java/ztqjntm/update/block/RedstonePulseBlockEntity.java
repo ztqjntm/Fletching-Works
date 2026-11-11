@@ -3,9 +3,11 @@ package ztqjntm.update.block;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.SnowLayerBlock;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.storage.ValueInput;
@@ -73,7 +75,11 @@ public class RedstonePulseBlockEntity extends BlockEntity {
     /**
      * 方块被换掉时的收尾。正常到期还原会置 {@link #restoring} 跳过；
      * 其余情况意味着玩家在 8 tick 内往这一格放了方块——原方块不会自己回来了，
-     * 就地掉出来，别让它凭空消失。水、高草这类没有物品形态的方块自然什么都掉不出来。
+     * 就地掉出来，别让它凭空消失。
+     * <p>
+     * 有物品形态的方块直接掉原方块物品（高草、海草等都和 1.0.1 行为一致）；
+     * 雪层没有物品形态，战利品表又要求“有破坏实体”才会掉，所以按 {@code layers} 掉雪球；
+     * 其他没有物品形态的方块走掉落表。水、岩浆这类流体没有物品形态，被方块顶掉是正常置换，不会掉东西。
      * <p>
      * 区块卸载不会走这个钩子，所以不会在卸载时往地上丢东西。
      */
@@ -83,9 +89,20 @@ public class RedstonePulseBlockEntity extends BlockEntity {
         if (this.restoring || !(this.level instanceof ServerLevel server)) {
             return;
         }
-        ItemStack drop = new ItemStack(this.originalState.getBlock().asItem());
-        if (!drop.isEmpty()) {
-            Block.popResource(server, pos, drop);
+        ItemStack item = new ItemStack(this.originalState.getBlock().asItem());
+        if (!item.isEmpty()) {
+            Block.popResource(server, pos, item);
+            return;
+        }
+        if (this.originalState.getBlock() instanceof SnowLayerBlock) {
+            int layers = this.originalState.getValue(SnowLayerBlock.LAYERS);
+            Block.popResource(server, pos, new ItemStack(Items.SNOWBALL, layers));
+            return;
+        }
+        for (ItemStack drop : Block.getDrops(this.originalState, server, pos, null)) {
+            if (!drop.isEmpty()) {
+                Block.popResource(server, pos, drop);
+            }
         }
     }
 

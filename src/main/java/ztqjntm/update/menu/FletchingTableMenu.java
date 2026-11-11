@@ -38,6 +38,13 @@ public class FletchingTableMenu extends AbstractContainerMenu {
 
 	private final Container input;
 	private final Container result;
+	/**
+	 * 这张桌子所在的维度；客户端为 null。
+	 * <p>
+	 * 只记 {@link BlockPos} 不够：玩家在界面开着时被传送/换维度后，{@code player.level()}
+	 * 已经是新维度了，用它去查方块和删存档条目会查错/删错。服务端菜单必须记住建菜单时的维度。
+	 */
+	private final ServerLevel level;
 	/** 服务端才有值，客户端用来跳过距离校验（关不关由服务端决定） */
 	private final BlockPos blockPos;
 	private final boolean clientSide;
@@ -46,17 +53,19 @@ public class FletchingTableMenu extends AbstractContainerMenu {
 
 	// 客户端构造器：由 MenuType 的工厂调用，先给一个空容器，随后自动与服务端同步
 	public FletchingTableMenu(int containerId, Inventory playerInventory) {
-		this(containerId, playerInventory, new SimpleContainer(INPUT_SIZE), null);
+		this(containerId, playerInventory, new SimpleContainer(INPUT_SIZE), null, null);
 	}
 
-	// 服务端构造器：直接持有真实的容器和方块坐标
-	public FletchingTableMenu(int containerId, Inventory playerInventory, Container container, BlockPos blockPos) {
+	// 服务端构造器：直接持有真实的容器、维度和方块坐标
+	public FletchingTableMenu(int containerId, Inventory playerInventory, Container container,
+			ServerLevel level, BlockPos blockPos) {
 		super(ModMenuTypes.FLETCHING_TABLE, containerId);
 		checkContainerSize(container, INPUT_SIZE);
 		this.input = container;
 		this.result = new SimpleContainer(1);
+		this.level = level;
 		this.blockPos = blockPos;
-		this.clientSide = playerInventory.player.level().isClientSide();
+		this.clientSide = level == null;
 		container.startOpen(playerInventory.player);
 
 		// 原料格：斜向 18px 步进（右上 → 中间 → 左下），栏位是固定的：
@@ -79,6 +88,11 @@ public class FletchingTableMenu extends AbstractContainerMenu {
 			simple.addListener(this.inputListener);
 		}
 		this.updateResult();
+	}
+
+	/** 给 {@link FletchingTableData.SharedContainer} 判断“这个玩家现在开着的还是不是这张桌子的菜单” */
+	boolean uses(Container container) {
+		return this.input == container;
 	}
 
 	@Override
@@ -235,11 +249,13 @@ public class FletchingTableMenu extends AbstractContainerMenu {
 		if (!this.input.stillValid(player)) {
 			return false;
 		}
-		// 客户端没有坐标，关不关交给服务端判断
-		if (this.blockPos == null) {
+		// 客户端没有维度和坐标，关不关交给服务端判断
+		if (this.blockPos == null || this.level == null) {
 			return true;
 		}
-		return player.level().getBlockState(this.blockPos).is(Blocks.FLETCHING_TABLE)
+		// 玩家换维度后旧菜单必须失效；方块和距离都查桌子自己的维度，不查 player.level()
+		return player.level() == this.level
+				&& this.level.getBlockState(this.blockPos).is(Blocks.FLETCHING_TABLE)
 				&& player.distanceToSqr(Vec3.atCenterOf(this.blockPos)) <= MAX_DISTANCE_SQR;
 	}
 
@@ -261,8 +277,8 @@ public class FletchingTableMenu extends AbstractContainerMenu {
 			simple.removeListener(this.inputListener);
 		}
 
-		// 客户端也会回调 removed()，但它不做任何实际动作，避免刷出幽灵物品
-		if (!(player.level() instanceof ServerLevel server)) {
+		// 客户端（level 为 null）也会回调 removed()，但它不做任何实际动作，避免刷出幽灵物品
+		if (this.level == null) {
 			return;
 		}
 		// 还有人开着这张桌子：先留着，等他关
@@ -272,8 +288,9 @@ public class FletchingTableMenu extends AbstractContainerMenu {
 
 		this.clearContainer(player, this.input);
 		if (this.blockPos != null) {
-			// 东西已经退回玩家，条目直接删掉即可（桌子如果已被炸掉，也在这一步收尾）
-			FletchingTableData.get(server).discard(this.blockPos);
+			// 东西已经退回玩家，条目直接删掉即可。用建菜单时记下的维度，不能用 player.level()：
+			// 玩家换维度后 player.level() 已经是新维度，会删错条目（甚至把另一个维度同坐标的桌子内容删掉）。
+			FletchingTableData.get(this.level).discard(this.blockPos);
 		}
 	}
 }

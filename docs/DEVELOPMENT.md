@@ -69,24 +69,24 @@ update-ft/
 
 | 文件 | 作用 |
 | --- | --- |
-| `UpdateFt.java` | **主入口**（`ModInitializer`）。持有 `MOD_ID = "update-ft"`、日志器和 `id(path)` 工具方法；在 `onInitialize()` 里按 物品 → 方块 → 方块实体 → MenuType 的顺序注册，并挂两个事件：`UseBlockCallback`（主手右键制箭台 → 服务端 `openMenu`，容器从 `FletchingTableData` 按坐标取）和 `PlayerBlockBreakEvents.AFTER`（拆桌时把内容物掉在原地并删条目）。 |
+| `UpdateFt.java` | **主入口**（`ModInitializer`）。持有 `MOD_ID = "update-ft"` 和 `id(path)` 工具方法；在 `onInitialize()` 里按 物品 → 方块 → 方块实体 → MenuType 的顺序注册，并挂三个事件：`UseBlockCallback`（主手右键制箭台 → 服务端 `openMenu`，容器从 `FletchingTableData` 按坐标取）、`PlayerBlockBreakEvents.AFTER`（拆桌时把内容物掉在原地并删条目）、`ServerTickEvents.END_SERVER_TICK`（每 20 tick 扫一次爆炸/活塞留下的残条目）。 |
 | `HalfExplosionDamageCalculator.java` | 自定义爆炸伤害计算器，单例 `INSTANCE`。覆写 `getEntityDamageAmount`，把实体受到的爆炸伤害乘 `0.5`；**不影响方块破坏和击退**。供 TNT 箭使用。 |
 | `NoEntityDamageCalculator.java` | 另一个爆炸伤害计算器：`shouldDamageEntity` 返回 `false`、`getKnockbackMultiplier` 返回 `0`，让爆炸对实体完全无效。供红石箭的“脉冲”使用。 |
 | `block/ModBlocks.java` | 方块注册表。目前只有 `update-ft:redstone_pulse`（隐形红石脉冲），无物品形态、无掉落物，只由红石箭临时放置。 |
 | `block/RedstonePulseBlock.java` | 红石脉冲方块：不渲染（`RenderShape.INVISIBLE`）、无碰撞、可替换，`getSignal`/`getDirectSignal` 固定返回 15 并声明 `isSignalSource`；实现 `EntityBlock`，`newBlockEntity` + `getTicker` 把倒计时交给方块实体（不再用计划刻）。 |
-| `block/RedstonePulseBlockEntity.java` | 脉冲的状态：`originalState`（被顶掉的原方块）+ `ticksLeft`。ticker 每 tick 减一，到 0 就 `setBlock` 还原；`preRemoveSideEffects` 处理“8 tick 内被玩家换掉”——把原方块掉在原地，且区块卸载不会误触发。读档时 `ticksLeft <= 0` 会被抬到 1，保证下一 tick 就还原，不留永久信号源。 |
+| `block/RedstonePulseBlockEntity.java` | 脉冲的状态：`originalState`（被顶掉的原方块）+ `ticksLeft`。ticker 每 tick 减一，到 0 就 `setBlock` 还原；`preRemoveSideEffects` 处理“8 tick 内被玩家换掉”——有物品形态的方块直接掉原方块物品，雪层单独按 `layers` 掉雪球（它的战利品表要求有破坏实体），其他没有物品形态的方块走掉落表。区块卸载不会误触发。读档时 `ticksLeft <= 0` 会被抬到 1，保证下一 tick 就还原，不留永久信号源。 |
 | `block/ModBlockEntities.java` | 方块实体注册表。`BlockEntityType` 在 1.21.11 是私有构造，用 Fabric 的 `FabricBlockEntityTypeBuilder.create(...).build()` 注册 `update-ft:redstone_pulse`。 |
 | `item/ModItems.java` | 9 种箭的注册表。`register()` 用 `Item.Properties.setId(ResourceKey)` 绑定 ID 后注册进 `BuiltInRegistries.ITEM`；`initialize()` 把 9 种箭加入创造模式「战斗」页签。数值（伤害加成、命中效果）与悬停介绍的语言键都写在这个文件里。 |
 | `item/ModArrowItem.java` | 自定义箭物品类，继承 `ArrowItem`，多三个字段：`damageBonus`（伤害加成）、`effect`（`ArrowEffect` 实例，决定命中后干什么）、`descriptionKeys`（悬停介绍的语言键列表）。覆写的 `appendHoverText` 会把每个键渲染成一行灰色小字。 |
 | `effect/ArrowEffect.java` | **命中行为的接口**：`onHitBlock` / `onHitEntity` 都返回 `boolean`，表示“这支箭是否应该被消耗”，默认 `false`。不引 `net.fabricmc.*`、不假设调用方一定拿得到 `ServerLevel`——这是三个平台唯一能共享的一层，1.21.1 / 1.20.1 的移植直接复用它。 |
 | `effect/NoneEffect.java` | 普通箭：什么都不做，完全交给原版。 |
 | `effect/ExplosiveEffect.java` | TNT 箭：半径 4、不点火、实体伤害减半，`mobGriefing` 关闭时不破坏方块；命中方块或实体都消耗。 |
-| `effect/RedstonePulseEffect.java` | 红石箭：`TRIGGER_BLOCK` 触发 + 隐形脉冲方块通电（只放空气/水源，同格续时）；命中实体不触发；不消耗。 |
+| `effect/RedstonePulseEffect.java` | 红石箭：`TRIGGER_BLOCK` 触发 + 隐形脉冲方块通电（放在命中面外侧任意**可替换**方块上，同格续时）；命中实体不触发；不消耗。 |
 | `effect/TeleportEffect.java` | 珍珠箭：传送射手 + 3 点摔落伤害；没有主人（发射器）或传送失败时返回 `false`，不消耗。 |
 | `effect/LightningEffect.java` | 铜箭：雷雨天且露天命中时引雷，击杀记在射手头上；不消耗。 |
 | `menu/ModMenuTypes.java` | 注册 `MenuType<FletchingTableMenu>`，ID 为 `update-ft:fletching_table`；客户端用它来决定打开哪个 `Screen`，服务端用它来反序列化菜单。 |
-| `menu/FletchingTableMenu.java` | 制箭台容器逻辑（`AbstractContainerMenu`）：3 个斜向原料格（`InputSlot` 用 `mayPlace` 做栏位限定）+ 1 个产物格 + 玩家背包（坐标与 `ft_gui.png` 一一对应）；监听原料容器变化重算产物；产物格自定义 `onTake` 消耗原料、`tryRemove` 强制整份取走；`quickMoveStack` 按物品类型把 Shift 点击的物品路由到对应原料格。`removed()` 在**最后一个查看者**关闭时用 `clearContainer` 把原料退回背包（装不下的掉在脚下），并删掉存档条目——桌面不留东西。 |
-| `menu/FletchingTableData.java` | 制箭台的持久化（`SavedData`）：每个 `ServerLevel` 一份，内部 `Map<BlockPos, SimpleContainer>`，codec 存成 `{"tables":[{pos, items}]}`。`getOrCreate` 按坐标取同一个容器（界面开着时双人共享）；每个容器挂了监听调 `setDirty()`，否则崩溃后内容会丢；`SharedContainer` 用 `startOpen`/`stopOpen` 数着当前有几个人开着，最后一个关的人负责结算；`dropAndRemove` 负责拆桌/爆炸后把内容物掉在原地，`discard` 只删条目（东西已经还给玩家）。 |
+| `menu/FletchingTableMenu.java` | 制箭台容器逻辑（`AbstractContainerMenu`）：3 个斜向原料格（`InputSlot` 用 `mayPlace` 做栏位限定）+ 1 个产物格 + 玩家背包（坐标与 `ft_gui.png` 一一对应）；监听原料容器变化重算产物；产物格自定义 `onTake` 消耗原料、`tryRemove` 强制整份取走；`quickMoveStack` 按物品类型把 Shift 点击的物品路由到对应原料格。服务端菜单额外保存建菜单时的 `ServerLevel`，`stillValid()`/`removed()` 都查这个维度而不是 `player.level()`，玩家换维度后旧菜单会立即失效、也不会删错维度的条目。`removed()` 在**最后一个查看者**关闭时用 `clearContainer` 把原料退回背包（装不下的掉在脚下），并删掉存档条目——桌面不留东西。 |
+| `menu/FletchingTableData.java` | 制箭台的持久化（`SavedData`）：每个 `ServerLevel` 一份，内部 `Map<BlockPos, SimpleContainer>`，codec 存成 `{"tables":[{pos, items}]}`。`getOrCreate` 按坐标取同一个容器（界面开着时双人共享）；每个容器挂了监听调 `setDirty()`，否则崩溃后内容会丢；`SharedContainer` 用 `Set<ContainerUser>` 记录查看者，最后一个关的人负责结算，`isViewed()` 会剔除已移除/当前菜单已不是这张桌子的查看者，避免计数泄漏；`sweep()` 每秒扫描已加载区块，给爆炸/活塞/结构破坏留下的残条目兜底；`dropAndRemove` 把内容物掉在原地，`discard` 只删条目（东西已经还给玩家）。 |
 | `recipe/FletchingRecipe.java` | 单个制箭台配方：只保存**箭头材料**的 `Ingredient` 与产物（木棍、羽毛是固定栏位，不必重复写），`matchesTip()` 判断某物品能不能当这种箭的箭头。 |
 | `recipe/FletchingRecipes.java` | 配方表（写死在代码里）与栏位定义：`TIP_SLOT`/`SHAFT_SLOT`/`FLETCHING_SLOT` 三个常量对应界面右上/中间/左下；`findResult()` 先校验中间是木棍、左下是羽毛，再按右上的材料查产物；`isTipMaterial()` 给箭头格做 `mayPlace` 过滤，**只查 `ModTags.FLETCHING_TIPS` 标签**，不再遍历配方表。 |
 | `client/UpdateFtClient.java` | **客户端入口**（`ClientModInitializer`）。调用 `MenuScreens.register` 把 `MenuType` 与 `FletchingTableScreen` 绑定。 |
@@ -119,11 +119,11 @@ update-ft/
 
 ## 关键流程
 
-**注册**：`UpdateFt.onInitialize()` → `ModItems.initialize()`（触发静态字段注册物品、加入创造页签）→ `ModMenuTypes.initialize()`（触发 `MenuType` 注册）→ 注册右键事件。客户端 `UpdateFtClient.onInitializeClient()` → 绑定 `MenuType` 与 `Screen`。
+**注册**：`UpdateFt.onInitialize()` → `ModItems.initialize()`（触发静态字段注册物品、加入创造页签）→ `ModBlocks.initialize()`（注册红石脉冲）→ `ModBlockEntities.initialize()`（注册方块实体，必须在方块之后）→ `ModMenuTypes.initialize()`（触发 `MenuType` 注册）→ 注册右键、拆桌和每秒扫描事件。客户端 `UpdateFtClient.onInitializeClient()` → 绑定 `MenuType` 与 `Screen`。
 
-**开界面与合成**：主手右键制箭台 → 服务端 `UseBlockCallback` 返回 `SUCCESS` 并 `openMenu` → `FletchingTableData.get(level).getOrCreate(pos)` 取出这个坐标的容器（第一次为空，之后是上次留下的东西）→ 创建 `FletchingTableMenu` → 发送 `ClientboundOpenScreenPacket` → 客户端用 `MenuType` 新建菜单与 `FletchingTableScreen`，槽位内容由 `AbstractContainerMenu` 自动同步 → 放入三样原料后容器监听触发 `FletchingRecipes.findResult()` 把产物写进产物格 → 取走产物时消耗每个原料 1 个 → 关界面把剩下的原料退回背包、桌子清空（还有人开着同一张桌子时先不结算，等最后一个关闭）。
+**开界面与合成**：主手右键制箭台 → 服务端 `UseBlockCallback` 返回 `SUCCESS` 并 `openMenu` → `FletchingTableData.get(level).getOrCreate(pos)` 取出这个坐标的容器（第一次为空，之后是上次留下的东西）→ 创建 `FletchingTableMenu` → 发送 `ClientboundOpenScreenPacket` → 客户端用 `MenuType` 新建菜单与 `FletchingTableScreen`，槽位内容由 `AbstractContainerMenu` 自动同步 → 放入三样原料后容器监听触发 `FletchingRecipes.findResult()` 把产物写进产物格 → 取走产物时消耗每个原料 1 个 → 关界面把剩下的原料退回背包、桌子清空（还有人开着同一张桌子时先不结算，等最后一个关闭的人拿走桌面全部原料）。
 
-**内容物什么时候离开桌面**：正常关闭界面 → `removed()` 把原料退回玩家并删条目；拆桌 → `PlayerBlockBreakEvents.AFTER` 掉在原地；爆炸/活塞没有事件，由 `getOrCreate` 发现“这个坐标已经不是制箭台”时兜底。
+**内容物什么时候离开桌面**：正常关闭界面 → `removed()` 把原料退回玩家并删条目；玩家拆桌 → `PlayerBlockBreakEvents.AFTER` 掉在原地；爆炸/活塞/结构破坏没有事件 → `FletchingTableData.sweep()` 每 20 tick 检查一次已加载区块，发现坐标上已经不是制箭台就把内容物掉在原地并删条目（未加载的区块留到加载后再查，不会为了清理强行加载区块）。
 
 **射击命中**：弓/弩/发射器发射 → `ArrowItem.createArrow()` 生成 `Arrow` 实体（`pickupItemStack` 即本模组的箭）→ `AbstractArrowMixin` 用 `getPickupItemStackOrigin()` 认出是哪个物品 → 伤害走 `@ModifyArg` 加 `damageBonus` → 命中回调一行分派给 `arrow.effect()`，由对应的 `ArrowEffect` 决定做什么以及要不要消耗这支箭：TNT 箭炸完消失、珍珠箭传送成功才消失，红石箭和铜箭照常插在地上可以捡回。
 
