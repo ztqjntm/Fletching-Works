@@ -1,0 +1,8 @@
+{
+  "type": "update-ft:fletching",
+  "tip": "minecraft:blaze_powder",
+  "result": {
+    "id": "update-ft:fire_arrow",
+    "count": 2
+  }
+}

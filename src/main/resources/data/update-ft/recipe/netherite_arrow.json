@@ -1,0 +1,8 @@
+{
+  "type": "update-ft:fletching",
+  "tip": "minecraft:netherite_ingot",
+  "result": {
+    "id": "update-ft:netherite_arrow",
+    "count": 4
+  }
+}

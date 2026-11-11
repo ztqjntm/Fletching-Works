@@ -1,0 +1,8 @@
+{
+  "type": "update-ft:fletching",
+  "tip": "minecraft:tripwire_hook",
+  "result": {
+    "id": "update-ft:grapple_arrow",
+    "count": 2
+  }
+}

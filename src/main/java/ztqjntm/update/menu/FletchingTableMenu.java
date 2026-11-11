@@ -105,10 +105,10 @@ public class FletchingTableMenu extends AbstractContainerMenu {
 
 	/** 产物以服务端为准；客户端也重算的话，多格同时同步时会出现“闪一下”的中间态 */
 	private void updateResult() {
-		if (this.clientSide) {
+		if (this.clientSide || this.level == null) {
 			return;
 		}
-		this.result.setItem(0, FletchingRecipes.findResult(this.input));
+		this.result.setItem(0, FletchingRecipes.findResult(this.level, this.input));
 	}
 
 	/** 物品该进哪个原料格；返回 -1 表示三个格子都不收 */

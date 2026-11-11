@@ -1,0 +1,8 @@
+{
+  "type": "update-ft:fletching",
+  "tip": "minecraft:diamond",
+  "result": {
+    "id": "update-ft:diamond_arrow",
+    "count": 4
+  }
+}

@@ -23,6 +23,7 @@ import ztqjntm.update.item.ModItems;
 import ztqjntm.update.menu.FletchingTableData;
 import ztqjntm.update.menu.FletchingTableMenu;
 import ztqjntm.update.menu.ModMenuTypes;
+import ztqjntm.update.recipe.ModRecipes;
 
 public class UpdateFt implements ModInitializer {
 	public static final String MOD_ID = "update-ft";
@@ -33,6 +34,7 @@ public class UpdateFt implements ModInitializer {
 		ModBlocks.initialize();         // 注册方块（红石脉冲）
 		ModBlockEntities.initialize();  // 红石脉冲的方块实体（要在方块之后）
 		ModMenuTypes.initialize();      // 注册 MenuType
+		ModRecipes.initialize();        // 注册制箭台的配方类型与序列化器（配方本体在 data/update-ft/recipe/）
 		BeeArrowManager.register();     // 蜜蜂箭召唤的蜜蜂 30 秒后散场
 		GrappleManager.register();      // 钩爪箭的逐 tick 牵引
 

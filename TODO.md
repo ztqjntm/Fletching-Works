@@ -14,13 +14,11 @@
 
 ## P2 · 技术债
 
-1. **配方体系不是官方实现**（与设计缺口同源）
-   - 现状：`FletchingRecipe` / `FletchingRecipes` 是手写表，没有 `RecipeType` / `RecipeSerializer` / `RecipeInput`，`data/` 下没有 `recipe/`。
-   - 后果：`/reload` 无效、数据包改不了、JEI/REI/EMI 查不到、没有配方书。
-   - 改造：自定义 `RecipeType` + Serializer + JSON（10 条）+ 客户端同步；「固定栏位 + 木棍/羽毛硬编码」原版 JSON 表达不了，必须自定义 serializer。
-2. **没有自动化测试**：`test NO-SOURCE`。最值得补的是 `FletchingRecipes.findResult()` 的匹配矩阵和 `InputSlot.mayPlace` 的栏位过滤（gametest）。
-3. **CI**：`build.yml` 在每次 push / PR 时构建；`release.yml` 在 `v*` tag 时校验版本、构建并发布 GitHub Release / CurseForge，release job 已配置 Gradle 缓存。目前仍缺自动化测试（见上一条）。
-4. **查看者计数**：已改用 `Set<ContainerUser>`，`isViewed()` 会剔除已移除的玩家和“当前菜单已不是这张桌子”的玩家；剩下“所有查看者都异常消失、桌子还在”的极端情况，内容会留在桌上等下一个玩家打开，不会丢。
+1. ~~**配方体系不是官方实现**~~ —— 已完成：`RecipeType` + `RecipeSerializer` + `RecipeInput` 齐了，配方本体在 `data/update-ft/recipe/*.json`，数据包可增删改、`/reload` 生效。注意 1.21.11 客户端没有配方表，产物格是服务端算完随容器同步的。
+2. **配方查看器**：JEI / REI / EMI 仍然需要各自的插件才能识别 `update-ft:fletching`，mod 本身不提供。
+3. **没有自动化测试**：`test NO-SOURCE`。最值得补的是 `FletchingRecipe.matches()` 的匹配矩阵和 `InputSlot.mayPlace` 的栏位过滤（gametest）。
+4. **CI**：`build.yml` 在每次 push / PR 时构建；`release.yml` 在 `v*` tag 时校验版本、构建并发布 GitHub Release / CurseForge，release job 已配置 Gradle 缓存。目前仍缺自动化测试（见上一条）。
+5. **查看者计数**：已改用 `Set<ContainerUser>`，`isViewed()` 会剔除已移除的玩家和“当前菜单已不是这张桌子”的玩家；剩下“所有查看者都异常消失、桌子还在”的极端情况，内容会留在桌上等下一个玩家打开，不会丢。
 
 ## P3 · 可选特性
 
@@ -28,7 +26,6 @@
    - 评估结论（2026-10-31）：制箭台没有方块/物品模型、也没有方块实体，世界里的桌子就是原版的。
      - **A（0.2，高风险高收益）**：自建 `update-ft:fletching_table` 方块（blockstate + 模型 + 物品模型 + loot + 配方 + **村民 POI** + 兼容原版方块），可顺带加 BlockEntity 做桌面展示。
 2. **BlockEntity**：容器持久化与多人共享已经在 1.0.1 用 `SavedData` 解决，剩下的只有漏斗自动化和桌面展示材料/进度——这两件必须有真方块实体，而 1.21.11 的制箭台没有专属方块类，只能等方案 A。
-3. **数据包配方**：与 P2-1 同源，做完顺带支持整合包作者自定义。
 
 ## 发布检查清单
 

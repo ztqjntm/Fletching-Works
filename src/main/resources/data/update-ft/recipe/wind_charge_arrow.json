@@ -1,0 +1,8 @@
+{
+  "type": "update-ft:fletching",
+  "tip": "minecraft:wind_charge",
+  "result": {
+    "id": "update-ft:wind_charge_arrow",
+    "count": 2
+  }
+}

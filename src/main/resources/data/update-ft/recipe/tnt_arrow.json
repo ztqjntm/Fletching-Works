@@ -1,0 +1,8 @@
+{
+  "type": "update-ft:fletching",
+  "tip": "minecraft:tnt",
+  "result": {
+    "id": "update-ft:tnt_arrow",
+    "count": 1
+  }
+}

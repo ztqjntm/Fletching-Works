@@ -1,0 +1,8 @@
+{
+  "type": "update-ft:fletching",
+  "tip": "minecraft:ender_pearl",
+  "result": {
+    "id": "update-ft:pearl_arrow",
+    "count": 2
+  }
+}

@@ -1,0 +1,8 @@
+{
+  "type": "update-ft:fletching",
+  "tip": "minecraft:gold_ingot",
+  "result": {
+    "id": "update-ft:gold_arrow",
+    "count": 4
+  }
+}

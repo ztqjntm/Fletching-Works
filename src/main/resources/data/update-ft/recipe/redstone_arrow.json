@@ -1,0 +1,8 @@
+{
+  "type": "update-ft:fletching",
+  "tip": "minecraft:redstone",
+  "result": {
+    "id": "update-ft:redstone_arrow",
+    "count": 3
+  }
+}

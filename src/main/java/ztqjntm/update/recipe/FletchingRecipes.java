@@ -1,16 +1,13 @@
 package ztqjntm.update.recipe;
 
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.Container;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
-import net.minecraft.world.item.crafting.Ingredient;
-import ztqjntm.update.item.ModItems;
+import net.minecraft.world.level.Level;
 import ztqjntm.update.tag.ModTags;
 
-import java.util.List;
-
 /**
- * 制箭台的配方表。
+ * 制箭台的栏位约定与配方查询。
  * <p>
  * 栏位是固定的，和箭的构造一一对应：
  * <ul>
@@ -18,81 +15,48 @@ import java.util.List;
  *     <li>{@link #SHAFT_SLOT}=1（界面中间）——恒为木棍；</li>
  *     <li>{@link #FLETCHING_SLOT}=2（界面左下）——恒为羽毛。</li>
  * </ul>
- * 所以每条配方只需要描述“箭头材料 → 产物”。想做新箭，往 {@link #recipes()} 里加一行即可
- * （目前写死在代码里，以后要支持数据包再换成自定义 RecipeType + JSON）。
+ * 配方本体不再是代码里的静态表，而是 {@code data/<namespace>/recipe/*.json} 里的
+ * {@code update-ft:fletching} 配方，由 {@link net.minecraft.world.item.crafting.RecipeManager}
+ * 在服务端加载、匹配；数据包可以增删改，{@code /reload} 生效。
  * <p>
  * 箭头格“能放什么”和“能做出什么”是两件事：能放什么由物品标签
- * {@link ModTags#FLETCHING_TIPS} 决定（数据包可改，{@code /reload} 生效），能做出什么仍由下面的配方表决定。
+ * {@link ModTags#FLETCHING_TIPS} 决定（数据包可改，{@code /reload} 生效，且会同步给客户端），
+ * 能做出什么由配方表决定。客户端拿不到配方表，所以放置预判只能用标签。
  */
 public final class FletchingRecipes {
     public static final int TIP_SLOT = 0;
     public static final int SHAFT_SLOT = 1;
     public static final int FLETCHING_SLOT = 2;
 
-    /**
-     * 配方表。惰性构建——不在类初始化阶段引用 {@link ModItems}，
-     * 避免“谁先被加载”变成一条隐性约束（物品必须在注册表冻结之前完成注册）。
-     */
-    private static List<FletchingRecipe> recipes;
-
     private FletchingRecipes() {
-    }
-
-    private static List<FletchingRecipe> recipes() {
-        if (recipes == null) {
-            recipes = List.of(
-                    // 原版箭
-                    new FletchingRecipe(new ItemStack(Items.ARROW, 4), Ingredient.of(Items.FLINT)),
-                    // 本模组的箭
-                    new FletchingRecipe(new ItemStack(ModItems.STONE_ARROW, 4), Ingredient.of(Items.COBBLESTONE)),
-                    new FletchingRecipe(new ItemStack(ModItems.COPPER_ARROW, 4), Ingredient.of(Items.COPPER_INGOT)),
-                    new FletchingRecipe(new ItemStack(ModItems.IRON_ARROW, 4), Ingredient.of(Items.IRON_INGOT)),
-                    new FletchingRecipe(new ItemStack(ModItems.GOLD_ARROW, 4), Ingredient.of(Items.GOLD_INGOT)),
-                    new FletchingRecipe(new ItemStack(ModItems.DIAMOND_ARROW, 4), Ingredient.of(Items.DIAMOND)),
-                    new FletchingRecipe(new ItemStack(ModItems.NETHERITE_ARROW, 4), Ingredient.of(Items.NETHERITE_INGOT)),
-                    // 爆炸/功能箭：产出少一些
-                    new FletchingRecipe(new ItemStack(ModItems.TNT_ARROW, 1), Ingredient.of(Items.TNT)),
-                    new FletchingRecipe(new ItemStack(ModItems.REDSTONE_ARROW, 3), Ingredient.of(Items.REDSTONE)),
-                    new FletchingRecipe(new ItemStack(ModItems.PEARL_ARROW, 2), Ingredient.of(Items.ENDER_PEARL)),
-                    // 1.0.2 六支功能箭
-                    new FletchingRecipe(new ItemStack(ModItems.WEB_ARROW, 2), Ingredient.of(Items.STRING)),
-                    new FletchingRecipe(new ItemStack(ModItems.FIRE_ARROW, 2), Ingredient.of(Items.BLAZE_POWDER)),
-                    new FletchingRecipe(new ItemStack(ModItems.BEE_ARROW, 1), Ingredient.of(Items.HONEYCOMB)),
-                    new FletchingRecipe(new ItemStack(ModItems.FROST_ARROW, 2), Ingredient.of(Items.BLUE_ICE)),
-                    new FletchingRecipe(new ItemStack(ModItems.WIND_CHARGE_ARROW, 2), Ingredient.of(Items.WIND_CHARGE)),
-                    new FletchingRecipe(new ItemStack(ModItems.GRAPPLE_ARROW, 2), Ingredient.of(Items.TRIPWIRE_HOOK))
-            );
-        }
-        return recipes;
     }
 
     /**
      * 这个物品能不能放进箭头格（{@code InputSlot.mayPlace} 与 Shift 点击的路由都用它）。
      * <p>
-     * 只查物品标签，不遍历配方表：数据包往 tag 里加材料即可生效，也不用担心客户端拿不到配方数据——
-     * 标签是原版同步的，客户端和服务端看到的是同一份。
+     * 只查物品标签，不查配方：客户端没有配方表，而标签是原版同步的，
+     * 两端看到的是同一份，预判不会和服务端打架。
      */
     public static boolean isTipMaterial(ItemStack stack) {
         return !stack.isEmpty() && stack.is(ModTags.FLETCHING_TIPS);
     }
 
     /**
-     * 找出匹配当前三格原料的产物：中间必须是木棍、左下必须是羽毛，右上按配方表查。
+     * 找出匹配当前三格原料的产物。木棍/羽毛的校验在 {@link FletchingRecipe#matches} 里。
+     * <p>
+     * 只在服务端查询：1.21.11 的 {@code Level#recipeAccess()} 在客户端不提供配方表，
+     * 产物格由服务端算好后随容器同步发给客户端（和原版工作台一致）。
      * 没有匹配则返回空栈。
      */
-    public static ItemStack findResult(Container input) {
-        if (input.getContainerSize() <= FLETCHING_SLOT) {
+    public static ItemStack findResult(Level level, Container input) {
+        if (!(level instanceof ServerLevel server) || input.getContainerSize() <= FLETCHING_SLOT) {
             return ItemStack.EMPTY;
         }
-        if (!input.getItem(SHAFT_SLOT).is(Items.STICK) || !input.getItem(FLETCHING_SLOT).is(Items.FEATHER)) {
-            return ItemStack.EMPTY;
-        }
-        ItemStack tip = input.getItem(TIP_SLOT);
-        for (FletchingRecipe recipe : recipes()) {
-            if (recipe.matchesTip(tip)) {
-                return recipe.createResult();
-            }
-        }
-        return ItemStack.EMPTY;
+        FletchingRecipeInput recipeInput = new FletchingRecipeInput(
+                input.getItem(TIP_SLOT), input.getItem(SHAFT_SLOT), input.getItem(FLETCHING_SLOT));
+        return server.getServer().getRecipeManager()
+                .getRecipeFor(ModRecipes.FLETCHING, recipeInput, server)
+                .map(holder -> holder.value().assemble(recipeInput, server.registryAccess()))
+                .orElse(ItemStack.EMPTY);
     }
 }

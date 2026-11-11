@@ -1,0 +1,8 @@
+{
+  "type": "update-ft:fletching",
+  "tip": "minecraft:blue_ice",
+  "result": {
+    "id": "update-ft:frost_arrow",
+    "count": 2
+  }
+}

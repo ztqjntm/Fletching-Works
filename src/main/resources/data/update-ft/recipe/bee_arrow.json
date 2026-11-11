@@ -1,0 +1,8 @@
+{
+  "type": "update-ft:fletching",
+  "tip": "minecraft:honeycomb",
+  "result": {
+    "id": "update-ft:bee_arrow",
+    "count": 1
+  }
+}
