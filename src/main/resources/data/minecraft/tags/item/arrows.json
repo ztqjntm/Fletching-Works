@@ -9,6 +9,12 @@
     "update-ft:netherite_arrow",
     "update-ft:tnt_arrow",
     "update-ft:redstone_arrow",
-    "update-ft:pearl_arrow"
+    "update-ft:pearl_arrow",
+    "update-ft:web_arrow",
+    "update-ft:fire_arrow",
+    "update-ft:bee_arrow",
+    "update-ft:frost_arrow",
+    "update-ft:wind_charge_arrow",
+    "update-ft:grapple_arrow"
   ]
 }

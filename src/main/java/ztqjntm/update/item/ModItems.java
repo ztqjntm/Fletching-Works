@@ -8,11 +8,17 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.item.CreativeModeTabs;
 import net.minecraft.world.item.Item;
 import ztqjntm.update.UpdateFt;
+import ztqjntm.update.effect.BeeArrowEffect;
 import ztqjntm.update.effect.ExplosiveEffect;
+import ztqjntm.update.effect.FireArrowEffect;
+import ztqjntm.update.effect.FrostArrowEffect;
+import ztqjntm.update.effect.GrappleArrowEffect;
 import ztqjntm.update.effect.LightningEffect;
 import ztqjntm.update.effect.NoneEffect;
 import ztqjntm.update.effect.RedstonePulseEffect;
 import ztqjntm.update.effect.TeleportEffect;
+import ztqjntm.update.effect.WebArrowEffect;
+import ztqjntm.update.effect.WindArrowEffect;
 
 import java.util.function.Function;
 
@@ -83,6 +89,49 @@ public class ModItems {
                     "tooltip.update-ft.pearl_arrow.3"),
             new Item.Properties());
 
+    // 1.0.2 六支功能箭：统一 -1 伤害，用伤害换效果
+    public static final ModArrowItem WEB_ARROW = register("web_arrow",
+            props -> new ModArrowItem(props, -1, WebArrowEffect.INSTANCE,
+                    "tooltip.update-ft.web_arrow.1",
+                    "tooltip.update-ft.web_arrow.2",
+                    "tooltip.update-ft.web_arrow.3"),
+            new Item.Properties());
+
+    public static final ModArrowItem FIRE_ARROW = register("fire_arrow",
+            props -> new ModArrowItem(props, -1, FireArrowEffect.INSTANCE,
+                    "tooltip.update-ft.fire_arrow.1",
+                    "tooltip.update-ft.fire_arrow.2",
+                    "tooltip.update-ft.fire_arrow.3"),
+            new Item.Properties());
+
+    public static final ModArrowItem BEE_ARROW = register("bee_arrow",
+            props -> new ModArrowItem(props, -1, BeeArrowEffect.INSTANCE,
+                    "tooltip.update-ft.bee_arrow.1",
+                    "tooltip.update-ft.bee_arrow.2",
+                    "tooltip.update-ft.bee_arrow.3"),
+            new Item.Properties());
+
+    public static final ModArrowItem FROST_ARROW = register("frost_arrow",
+            props -> new ModArrowItem(props, -1, FrostArrowEffect.INSTANCE,
+                    "tooltip.update-ft.frost_arrow.1",
+                    "tooltip.update-ft.frost_arrow.2",
+                    "tooltip.update-ft.frost_arrow.3"),
+            new Item.Properties());
+
+    public static final ModArrowItem WIND_CHARGE_ARROW = register("wind_charge_arrow",
+            props -> new ModArrowItem(props, -1, WindArrowEffect.INSTANCE,
+                    "tooltip.update-ft.wind_charge_arrow.1",
+                    "tooltip.update-ft.wind_charge_arrow.2",
+                    "tooltip.update-ft.wind_charge_arrow.3"),
+            new Item.Properties());
+
+    public static final ModArrowItem GRAPPLE_ARROW = register("grapple_arrow",
+            props -> new ModArrowItem(props, -1, GrappleArrowEffect.INSTANCE,
+                    "tooltip.update-ft.grapple_arrow.1",
+                    "tooltip.update-ft.grapple_arrow.2",
+                    "tooltip.update-ft.grapple_arrow.3"),
+            new Item.Properties());
+
     public static void initialize() {
         ItemGroupEvents.modifyEntriesEvent(CreativeModeTabs.COMBAT)
                 .register((itemGroup) -> {
@@ -95,6 +144,12 @@ public class ModItems {
                     itemGroup.accept(ModItems.TNT_ARROW);
                     itemGroup.accept(ModItems.REDSTONE_ARROW);
                     itemGroup.accept(ModItems.PEARL_ARROW);
+                    itemGroup.accept(ModItems.WEB_ARROW);
+                    itemGroup.accept(ModItems.FIRE_ARROW);
+                    itemGroup.accept(ModItems.BEE_ARROW);
+                    itemGroup.accept(ModItems.FROST_ARROW);
+                    itemGroup.accept(ModItems.WIND_CHARGE_ARROW);
+                    itemGroup.accept(ModItems.GRAPPLE_ARROW);
                 });
     }
 }

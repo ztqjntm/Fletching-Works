@@ -17,6 +17,8 @@ import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.level.block.Blocks;
 import ztqjntm.update.block.ModBlockEntities;
 import ztqjntm.update.block.ModBlocks;
+import ztqjntm.update.entity.BeeArrowManager;
+import ztqjntm.update.entity.GrappleManager;
 import ztqjntm.update.item.ModItems;
 import ztqjntm.update.menu.FletchingTableData;
 import ztqjntm.update.menu.FletchingTableMenu;
@@ -31,6 +33,8 @@ public class UpdateFt implements ModInitializer {
 		ModBlocks.initialize();         // 注册方块（红石脉冲）
 		ModBlockEntities.initialize();  // 红石脉冲的方块实体（要在方块之后）
 		ModMenuTypes.initialize();      // 注册 MenuType
+		BeeArrowManager.register();     // 蜜蜂箭召唤的蜜蜂 30 秒后散场
+		GrappleManager.register();      // 钩爪箭的逐 tick 牵引
 
 		// 右键制箭台 → 打开 GUI（不需要方块实体，也不需要 Mixin）
 		UseBlockCallback.EVENT.register((player, level, hand, hitResult) -> {

@@ -4,7 +4,7 @@
 
 > The fletching table has been decoration since 1.14. This mod gives it the one job its name promises.
 
-Right-click a fletching table to open a three-slot crafting UI: **tip + stick + feather**. Most recipes yield 4 arrows (TNT yields 1, redstone 3, pearl 2). On top of that, **9 arrow types** — from stone and copper to explosive TNT arrows, redstone-pulsing arrows, and a pearl arrow that teleports *you*.
+Right-click a fletching table to open a three-slot crafting UI: **tip + stick + feather**. Most recipes yield 4 arrows (TNT 1, redstone 3, pearl / web / fire / frost / wind charge / grapple 2, bee 1). On top of that, **15 arrow types** — from stone and copper to explosive TNT arrows, redstone-pulsing arrows, and a pearl arrow that teleports *you*.
 
 [![Release](https://img.shields.io/github/v/release/ztqjntm/update-FT?style=flat-square&label=release)](https://github.com/ztqjntm/update-FT/releases)
 [![Minecraft](https://img.shields.io/badge/Minecraft-1.21.11-3C8527?style=flat-square)](https://www.minecraft.net/)
@@ -22,27 +22,27 @@ Right-click a fletching table to open a three-slot crafting UI: **tip + stick + 
 
 - **The fletching table finally does something.** In vanilla it is a villager workstation and nothing else. Now it opens a crafting UI.
 - **No more arrow shortages.** Out of flint? Cobblestone, copper and iron all work, so you craft from whatever you already have.
-- **Nine arrows, nine jobs.** Demolition, remote redstone, self-teleport, lightning — each one is worth carrying on its own.
+- **Fifteen arrows, fifteen jobs.** Demolition, remote redstone, self-teleport, lightning — each one is worth carrying on its own.
 
 ## Screenshots
 
 <!--
   Four shots (16:9, ≤1000px wide) in docs/images/:
   1. gui.png       The fletching table UI — the important one: three slots filled, output populated
-  2. arrows.png    All nine arrows with a tooltip open
+  2. arrows.png    All fifteen arrows with a tooltip open
   3. tnt.png       A TNT arrow mid-explosion
   4. redstone.png  A redstone arrow lighting up a redstone lamp
   A 10-second GIF (right-click → take the arrows) beats four stills.
   Uncomment once the files exist; delete this whole section until then.
   ![Fletching table UI](docs/images/gui.png)
-  ![Nine arrows](docs/images/arrows.png)
+  ![Fifteen arrows](docs/images/arrows.png)
 -->
 
 ## Installation
 
 1. Install **Fabric Loader ≥ 0.19.5** for **Minecraft 1.21.11** (Java 21).
 2. Drop [Fabric API](https://modrinth.com/mod/fabric-api) into `mods/`.
-3. Drop `update-ft-1.0.1.jar` into `mods/`.
+3. Drop `update-ft-1.0.2.jar` into `mods/`.
 
 That is all for singleplayer. **For a server, install it on both sides** — the mod registers blocks, items and a menu, so a client-only install cannot join.
 
@@ -50,15 +50,15 @@ That is all for singleplayer. **For a server, install it on both sides** — the
 
 | Source | Version | Notes |
 | --- | --- | --- |
-| [GitHub Releases](https://github.com/ztqjntm/update-FT/releases) | 1.0.1 | Grab the jar under `Assets` |
-| [CurseForge](https://www.curseforge.com/minecraft/mc-mods/update-ft) | 1.0.1 | One-click install via the CurseForge app |
+| [GitHub Releases](https://github.com/ztqjntm/update-FT/releases) | 1.0.2 | Grab the jar under `Assets` |
+| [CurseForge](https://www.curseforge.com/minecraft/mc-mods/update-ft) | 1.0.2 | One-click install via the CurseForge app |
 | Modrinth | — | Not listed yet |
 
 | Mod version | Minecraft | Loader |
 | --- | --- | --- |
-| 1.0.1 | 1.21.11 | Fabric |
+| 1.0.2 | 1.21.11 | Fabric |
 
-## The nine arrows
+## The fifteen arrows
 
 | Arrow | Damage bonus | Effect |
 | --- | --- | --- |
@@ -71,11 +71,17 @@ That is all for singleplayer. **For a server, install it on both sides** — the
 | TNT Arrow | −1 | Explodes on impact with a block or an entity |
 | Redstone Arrow | −1 | Fires a redstone pulse where it lands |
 | Pearl Arrow | ±0 | Teleports the shooter to the impact point |
+| Web Arrow | −1 | Leaves an 8-second cobweb where it lands |
+| Fire Arrow | −1 | Ignites the target and spreads a 3x3 fire |
+| Bee Arrow | −1 | Summons 2 bees that only attack the target |
+| Frost Arrow | −1 | Freezes the target for 10 seconds; freezes 3x3 water |
+| Wind Charge Arrow | −1 | Pure knockback in a 3x3x3 area |
+| Grapple Arrow | −1 | Pulls you to a block, or a creature 5 blocks toward you |
 
 The bonus is added **directly to vanilla's final damage** (vanilla rolls speed and crits, rounds up, then the bonus is applied, floored at 0). So a diamond arrow is not "double damage" — it is a flat +2.
 
 <details>
-<summary>Details on the four special arrows</summary>
+<summary>Details on the ten special arrows</summary>
 
 - **TNT Arrow** — radius 4, no fire, **destroys blocks** (TNT strapped to an arrow — it is consumed on impact and cannot be recovered). Entity damage is halved, so point-blank shots will not instantly kill you. With `mobGriefing` off it only damages entities and leaves the terrain alone.
 - **Redstone Arrow** — on hitting a block, it triggers buttons, levers, doors, fence gates, trapdoors, bells, candles and bee nests within 2 blocks (without breaking anything), and places an invisible block on the face it hit that **emits signal strength 15 for 8 ticks** — that is what redstone lamps, pistons, dust, dispensers and rails actually respond to. The arrow itself sticks in the block as usual and can be picked up again.
@@ -83,6 +89,12 @@ The bonus is added **directly to vanilla's final damage** (vanilla rolls speed a
   - Hitting the same spot again just resets the timer; it does not stack a second block.
 - **Pearl Arrow** — teleports the **shooter** to the impact point: 0.6 blocks back along the arrow's incoming direction, then a collision check within 4 blocks of height for a spot that is not inside a block. Costs 3 fall damage (a vanilla ender pearl costs 5). The arrow is consumed — **unless the teleport cannot happen** (e.g. a dispenser-fired arrow has no owner), in which case it sticks in the ground like any other arrow.
 - **Copper Arrow** — only works during a **thunderstorm** with **open sky** above the impact point; underground or indoors it is an ordinary arrow. The bolt is real: it sets fires and can strike you and nearby mobs. Damage and kills are credited to the shooter.
+- **Web Arrow** — leaves a cobweb that vanishes after 8 seconds. On an entity it goes under their feet; on a block it goes on the face you hit. If there is no replaceable spot, it only deals damage. The web traps the shooter too — point-blank shots are a bad idea.
+- **Fire Arrow** — ignites the target for 5 seconds and spreads a 3x3 fire at the impact. It is normal fire and **it spreads**, so do not shoot your own house. Rain, water and `doFireTick=false` limit it as usual.
+- **Bee Arrow** — on an entity, summons 2 bees that only attack that target and leave after 30 seconds. Bees die after stinging, so it is really 2 stings. Block hits and ownerless dispenser arrows spawn nothing.
+- **Frost Arrow** — freezes the target for 10 seconds and turns 3x3 water sources into frosted ice, which melts on its own. Only source water is frozen; any piece of leather armor makes a target immune. **The arrow is not consumed.**
+- **Wind Charge Arrow** — pure knockback for every entity in a 3x3x3 area. No damage, no block destruction, no redstone triggers; it can push the shooter too.
+- **Grapple Arrow** — pulls you to a block within 32 blocks, or pulls a creature up to 5 blocks toward you. It moves per tick and stops at walls. **The arrow is not consumed**; ownerless dispenser arrows do not pull.
 
 </details>
 
@@ -102,6 +114,12 @@ Right-click a fletching table to open the UI. The three input slots are **fixed*
 | Block of TNT | TNT Arrow | 1 |
 | Redstone | Redstone Arrow | 3 |
 | Ender Pearl | Pearl Arrow | 2 |
+| String | Web Arrow | 2 |
+| Blaze Powder | Fire Arrow | 2 |
+| Honeycomb | Bee Arrow | 1 |
+| Blue Ice | Frost Arrow | 2 |
+| Wind Charge | Wind Charge Arrow | 2 |
+| Tripwire Hook | Grapple Arrow | 2 |
 
 A few rules:
 
@@ -116,7 +134,7 @@ A few rules:
 - **Fabric and Minecraft 1.21.11 only.** No Forge / NeoForge plans.
 - **Recipes are hardcoded**: the tip slot's whitelist is a tag that datapacks can extend, but the recipes themselves have no datapack support, no recipe book and no JEI / REI / EMI integration — players have to experiment.
 - **The redstone pulse only powers the cell adjacent to the face it hit.** To light a lamp further away, route the signal with dust.
-- **TNT arrows grief terrain.** On a multiplayer server that is infinite TNT; pair it with claim/protection plugins.
+- **TNT and fire arrows grief terrain.** On a multiplayer server that is infinite TNT and infinite fire; pair it with claim/protection plugins or turn off `doFireTick`.
 - **The fletching table has no block entity**: while the UI is open, contents are held in the level's saved data keyed by block position, so two players share one inventory and a crash does not eat them. Hoppers still cannot feed the table and nothing is displayed on it.
 
 ## FAQ
@@ -128,7 +146,7 @@ Yes. Without it the game fails to start.
 Yes. The mod registers blocks, items and a menu, so client and server must both have it.
 
 **Can I pick my arrows back up?**
-Normal arrows and redstone arrows stick in the ground and can be retrieved. TNT arrows are consumed by the explosion; pearl arrows are consumed once the teleport succeeds.
+Normal, redstone, frost and grapple arrows stick in the ground and can be retrieved. TNT, web, fire, bee and wind charge arrows are consumed on impact; pearl arrows are consumed once the teleport succeeds.
 
 **Will it conflict with other mods?**
 It only rewrites vanilla arrow impact logic (one Mixin) and does not touch other mods' content. If something does break, open an issue with `latest.log` and reproduction steps.
@@ -142,7 +160,7 @@ It only rewrites vanilla arrow impact logic (one Mixin) and does not touch other
 ./gradlew build        # gradlew.bat on Windows
 ```
 
-Output lands in `build/libs/`: `update-ft-1.0.1.jar` (the one you install) and `-sources.jar`. Requires JDK 21.
+Output lands in `build/libs/`: `update-ft-1.0.2.jar` (the one you install) and `-sources.jar`. Requires JDK 21.
 
 Project layout, what each file does, the registration and crafting flow, and the release process all live in [docs/DEVELOPMENT.md](docs/DEVELOPMENT.md) (Chinese).
 
@@ -163,7 +181,7 @@ Project layout, what each file does, the registration and crafting flow, and the
 | Field | Value |
 | --- | --- |
 | Mod ID | `update-ft` |
-| Version | 1.0.1 |
+| Version | 1.0.2 |
 | Minecraft | 1.21.11 |
 | Fabric Loader | ≥ 0.19.5 |
 | Fabric API | 0.141.6+1.21.11 |

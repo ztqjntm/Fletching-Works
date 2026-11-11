@@ -8,8 +8,15 @@
   "item.update-ft.tnt_arrow": "TNT Arrow",
   "item.update-ft.redstone_arrow": "Redstone Arrow",
   "item.update-ft.pearl_arrow": "Pearl Arrow",
+  "item.update-ft.web_arrow": "Web Arrow",
+  "item.update-ft.fire_arrow": "Fire Arrow",
+  "item.update-ft.bee_arrow": "Bee Arrow",
+  "item.update-ft.frost_arrow": "Frost Arrow",
+  "item.update-ft.wind_charge_arrow": "Wind Charge Arrow",
+  "item.update-ft.grapple_arrow": "Grapple Arrow",
   "container.update-ft.fletching_table": "Fletching Table",
   "block.update-ft.redstone_pulse": "Redstone Pulse",
+  "block.update-ft.temporary_cobweb": "Temporary Cobweb",
 
   "tooltip.update-ft.stone_arrow.1": "The crudest arrowhead, but it gets the job done.",
   "tooltip.update-ft.stone_arrow.2": "Damage bonus: ±0",
@@ -40,5 +47,29 @@
 
   "tooltip.update-ft.pearl_arrow.1": "An ender pearl set into the tip.",
   "tooltip.update-ft.pearl_arrow.2": "You land wherever it hits, at the cost of 3 fall damage.",
-  "tooltip.update-ft.pearl_arrow.3": "Damage bonus: ±0"
+  "tooltip.update-ft.pearl_arrow.3": "Damage bonus: ±0",
+
+  "tooltip.update-ft.web_arrow.1": "Leaves a cobweb under whatever it hits.",
+  "tooltip.update-ft.web_arrow.2": "The web vanishes after 8 seconds.",
+  "tooltip.update-ft.web_arrow.3": "Damage bonus: -1",
+
+  "tooltip.update-ft.fire_arrow.1": "Ignites the target and spreads fire in a 3x3 area.",
+  "tooltip.update-ft.fire_arrow.2": "The fire spreads - do not shoot your own house.",
+  "tooltip.update-ft.fire_arrow.3": "Damage bonus: -1",
+
+  "tooltip.update-ft.bee_arrow.1": "Summons 2 bees that only attack the target.",
+  "tooltip.update-ft.bee_arrow.2": "Bees die after stinging; they leave after 30 seconds.",
+  "tooltip.update-ft.bee_arrow.3": "Damage bonus: -1",
+
+  "tooltip.update-ft.frost_arrow.1": "Freezes the target for 10 seconds.",
+  "tooltip.update-ft.frost_arrow.2": "Turns 3x3 water surface into melting frosted ice.",
+  "tooltip.update-ft.frost_arrow.3": "Damage bonus: -1",
+
+  "tooltip.update-ft.wind_charge_arrow.1": "Unleashes a pure knockback burst at the impact.",
+  "tooltip.update-ft.wind_charge_arrow.2": "No damage, no block destruction.",
+  "tooltip.update-ft.wind_charge_arrow.3": "Damage bonus: -1",
+
+  "tooltip.update-ft.grapple_arrow.1": "Pulls you toward the block it hits.",
+  "tooltip.update-ft.grapple_arrow.2": "Pulls a creature 5 blocks toward you.",
+  "tooltip.update-ft.grapple_arrow.3": "Damage bonus: -1"
 }

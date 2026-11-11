@@ -53,7 +53,14 @@ public final class FletchingRecipes {
                     // 爆炸/功能箭：产出少一些
                     new FletchingRecipe(new ItemStack(ModItems.TNT_ARROW, 1), Ingredient.of(Items.TNT)),
                     new FletchingRecipe(new ItemStack(ModItems.REDSTONE_ARROW, 3), Ingredient.of(Items.REDSTONE)),
-                    new FletchingRecipe(new ItemStack(ModItems.PEARL_ARROW, 2), Ingredient.of(Items.ENDER_PEARL))
+                    new FletchingRecipe(new ItemStack(ModItems.PEARL_ARROW, 2), Ingredient.of(Items.ENDER_PEARL)),
+                    // 1.0.2 六支功能箭
+                    new FletchingRecipe(new ItemStack(ModItems.WEB_ARROW, 2), Ingredient.of(Items.STRING)),
+                    new FletchingRecipe(new ItemStack(ModItems.FIRE_ARROW, 2), Ingredient.of(Items.BLAZE_POWDER)),
+                    new FletchingRecipe(new ItemStack(ModItems.BEE_ARROW, 1), Ingredient.of(Items.HONEYCOMB)),
+                    new FletchingRecipe(new ItemStack(ModItems.FROST_ARROW, 2), Ingredient.of(Items.BLUE_ICE)),
+                    new FletchingRecipe(new ItemStack(ModItems.WIND_CHARGE_ARROW, 2), Ingredient.of(Items.WIND_CHARGE)),
+                    new FletchingRecipe(new ItemStack(ModItems.GRAPPLE_ARROW, 2), Ingredient.of(Items.TRIPWIRE_HOOK))
             );
         }
         return recipes;

@@ -8,8 +8,15 @@
   "item.update-ft.tnt_arrow": "TNT箭",
   "item.update-ft.redstone_arrow": "红石箭",
   "item.update-ft.pearl_arrow": "珍珠箭",
+  "item.update-ft.web_arrow": "蛛网箭",
+  "item.update-ft.fire_arrow": "烈焰箭",
+  "item.update-ft.bee_arrow": "蜜蜂箭",
+  "item.update-ft.frost_arrow": "冰冻箭",
+  "item.update-ft.wind_charge_arrow": "风弹箭",
+  "item.update-ft.grapple_arrow": "钩爪箭",
   "container.update-ft.fletching_table": "制箭台",
   "block.update-ft.redstone_pulse": "红石脉冲",
+  "block.update-ft.temporary_cobweb": "临时蛛网",
 
   "tooltip.update-ft.stone_arrow.1": "最简陋的箭头，胜在随处可得。",
   "tooltip.update-ft.stone_arrow.2": "伤害加成：±0",
@@ -40,5 +47,29 @@
 
   "tooltip.update-ft.pearl_arrow.1": "箭尖嵌着一颗末影珍珠。",
   "tooltip.update-ft.pearl_arrow.2": "命中处就是你落下的地方，代价是 3 点摔落伤害。",
-  "tooltip.update-ft.pearl_arrow.3": "伤害加成：±0"
+  "tooltip.update-ft.pearl_arrow.3": "伤害加成：±0",
+
+  "tooltip.update-ft.web_arrow.1": "命中后在目标脚下留下一张网。",
+  "tooltip.update-ft.web_arrow.2": "8 秒后自动消失。",
+  "tooltip.update-ft.web_arrow.3": "伤害加成：-1",
+
+  "tooltip.update-ft.fire_arrow.1": "点燃目标，并在落点铺开 3×3 的火。",
+  "tooltip.update-ft.fire_arrow.2": "火会蔓延——别对着自家房子射。",
+  "tooltip.update-ft.fire_arrow.3": "伤害加成：-1",
+
+  "tooltip.update-ft.bee_arrow.1": "召唤 2 只只攻击目标的蜜蜂。",
+  "tooltip.update-ft.bee_arrow.2": "蜜蜂蜇完会死，30 秒后散场。",
+  "tooltip.update-ft.bee_arrow.3": "伤害加成：-1",
+
+  "tooltip.update-ft.frost_arrow.1": "冻结目标 10 秒。",
+  "tooltip.update-ft.frost_arrow.2": "把 3×3 水面冻成会融化的霜冰。",
+  "tooltip.update-ft.frost_arrow.3": "伤害加成：-1",
+
+  "tooltip.update-ft.wind_charge_arrow.1": "落点炸开一次纯击退的风爆。",
+  "tooltip.update-ft.wind_charge_arrow.2": "不造成伤害，不破坏方块。",
+  "tooltip.update-ft.wind_charge_arrow.3": "伤害加成：-1",
+
+  "tooltip.update-ft.grapple_arrow.1": "命中方块把自己拉过去。",
+  "tooltip.update-ft.grapple_arrow.2": "命中生物把它拉向你 5 格。",
+  "tooltip.update-ft.grapple_arrow.3": "伤害加成：-1"
 }

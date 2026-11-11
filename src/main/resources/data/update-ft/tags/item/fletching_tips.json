@@ -10,6 +10,12 @@
     "minecraft:netherite_ingot",
     "minecraft:tnt",
     "minecraft:redstone",
-    "minecraft:ender_pearl"
+    "minecraft:ender_pearl",
+    "minecraft:string",
+    "minecraft:blaze_powder",
+    "minecraft:honeycomb",
+    "minecraft:blue_ice",
+    "minecraft:wind_charge",
+    "minecraft:tripwire_hook"
   ]
 }
