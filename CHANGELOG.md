@@ -3,11 +3,12 @@
 > release 工作流会取 `## [版本]` 到下一个 `## ` 之间的内容，作为 GitHub Release 和 CurseForge 的更新说明。
 > 版本号必须与 `gradle.properties` 的 `mod_version` 完全一致。
 
-## [Unreleased]
+## [1.0.3] - 2026-11-11
 
 ### 变更
 
 - 模组显示名改为 **Fletching Works**。mod id、资源命名空间与 jar 前缀仍是 `update-ft`，存档、配方和标签完全兼容。
+- 仓库与 CurseForge 地址同步改成 `Fletching-Works` / `fletching-works`，旧链接通过重定向仍可访问。
 - **配方改为数据包驱动**：16 条配方从代码里的静态表搬到 `data/update-ft/recipe/*.json`（类型 `update-ft:fletching`），自定义 `RecipeType` / `RecipeSerializer` + `RecipeInput`。整合包可以增删改，`/reload` 生效。
   - 1.21.11 的客户端拿不到配方表，产物格改为服务端用 `RecipeManager` 计算后随容器同步（和原版工作台一致），界面表现不变。
   - 箭头格的白名单仍是 `update-ft:fletching_tips` 标签：加新材料时配方和标签要一起改。
