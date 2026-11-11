@@ -6,11 +6,11 @@
 
 右键制箭台打开三格合成：**箭头材料 + 木棍 + 羽毛**。多数配方一次出 4 支（TNT 箭 1 支，红石箭 3 支，珍珠 / 蛛网 / 烈焰 / 冰冻 / 风弹 / 钩爪箭 2 支，蜜蜂箭 1 支）。另外新增 **15 种箭**——从石箭、铜箭，到会炸的 TNT 箭、能远程通电的红石箭，以及把你自己送出去的珍珠箭。
 
-[![Release](https://img.shields.io/github/v/release/ztqjntm/update-FT?style=flat-square&label=release)](https://github.com/ztqjntm/update-FT/releases)
+[![Release](https://img.shields.io/github/v/release/ztqjntm/Fletching-Works?style=flat-square&label=release)](https://github.com/ztqjntm/Fletching-Works/releases)
 [![Minecraft](https://img.shields.io/badge/Minecraft-1.21.11-3C8527?style=flat-square)](https://www.minecraft.net/)
 [![Loader](https://img.shields.io/badge/Loader-Fabric-DBB69B?style=flat-square)](https://fabricmc.net/)
 [![License](https://img.shields.io/badge/License-MPL--2.0-blue?style=flat-square)](LICENSE)
-[![build](https://github.com/ztqjntm/update-FT/actions/workflows/build.yml/badge.svg)](https://github.com/ztqjntm/update-FT/actions/workflows/build.yml)
+[![build](https://github.com/ztqjntm/Fletching-Works/actions/workflows/build.yml/badge.svg)](https://github.com/ztqjntm/Fletching-Works/actions/workflows/build.yml)
 
 <!--
   顶部横幅（可选但建议）：1280×400 的 banner.png 放 docs/images/banner.png，
@@ -50,7 +50,7 @@
 
 | 渠道 | 版本 | 说明 |
 | --- | --- | --- |
-| [GitHub Releases](https://github.com/ztqjntm/update-FT/releases) | 1.0.2 | 在 `Assets` 里下 jar |
+| [GitHub Releases](https://github.com/ztqjntm/Fletching-Works/releases) | 1.0.2 | 在 `Assets` 里下 jar |
 | [CurseForge](https://www.curseforge.com/minecraft/mc-mods/update-ft) | 1.0.2 | 支持 CurseForge App 一键安装 |
 | Modrinth | — | 未上架 |
 
@@ -166,7 +166,7 @@
 
 ## 反馈
 
-- Bug / 建议：[Issues](https://github.com/ztqjntm/update-FT/issues)
+- Bug / 建议：[Issues](https://github.com/ztqjntm/Fletching-Works/issues)
 - 更新日志：[CHANGELOG.md](CHANGELOG.md)
 - 开发计划：[TODO.md](TODO.md)
 - 作者：[Bilibili](https://space.bilibili.com/3546940667071250)

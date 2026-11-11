@@ -6,11 +6,11 @@
 
 Right-click a fletching table to open a three-slot crafting UI: **tip + stick + feather**. Most recipes yield 4 arrows (TNT 1, redstone 3, pearl / web / fire / frost / wind charge / grapple 2, bee 1). On top of that, **15 arrow types** — from stone and copper to explosive TNT arrows, redstone-pulsing arrows, and a pearl arrow that teleports *you*.
 
-[![Release](https://img.shields.io/github/v/release/ztqjntm/update-FT?style=flat-square&label=release)](https://github.com/ztqjntm/update-FT/releases)
+[![Release](https://img.shields.io/github/v/release/ztqjntm/Fletching-Works?style=flat-square&label=release)](https://github.com/ztqjntm/Fletching-Works/releases)
 [![Minecraft](https://img.shields.io/badge/Minecraft-1.21.11-3C8527?style=flat-square)](https://www.minecraft.net/)
 [![Loader](https://img.shields.io/badge/Loader-Fabric-DBB69B?style=flat-square)](https://fabricmc.net/)
 [![License](https://img.shields.io/badge/License-MPL--2.0-blue?style=flat-square)](LICENSE)
-[![build](https://github.com/ztqjntm/update-FT/actions/workflows/build.yml/badge.svg)](https://github.com/ztqjntm/update-FT/actions/workflows/build.yml)
+[![build](https://github.com/ztqjntm/Fletching-Works/actions/workflows/build.yml/badge.svg)](https://github.com/ztqjntm/Fletching-Works/actions/workflows/build.yml)
 
 <!--
   Banner (optional but recommended): a 1280×400 banner.png at docs/images/banner.png.
@@ -50,7 +50,7 @@ That is all for singleplayer. **For a server, install it on both sides** — the
 
 | Source | Version | Notes |
 | --- | --- | --- |
-| [GitHub Releases](https://github.com/ztqjntm/update-FT/releases) | 1.0.2 | Grab the jar under `Assets` |
+| [GitHub Releases](https://github.com/ztqjntm/Fletching-Works/releases) | 1.0.2 | Grab the jar under `Assets` |
 | [CurseForge](https://www.curseforge.com/minecraft/mc-mods/update-ft) | 1.0.2 | One-click install via the CurseForge app |
 | Modrinth | — | Not listed yet |
 
@@ -166,7 +166,7 @@ Project layout, what each file does, the registration and crafting flow, and the
 
 ## Feedback
 
-- Bugs / ideas: [Issues](https://github.com/ztqjntm/update-FT/issues)
+- Bugs / ideas: [Issues](https://github.com/ztqjntm/Fletching-Works/issues)
 - Changelog: [CHANGELOG.md](CHANGELOG.md)
 - Roadmap: [TODO.md](TODO.md)
 - Author: [Bilibili](https://space.bilibili.com/3546940667071250)
