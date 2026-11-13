@@ -21,6 +21,17 @@ loom {
 	}
 }
 
+repositories {
+	// JEI 官方发布在 Modrinth，Maven 坐标是 maven.modrinth:<slug>:<version>
+	maven {
+		name = "Modrinth"
+		url = "https://api.modrinth.com/maven"
+		content {
+			includeGroup "maven.modrinth"
+		}
+	}
+}
+
 dependencies {
 	// To change the versions see the gradle.properties file
 	minecraft "com.mojang:minecraft:${project.minecraft_version}"
@@ -29,6 +40,12 @@ dependencies {
 
 	// Fabric API. This is technically optional, but you probably want it anyway.
 	modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_api_version}"
+
+	// JEI 是可选的兼容目标，只在编译期需要，运行时由玩家自己安装。
+	// 不用 modLocalRuntime：JEI 依赖它自己内嵌的 mezz_config，直接放 classpath 不会被
+	// Fabric Loader 展开，runServer/runClient 会报 “需要 mezz_config”。开发时要测 JEI，
+	// 把 jei-*.jar 放进 run/mods/ 即可（Loader 会处理嵌套 jar）。
+	modCompileOnly "maven.modrinth:jei:${project.jei_version}"
 }
 
 processResources {

@@ -4,6 +4,7 @@ import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.fabricmc.fabric.api.event.player.PlayerBlockBreakEvents;
 import net.fabricmc.fabric.api.event.player.UseBlockCallback;
+import net.fabricmc.fabric.api.recipe.v1.sync.RecipeSynchronization;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
@@ -35,6 +36,9 @@ public class UpdateFt implements ModInitializer {
 		ModBlockEntities.initialize();  // 红石脉冲的方块实体（要在方块之后）
 		ModMenuTypes.initialize();      // 注册 MenuType
 		ModRecipes.initialize();        // 注册制箭台的配方类型与序列化器（配方本体在 data/update-ft/recipe/）
+		// 1.21.11 原版不再把配方同步给客户端；注册序列化器后 Fabric 会把我们的配方发过去，
+		// 客户端（JEI 和配方缓存）才能拿到 update-ft:fletching 的条目。必须两端都执行。
+		RecipeSynchronization.synchronizeRecipeSerializer(ModRecipes.FLETCHING_SERIALIZER);
 		BeeArrowManager.register();     // 蜜蜂箭召唤的蜜蜂 30 秒后散场
 		GrappleManager.register();      // 钩爪箭的逐 tick 牵引
 

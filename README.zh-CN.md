@@ -132,7 +132,8 @@
 ## 兼容性与已知限制
 
 - **只支持 Fabric + Minecraft 1.21.11**，Forge / NeoForge 没有计划。
-- **配方由数据包驱动**：每条配方都是 `data/update-ft/recipe/*.json` 里的 `update-ft:fletching`，整合包可以自己增删改，`/reload` 生效。箭头格的白名单是另一个标签 `update-ft:fletching_tips`，新材料要同时加进标签，否则放不进格子。JEI / REI / EMI 仍需要各自的插件才能显示。
+- **配方由数据包驱动**：每条配方都是 `data/update-ft/recipe/*.json` 里的 `update-ft:fletching`，整合包可以自己增删改，`/reload` 生效。箭头格的白名单是另一个标签 `update-ft:fletching_tips`，新材料要同时加进标签，否则放不进格子。
+- **已内置 JEI 支持**。JEI 只需要装在客户端：模组自己用 Fabric 的配方同步 API 注册了序列化器，服务端不装 JEI 也能把配方送到客户端。REI / EMI 暂不支持。
 - **红石箭的脉冲只作用于命中面相邻的那一格**，想让远处亮灯得靠红石粉把信号传过去。
 - **TNT 箭和烈焰箭都会拆家**，多人服等于无限 TNT / 无限火，建议配合领地/保护插件，或关掉 `doFireTick`。
 - 制箭台**没有方块实体**：界面开着时内容按坐标存在存档数据里，所以两个人共用一个背包、崩溃也不丢；但漏斗接不进去，桌面也不会展示材料。

@@ -22,6 +22,8 @@ README 面向玩家（`README.md` 英文、`README.zh-CN.md` 中文），这里�
 
 CI（`.github/workflows/build.yml`）在每次 push / PR 时用 JDK 21 跑一遍 `./gradlew build`，并把 `build/libs/` 上传为构建产物。
 
+首次构建需要联网：Fabric Loom 要下载 Minecraft/映射，JEI 从 Modrinth Maven 拉取（`modCompileOnly`，不会进 jar）。拉过之后 `--offline` 可以正常构建。
+
 ## 目录结构
 
 ```
@@ -54,7 +56,7 @@ update-ft/
 | 文件 | 作用 |
 | --- | --- |
 | `build.gradle` | 应用 `net.fabricmc.fabric-loom-remap` 插件，声明 Minecraft / Fabric Loader / Fabric API 依赖、Java 21 编译目标；开头把 `mod_version` 显式赋给 `project.version`；`loom { splitEnvironmentSourceSets() }` 把 `main` / `client` 拆成两个源集（`mods { }` 里同时声明两者），`processResources` 把 `fabric.mod.json` 里的 `${version}` 展开成真实版本号，`jar` 任务把 `LICENSE` 一并打进包里。 |
-| `gradle.properties` | 所有版本号的唯一来源：`minecraft_version=1.21.11`、`loader_version=0.19.5`、`loom_version=1.15.5`（已锁定 release 版本）、`fabric_api_version`、`mod_version`（模组版本，发布时必须与 tag 一致）、`group`（包名前缀）。JVM 内存与并行/配置缓存开关也在这里。 |
+| `gradle.properties` | 所有版本号的唯一来源：`minecraft_version=1.21.11`、`loader_version=0.19.5`、`loom_version=1.17.20`、`fabric_api_version`、`jei_version`（可选兼容目标，只用于编译）、`mod_version`（模组版本，发布时必须与 tag 一致）、`group`（包名前缀）。JVM 内存与并行/配置缓存开关也在这里。 |
 | `settings.gradle` | 声明 Fabric Maven / Maven Central / Gradle Plugin Portal 三个插件仓库；`rootProject.name = 'update-ft'` 决定产物 jar 的文件名。 |
 | `gradlew`、`gradlew.bat` | Gradle Wrapper 启动脚本（Linux/macOS 与 Windows），保证不装 Gradle 也能构建。 |
 | `gradle/wrapper/gradle-wrapper.jar` | Wrapper 引导程序本体。 |
@@ -104,6 +106,9 @@ update-ft/
 | `recipe/FletchingRecipes.java` | 栏位定义与查询入口：`TIP_SLOT`/`SHAFT_SLOT`/`FLETCHING_SLOT` 三个常量对应界面右上/中间/左下；`findResult(level, container)` **只在服务端**用 `RecipeManager.getRecipeFor()` 查 `update-ft:fletching` 配方并 `assemble()`（客户端没有配方表，产物格靠容器同步）；`isTipMaterial()` 给箭头格做 `mayPlace` 过滤，只查 `ModTags.FLETCHING_TIPS` 标签。 |
 | `client/UpdateFtClient.java` | **客户端入口**（`ClientModInitializer`）。调用 `MenuScreens.register` 把 `MenuType` 与 `FletchingTableScreen` 绑定。 |
 | `client/FletchingTableScreen.java` | 界面渲染：176×166 布局，背景用 `update-ft:textures/gui/ft_gui.png`（从 256×256 画布的 (0,0) 取 176×166）；`init()` 里把标题居中；`render()` 末尾手动调 `renderTooltip`（1.21.11 的父类已不再自动调用）。 |
+| `client/jei/FletchingJeiPlugin.java` | JEI 插件（`@JeiPlugin` + `fabric.mod.json` 的 `jei_mod_plugin` 入口点）：注册分类、把缓存里的配方交给 `IRecipeRegistration.addRecipes`、把制箭台登记为 `addCraftingStation`。 |
+| `client/jei/FletchingRecipeCategory.java` | JEI 分类：`AbstractRecipeCategory<RecipeHolder<FletchingRecipe>>`，右上箭头材料 / 中间木棍 / 左下羽毛 / 右侧产物，和模组界面一致；原料用 `add(Ingredient)`，标签配方也能展开。 |
+| `client/jei/SyncedFletchingRecipes.java` | 客户端配方缓存：监听 `ClientRecipeSynchronizedEvent`，把 `getAllOfType(ModRecipes.FLETCHING)` 存下来给 JEI 用；断开连接时清空。 |
 | `mixin/AbstractArrowMixin.java` | 箭矢与原版的**唯一接缝**（89 行）：① `@ModifyArg` 改 `onHitEntity` 里 `Entity.hurtOrSimulate(DamageSource, float)` 的伤害参数，加上 `damageBonus`；② `onHitBlock` 头部注入，一行分派——`arrow.effect().onHitBlock(level, self, hit)`；③ `onHitEntity` 在所有 return 处注入，分派到 `onHitEntity(...)`。效果返回 `true` 就移除箭并取消原版流程，返回 `false` 就放手让原版把箭插进方块。客户端拿不到 `ServerLevel`，直接交回原版，由服务端包同步。具体效果全在 `effect/` 包里，Mixin 不碰任何数值。 |
 
 ### 资源与元数据（`src/main/resources/`）
@@ -134,7 +139,7 @@ update-ft/
 
 ## 关键流程
 
-**注册**：`UpdateFt.onInitialize()` → `ModItems.initialize()`（触发静态字段注册物品、加入创造页签）→ `ModBlocks.initialize()`（注册红石脉冲/临时蛛网并登记可燃性）→ `ModBlockEntities.initialize()`（注册方块实体，必须在方块之后）→ `ModMenuTypes.initialize()`（触发 `MenuType` 注册）→ `ModRecipes.initialize()`（注册 `RecipeType` 与 `RecipeSerializer`，必须在配方加载之前）→ `BeeArrowManager.register()` / `GrappleManager.register()`（蜜蜂寿命与钩爪 tick 循环）→ 注册右键、拆桌和每秒扫描事件。客户端 `UpdateFtClient.onInitializeClient()` → 绑定 `MenuType` 与 `Screen` → 注册临时蛛网的 `CUTOUT` 渲染层。
+**注册**：`UpdateFt.onInitialize()` → `ModItems.initialize()`（触发静态字段注册物品、加入创造页签）→ `ModBlocks.initialize()`（注册红石脉冲/临时蛛网并登记可燃性）→ `ModBlockEntities.initialize()`（注册方块实体，必须在方块之后）→ `ModMenuTypes.initialize()`（触发 `MenuType` 注册）→ `ModRecipes.initialize()`（注册 `RecipeType` 与 `RecipeSerializer`，必须在配方加载之前）→ `RecipeSynchronization.synchronizeRecipeSerializer(ModRecipes.FLETCHING_SERIALIZER)`（让 Fabric 把我们的配方同步到客户端）→ `BeeArrowManager.register()` / `GrappleManager.register()`（蜜蜂寿命与钩爪 tick 循环）→ 注册右键、拆桌和每秒扫描事件。客户端 `UpdateFtClient.onInitializeClient()` → 绑定 `MenuType` 与 `Screen` → 注册临时蛛网的 `CUTOUT` 渲染层 → 监听 `ClientRecipeSynchronizedEvent` 缓存配方给 JEI。
 
 **开界面与合成**：主手右键制箭台 → 服务端 `UseBlockCallback` 返回 `SUCCESS` 并 `openMenu` → `FletchingTableData.get(level).getOrCreate(pos)` 取出这个坐标的容器（第一次为空，之后是上次留下的东西）→ 创建 `FletchingTableMenu` → 发送 `ClientboundOpenScreenPacket` → 客户端用 `MenuType` 新建菜单与 `FletchingTableScreen`，槽位内容由 `AbstractContainerMenu` 自动同步 → 放入三样原料后容器监听触发 `FletchingRecipes.findResult(level, input)`：服务端用 `RecipeManager.getRecipeFor(update-ft:fletching)` 匹配配方并把产物写进产物格，客户端**不计算**，等槽位同步 → 取走产物时消耗每个原料 1 个 → 关界面把剩下的原料退回背包、桌子清空（还有人开着同一张桌子时先不结算，等最后一个关闭的人拿走桌面全部原料）。
 
@@ -156,6 +161,16 @@ update-ft/
 8. `data/update-ft/recipe/<id>.json` —— 加一条 `update-ft:fletching` 配方，写明 `tip` 和 `result`
 
 第 7、8 步必须成对改：标签决定“能不能放进箭头格”，配方决定“能做出什么”。客户端没有配方表，`mayPlace` 只能用标签预判，所以只加配方不加标签时，材料根本放不进去；只加标签不加配方时，材料放得进去但产物永远是空的。两者都改完 `/reload` 即可生效，不用重新发版。
+
+## JEI 兼容
+
+JEI 是可选依赖，不写进 `depends`：
+
+- **编译**：`modCompileOnly "maven.modrinth:jei:${jei_version}"`（仓库是 Modrinth Maven）。不打包进 jar，也不作为必装依赖。
+- **发现插件**：Fabric 下 JEI 读 `fabric.mod.json` 的 `jei_mod_plugin` 入口点，插件类仍需 `@JeiPlugin` 注解和无参构造器。
+- **配方从哪来**：1.21.11 的客户端没有配方表（`Level#recipeAccess()` 只给配方属性集和切石机配方），原版也不再整份同步配方。Fabric 提供了按序列化器同步的 API，必须在主初始化器里显式调用 `RecipeSynchronization.synchronizeRecipeSerializer(ModRecipes.FLETCHING_SERIALIZER)`；JEI 自己只注册 `minecraft:` 命名空间的序列化器，模组的必须自己来。同步到客户端后，`ClientRecipeSynchronizedEvent` 会把配方交给 `SyncedFletchingRecipes`，JEI 插件的 `registerRecipes` 再读这份缓存。
+- **开发环境**：不要把 JEI 加进 `modLocalRuntime`——它依赖内嵌的 `mezz_config`，直接放 classpath 不会被 Loader 展开，`runServer` 会报缺 `mezz_config`。要测就把 `jei-*.jar` 丢进 `run/mods/`。
+- **Loom**：JEI 27.54 的 jar 带 `Fabric-Loom-Version: 1.17.20`，Loom 版本低于它时会在配置阶段直接报 “Mod was built with a newer version of Loom”，所以 `loom_version` 跟着升到了 1.17.20。
 
 ## 发布流程
 

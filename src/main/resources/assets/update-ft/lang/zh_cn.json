@@ -71,5 +71,6 @@
 
   "tooltip.update-ft.grapple_arrow.1": "命中方块把自己拉过去。",
   "tooltip.update-ft.grapple_arrow.2": "命中生物把它拉向你 5 格。",
-  "tooltip.update-ft.grapple_arrow.3": "伤害加成：-1"
+  "tooltip.update-ft.grapple_arrow.3": "伤害加成：-1",
+  "jei.update-ft.fletching": "制箭台"
 }

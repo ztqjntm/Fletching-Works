@@ -71,5 +71,6 @@
 
   "tooltip.update-ft.grapple_arrow.1": "Pulls you toward the block it hits.",
   "tooltip.update-ft.grapple_arrow.2": "Pulls a creature 5 blocks toward you.",
-  "tooltip.update-ft.grapple_arrow.3": "Damage bonus: -1"
+  "tooltip.update-ft.grapple_arrow.3": "Damage bonus: -1",
+  "jei.update-ft.fletching": "Fletching Table"
 }

@@ -3,6 +3,17 @@
 > release 工作流会取 `## [版本]` 到下一个 `## ` 之间的内容，作为 GitHub Release 和 CurseForge 的更新说明。
 > 版本号必须与 `gradle.properties` 的 `mod_version` 完全一致。
 
+## [Unreleased]
+
+### 新增
+
+- **JEI 兼容**：新增 `update-ft:fletching` 分类（右上箭头材料 / 中间木棍 / 左下羽毛 / 右侧产物），制箭台登记为催化剂；数据包改配方后 `/reload` 即可在 JEI 里看到。
+  - 1.21.11 客户端没有配方表，且 JEI 只自动同步 `minecraft:` 命名空间的序列化器，所以模组在主初始化器里显式调用了 Fabric 的 `RecipeSynchronization.synchronizeRecipeSerializer(...)`，客户端再用 `ClientRecipeSynchronizedEvent` 缓存配方给 JEI。
+
+### 内部
+
+- Loom 升到 1.17.20：JEI 27.54 的 jar 由该版本构建，低版本 Loom 会在配置阶段拒绝加载。
+
 ## [1.0.3] - 2026-11-11
 
 ### 变更

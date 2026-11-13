@@ -21,6 +21,9 @@
 		],
 		"client": [
 			"ztqjntm.update.client.UpdateFtClient"
+		],
+		"jei_mod_plugin": [
+			"ztqjntm.update.client.jei.FletchingJeiPlugin"
 		]
 	},
 	"mixins": [
@@ -31,5 +34,8 @@
 		"minecraft": "~1.21.11",
 		"java": ">=21",
 		"fabric-api": ">=0.141.6"
+	},
+	"recommends": {
+		"jei": "*"
 	}
 }

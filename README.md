@@ -132,7 +132,8 @@ A few rules:
 ## Compatibility & known limitations
 
 - **Fabric and Minecraft 1.21.11 only.** No Forge / NeoForge plans.
-- **Recipes are datapack-driven**: every recipe lives in `data/update-ft/recipe/*.json` as `update-ft:fletching`, so packs can add or change them and `/reload` applies it. The tip slot's whitelist is a separate tag (`update-ft:fletching_tips`) — add your material there too, or it will not fit into the slot. Recipe viewers (JEI / REI / EMI) still need their own plugin.
+- **Recipes are datapack-driven**: every recipe lives in `data/update-ft/recipe/*.json` as `update-ft:fletching`, so packs can add or change them and `/reload` applies it. The tip slot's whitelist is a separate tag (`update-ft:fletching_tips`) — add your material there too, or it will not fit into the slot.
+- **JEI is supported out of the box.** JEI is only needed on the client: the mod registers its own recipe serializer with Fabric's sync API, so the recipe data reaches the client without JEI on the server. REI / EMI are not supported yet.
 - **The redstone pulse only powers the cell adjacent to the face it hit.** To light a lamp further away, route the signal with dust.
 - **TNT and fire arrows grief terrain.** On a multiplayer server that is infinite TNT and infinite fire; pair it with claim/protection plugins or turn off `doFireTick`.
 - **The fletching table has no block entity**: while the UI is open, contents are held in the level's saved data keyed by block position, so two players share one inventory and a crash does not eat them. Hoppers still cannot feed the table and nothing is displayed on it.
