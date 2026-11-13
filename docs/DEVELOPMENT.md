@@ -94,9 +94,9 @@ update-ft/
 | `effect/BeeArrowEffect.java` | 蜜蜂箭：命中生物时生成 2 只只攻击该目标的蜜蜂（`EntityReference` + `setTimeToRemainAngry(600)`）；无主箭、方块命中、盔甲架不生成；生成成功才消耗。 |
 | `effect/FrostArrowEffect.java` | 冰冻箭：命中实体 `setTicksFrozen(200)`（10 秒），命中方块把 3×3 水源换成 `FROSTED_ICE[age=0]`；不消耗。 |
 | `effect/WindArrowEffect.java` | 风弹箭：手写 3×3×3 AABB 遍历做纯击退，玩家补 `ClientboundSetEntityMotionPacket`；风爆音效/粒子；不调用 `explode()`；消耗。 |
-| `effect/GrappleArrowEffect.java` | 钩爪箭：方块命中拉射手（32 格内，锚点回退 0.6 格），实体命中把目标拉向射手最多 5 格；交给 `GrappleManager` 逐 tick 牵引；不消耗。 |
+| `effect/GrappleArrowEffect.java` | 钩爪箭：方块命中拉射手（32 格内，锚点回退 0.6 格），实体命中把目标拉向射手最多 5 格；交给 `GrappleManager` 逐 tick 牵引。成功后给射手记 30 tick（1.5 秒）物品冷却，冷却期间再命中不拉——判定在效果层做，因为弓不会替弹药检查物品冷却。不消耗。 |
 | `entity/BeeArrowManager.java` | 蜜蜂寿命管理：`Bee` 在 1.21.11 没有 `setLimitedLife`，用列表记录召唤的蜜蜂，`tickCount >= 600` 时 `discard()`；服务器停止时清空。 |
-| `entity/GrappleManager.java` | 钩爪牵引会话：每 tick 移动 0.8 格、最多 30 tick、`noCollision` 撞墙即停；玩家每 tick 补速度包；退出/死亡/换维度/移除时清理。 |
+| `entity/GrappleManager.java` | 钩爪牵引会话：每 tick 移动 0.8 格、最多 40 tick、`noCollision` 撞墙即停；玩家每 tick 补速度包；退出/死亡/换维度/移除时清理。 |
 | `menu/ModMenuTypes.java` | 注册 `MenuType<FletchingTableMenu>`，ID 为 `update-ft:fletching_table`；客户端用它来决定打开哪个 `Screen`，服务端用它来反序列化菜单。 |
 | `menu/FletchingTableMenu.java` | 制箭台容器逻辑（`AbstractContainerMenu`）：3 个斜向原料格（`InputSlot` 用 `mayPlace` 做栏位限定）+ 1 个产物格 + 玩家背包（坐标与 `ft_gui.png` 一一对应）；监听原料容器变化重算产物；产物格自定义 `onTake` 消耗原料、`tryRemove` 强制整份取走；`quickMoveStack` 按物品类型把 Shift 点击的物品路由到对应原料格。服务端菜单额外保存建菜单时的 `ServerLevel`，`stillValid()`/`removed()` 都查这个维度而不是 `player.level()`，玩家换维度后旧菜单会立即失效、也不会删错维度的条目。`removed()` 用 `clearContainer` 把**自己这份**原料退回背包（装不下的掉在脚下），并删掉自己的存档条目——桌面不留东西。 |
 | `menu/FletchingTableData.java` | 制箭台的持久化（`SavedData`）：每个 `ServerLevel` 一份，内部 `Map<BlockPos, Map<UUID, SimpleContainer>>`，**每个玩家一份容器**，两人同开互不可见、也拿不走对方材料。codec 带 `version`（当前 2），同时能读 v1 的 `{"tables":[{pos, items}]}`：老数据挂在全零 UUID 下，等第一个打开桌子的玩家认领。每个容器挂了监听调 `setDirty()`，否则崩溃后内容会丢；`sweep()` 每 20 tick 扫描已加载区块，给爆炸/活塞/结构破坏留下的残条目兜底（所有玩家的内容物一起掉在原地）；`dropAndRemove` 掉内容物，`discard(pos, uuid)` 只删某个玩家自己的条目；`dumpTo(player)` 供 `/fletchingworks dump` 使用。 |

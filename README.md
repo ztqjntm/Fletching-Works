@@ -76,7 +76,7 @@ That is all for singleplayer. **For a server, install it on both sides** — the
 | Bee Arrow | −1 | Summons 2 bees that only attack the target |
 | Frost Arrow | −1 | Freezes the target for 10 seconds; freezes 3x3 water |
 | Wind Charge Arrow | −1 | Pure knockback in a 3x3x3 area |
-| Grapple Arrow | −1 | Pulls you to a block, or a creature 5 blocks toward you |
+| Grapple Arrow | −1 | Pulls you to a block, or a creature 5 blocks toward you (1.5 s cooldown) |
 
 The bonus is added **directly to vanilla's final damage** (vanilla rolls speed and crits, rounds up, then the bonus is applied, floored at 0). So a diamond arrow is not "double damage" — it is a flat +2.
 
@@ -94,7 +94,7 @@ The bonus is added **directly to vanilla's final damage** (vanilla rolls speed a
 - **Bee Arrow** — on an entity, summons 2 bees that only attack that target and leave after 30 seconds. Bees die after stinging, so it is really 2 stings. Block hits and ownerless dispenser arrows spawn nothing.
 - **Frost Arrow** — freezes the target for 10 seconds and turns 3x3 water sources into frosted ice, which melts on its own. Only source water is frozen; any piece of leather armor makes a target immune. **The arrow is not consumed.**
 - **Wind Charge Arrow** — pure knockback for every entity in a 3x3x3 area. No damage, no block destruction, no redstone triggers; it can push the shooter too.
-- **Grapple Arrow** — pulls you to a block within 32 blocks, or pulls a creature up to 5 blocks toward you. It moves per tick and stops at walls. **The arrow is not consumed**; ownerless dispenser arrows do not pull.
+- **Grapple Arrow** — pulls you to a block within 32 blocks, or pulls a creature up to 5 blocks toward you. It moves per tick and stops at walls. Each successful pull has a **1.5 second cooldown** (the arrow in your inventory shows it); hits during the cooldown do nothing. **The arrow is not consumed**; ownerless dispenser arrows do not pull.
 
 </details>
 
