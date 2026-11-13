@@ -1,14 +1,17 @@
 package ztqjntm.update;
 
 import net.fabricmc.api.ModInitializer;
+import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.fabricmc.fabric.api.event.player.PlayerBlockBreakEvents;
 import net.fabricmc.fabric.api.event.player.UseBlockCallback;
 import net.fabricmc.fabric.api.recipe.v1.sync.RecipeSynchronization;
+import net.minecraft.commands.Commands;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.MenuProvider;
@@ -41,6 +44,21 @@ public class UpdateFt implements ModInitializer {
 		RecipeSynchronization.synchronizeRecipeSerializer(ModRecipes.FLETCHING_SERIALIZER);
 		BeeArrowManager.register();     // 蜜蜂箭召唤的蜜蜂 30 秒后散场
 		GrappleManager.register();      // 钩爪箭的逐 tick 牵引
+
+		// 卸载模组前忘记清桌子时，管理员至少有一条路把残留内容物取回来
+		CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess, environment) ->
+				dispatcher.register(Commands.literal("fletchingworks")
+						.then(Commands.literal("dump")
+								// 权限等级 2（管理员），和 README 写的一致
+								.requires(Commands.hasPermission(Commands.LEVEL_GAMEMASTERS))
+								.executes(context -> {
+									ServerPlayer player = context.getSource().getPlayerOrException();
+									int stacks = FletchingTableData.get(player.level()).dumpTo(player);
+									context.getSource().sendSuccess(
+											() -> Component.translatable("command.update-ft.dump", stacks), false);
+									return stacks;
+								}))));
+
 
 		// 右键制箭台 → 打开 GUI（不需要方块实体，也不需要 Mixin）
 		UseBlockCallback.EVENT.register((player, level, hand, hitResult) -> {
@@ -75,10 +93,11 @@ public class UpdateFt implements ModInitializer {
 
 					@Override
 					public AbstractContainerMenu createMenu(int containerId, Inventory inventory, Player p) {
-						// 容器按坐标存在存档里：关界面不清空、两个玩家共享、重启还在。
+						// 容器按坐标 + 玩家存在存档里：每人一份、关界面退还自己的、重启还在。
 						// 菜单要记住维度，否则玩家换维度后 stillValid()/removed() 会查错、删错。
 						return new FletchingTableMenu(containerId, inventory,
-								FletchingTableData.get(serverLevel).getOrCreate(serverLevel, pos), serverLevel, pos);
+								FletchingTableData.get(serverLevel).getOrCreate(serverLevel, pos, p.getUUID()),
+								serverLevel, pos);
 					}
 				});
 			}

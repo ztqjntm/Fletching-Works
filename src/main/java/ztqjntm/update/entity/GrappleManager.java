@@ -20,7 +20,7 @@ import java.util.Set;
  * 钩爪箭的逐 tick 牵引。
  * <p>
  * 单次冲量只能跳 3–4 格，射 15 格外的墙根本到不了，所以这里每 tick 移动 0.8 格，
- * 最多 30 tick，撞墙就停。玩家每 tick 补 {@link ClientboundSetEntityMotionPacket}，
+ * 最多 40 tick（32 格 ÷ 0.8 格/tick），撞墙就停。玩家每 tick 补 {@link ClientboundSetEntityMotionPacket}，
  * 否则客户端会用自己的速度覆盖服务端位置。
  * <p>
  * 会话只存服务端实体引用；玩家退出、死亡、换维度、被移除时立即清理。

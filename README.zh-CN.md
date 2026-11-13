@@ -42,7 +42,7 @@
 
 1. 安装 **Fabric Loader ≥ 0.19.5**（Minecraft **1.21.11**），需要 Java 21。
 2. 把 [Fabric API](https://modrinth.com/mod/fabric-api) 放进 `mods/`。
-3. 把 `update-ft-1.0.4.jar` 放进 `mods/`。
+3. 把 `update-ft-1.0.5.jar` 放进 `mods/`。
 
 单人游戏这样就够了。**开服的话服务端也要装**——模组会注册方块、物品和菜单，只有客户端装是连不上的。
 
@@ -50,13 +50,13 @@
 
 | 渠道 | 版本 | 说明 |
 | --- | --- | --- |
-| [GitHub Releases](https://github.com/ztqjntm/Fletching-Works/releases) | 1.0.4 | 在 `Assets` 里下 jar |
-| [CurseForge](https://www.curseforge.com/minecraft/mc-mods/fletching-works) | 1.0.4 | 支持 CurseForge App 一键安装 |
+| [GitHub Releases](https://github.com/ztqjntm/Fletching-Works/releases) | 1.0.5 | 在 `Assets` 里下 jar |
+| [CurseForge](https://www.curseforge.com/minecraft/mc-mods/fletching-works) | 1.0.5 | 支持 CurseForge App 一键安装 |
 | Modrinth | — | 未上架 |
 
 | 模组版本 | Minecraft | 加载器 |
 | --- | --- | --- |
-| 1.0.4 | 1.21.11 | Fabric |
+| 1.0.5 | 1.21.11 | Fabric |
 
 ## 十五种箭
 
@@ -125,7 +125,7 @@
 
 - 产物只能**整份取走**（右键也是整份），不会出现"只拿 1 支却扣掉一整套材料"。
 - **桌面不留东西**：关界面时原料退回背包（装不下的掉在脚下），不会出现“忘了拿就没了”。
-- **多人同时开着同一张桌子时，桌面是共用的**：最后关闭的人会拿走桌面上剩下的全部原料（包括别人放进去的）；先关的人不会结算，也不会把别人正在用的材料收走。
+- **每个人有自己的三格。** 两个人同时打开同一张桌子，看不到也拿不走对方的材料；关界面只退还自己放进去的那些。
 - **拆桌**时（哪怕有人正开着）里面的东西掉在原地。产物格只是预览，不会掉出来。
 - **桌子被爆炸/活塞弄掉时**，里面的东西也会在原地掉出来（最多延迟约 1 秒），不会卡在存档里取不回。
 
@@ -135,8 +135,10 @@
 - **配方由数据包驱动**：每条配方都是 `data/update-ft/recipe/*.json` 里的 `update-ft:fletching`，整合包可以自己增删改，`/reload` 生效。箭头格的白名单是另一个标签 `update-ft:fletching_tips`，新材料要同时加进标签，否则放不进格子。
 - **已内置 JEI 支持**。JEI 只需要装在客户端：模组自己用 Fabric 的配方同步 API 注册了序列化器，服务端不装 JEI 也能把配方送到客户端。REI / EMI 暂不支持。
 - **红石箭的脉冲只作用于命中面相邻的那一格**，想让远处亮灯得靠红石粉把信号传过去。
-- **TNT 箭和烈焰箭都会拆家**，多人服等于无限 TNT / 无限火，建议配合领地/保护插件，或关掉 `doFireTick`。
-- 制箭台**没有方块实体**：界面开着时内容按坐标存在存档数据里，所以两个人共用一个背包、崩溃也不丢；但漏斗接不进去，桌面也不会展示材料。
+- **TNT 箭和烈焰箭都会拆家**，多人服等于无限 TNT / 无限火，建议配合领地/保护插件。关掉 `mobGriefing` 后 TNT 箭只伤人，烈焰箭也不再铺火（点燃命中的生物仍然生效）。
+- 制箭台**没有方块实体**：内容按“坐标 + 玩家”存在存档数据里，所以每个人只看到自己放的材料，关界面会退还，崩溃也不丢；但漏斗接不进去，桌面也不会展示材料。
+- **卸载模组前先把桌子清空**：内容物在 `world/data/update_ft_fletching_tables.dat`，只有本模组会读它。卸载前用 `/fletchingworks dump`（权限等级 2）可以把当前维度所有残留物品倒到脚下。
+- **无限附魔只对原版箭生效**：附魔条件匹配的是 `minecraft:arrow` 单个物品，不是 `#minecraft:arrows` 标签，所以 15 种新箭照常消耗。
 
 ## 常见问题
 
@@ -147,7 +149,7 @@
 要。模组注册了方块、物品和菜单，客户端和服务端必须都有。
 
 **箭射出去能捡回来吗？**
-普通箭、红石箭、冰冻箭、钩爪箭插在地上都能捡；TNT / 蛛网 / 烈焰 / 蜜蜂 / 风弹箭命中后消耗，珍珠箭传送成功后消耗。
+普通箭、铜箭、红石箭、冰冻箭、钩爪箭插在地上都能捡。TNT / 风弹箭命中即消耗，珍珠箭传送成功后消耗；蛛网 / 烈焰 / 蜜蜂箭只在效果真正生效时消耗（放下蛛网、点着火、召唤出蜜蜂），否则照常插在地上可以捡回。
 
 **会和别的模组冲突吗？**
 只改写了原版箭矢的命中逻辑（一处 Mixin），不改其他模组的内容。真遇到冲突，请带上 `latest.log` 和复现步骤开 issue。
@@ -161,7 +163,7 @@
 ./gradlew build        # Windows 用 gradlew.bat
 ```
 
-产物在 `build/libs/`：`update-ft-1.0.4.jar`（实际用的）和 `-sources.jar`（源码包）。需要 JDK 21。
+产物在 `build/libs/`：`update-ft-1.0.5.jar`（实际用的）和 `-sources.jar`（源码包）。需要 JDK 21。
 
 目录结构、每个文件干什么、注册与合成流程、发布流程，都在 [docs/DEVELOPMENT.md](docs/DEVELOPMENT.md)。
 
@@ -182,7 +184,7 @@
 | 项目 | 值 |
 | --- | --- |
 | 模组 ID | `update-ft` |
-| 版本 | 1.0.4 |
+| 版本 | 1.0.5 |
 | Minecraft | 1.21.11 |
 | Fabric Loader | ≥ 0.19.5 |
 | Fabric API | 0.141.6+1.21.11 |

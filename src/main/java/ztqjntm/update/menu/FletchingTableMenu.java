@@ -90,11 +90,6 @@ public class FletchingTableMenu extends AbstractContainerMenu {
 		this.updateResult();
 	}
 
-	/** 给 {@link FletchingTableData.SharedContainer} 判断“这个玩家现在开着的还是不是这张桌子的菜单” */
-	boolean uses(Container container) {
-		return this.input == container;
-	}
-
 	@Override
 	public void slotsChanged(Container container) {
 		super.slotsChanged(container);
@@ -260,13 +255,12 @@ public class FletchingTableMenu extends AbstractContainerMenu {
 	}
 
 	/**
-	 * 关界面时把桌上的原料**还回玩家背包**（和工作台一致，背包满了掉在脚下），桌子随之清空。
+	 * 关界面时把桌上**自己放进去的**原料还回背包（和工作台一致，背包满了掉在脚下）。
+	 * <p>
+	 * 每个玩家一份容器，所以只管自己这一份：不用等别人关闭，也不会把别人的材料收走。
 	 * <p>
 	 * 桌面不留东西：玩家很容易忘在里面，关掉之后看起来就像被吞了。
-	 * 内容物按坐标存进存档只服务两件事——界面开着时两个人共用同一份、服务器崩了不至于丢。
-	 * <p>
-	 * 两个人同时开着同一张桌子时，先关的那位不结算，等最后一个玩家关闭时再退，
-	 * 免得把别人正在用的材料收走。
+	 * 内容物按坐标存进存档只服务两件事——界面开着时崩溃不至于丢、重启后还在。
 	 */
 	@Override
 	public void removed(Player player) {
@@ -281,16 +275,12 @@ public class FletchingTableMenu extends AbstractContainerMenu {
 		if (this.level == null) {
 			return;
 		}
-		// 还有人开着这张桌子：先留着，等他关
-		if (this.input instanceof FletchingTableData.SharedContainer shared && shared.isViewed()) {
-			return;
-		}
 
 		this.clearContainer(player, this.input);
 		if (this.blockPos != null) {
 			// 东西已经退回玩家，条目直接删掉即可。用建菜单时记下的维度，不能用 player.level()：
 			// 玩家换维度后 player.level() 已经是新维度，会删错条目（甚至把另一个维度同坐标的桌子内容删掉）。
-			FletchingTableData.get(this.level).discard(this.blockPos);
+			FletchingTableData.get(this.level).discard(this.blockPos, player.getUUID());
 		}
 	}
 }

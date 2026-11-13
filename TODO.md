@@ -18,7 +18,6 @@
 2. **配方查看器**：JEI 已支持（自定义分类 + 催化剂 + Fabric 配方同步）；REI / EMI 仍未适配。
 3. **没有自动化测试**：`test NO-SOURCE`。最值得补的是 `FletchingRecipe.matches()` 的匹配矩阵和 `InputSlot.mayPlace` 的栏位过滤（gametest）。
 4. **CI**：`build.yml` 在每次 push / PR 时构建；`release.yml` 在 `v*` tag 时校验版本、构建并发布 GitHub Release / CurseForge，release job 已配置 Gradle 缓存。目前仍缺自动化测试（见上一条）。
-5. **查看者计数**：已改用 `Set<ContainerUser>`，`isViewed()` 会剔除已移除的玩家和“当前菜单已不是这张桌子”的玩家；剩下“所有查看者都异常消失、桌子还在”的极端情况，内容会留在桌上等下一个玩家打开，不会丢。
 
 ## P3 · 可选特性
 

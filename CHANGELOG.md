@@ -3,6 +3,23 @@
 > release 工作流会取 `## [版本]` 到下一个 `## ` 之间的内容，作为 GitHub Release 和 CurseForge 的更新说明。
 > 版本号必须与 `gradle.properties` 的 `mod_version` 完全一致。
 
+## [1.0.5] - 2026-11-13
+
+### 修复
+
+- **多人同开一张制箭台时能拿走别人的材料**：内容物改为按“坐标 + 玩家”分开存（`FletchingTableData` v2），每人只看到自己放进去的三格，关界面只退还自己的；旧存档里的共享内容会在第一个玩家打开时认领，不会丢。
+- **烈焰箭不再无视 `mobGriefing`**：`mobGriefing=false` 时不铺火，和 TNT 箭一致；点燃命中的生物仍然生效。点不着火时不消耗这支箭。
+- **存档加版本号 + 卸载兜底**：`FletchingTableData` 写入 `version` 并兼容读取 v1 格式；新增 `/fletchingworks dump`（权限等级 2），把当前维度所有残留内容倒到脚下并清空。
+
+### 工程
+
+- `gradlew` 补上执行位（100755），Linux/macOS 克隆后可以直接 `./gradlew build`，不用先 `chmod`。
+
+### 文档
+
+- 修正 README 的消耗清单（蛛网 / 烈焰 / 蜜蜂箭只在效果生效时消耗）和可捡回清单（补上铜箭）；补充卸载前清桌子的提示与无限附魔的适用范围。
+- 修正 `GrappleManager` 类注释里的牵引上限（30 → 40 tick）。
+
 ## [1.0.4] - 2026-11-13
 
 ### 新增

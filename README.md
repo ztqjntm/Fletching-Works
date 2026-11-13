@@ -42,7 +42,7 @@ Right-click a fletching table to open a three-slot crafting UI: **tip + stick + 
 
 1. Install **Fabric Loader ≥ 0.19.5** for **Minecraft 1.21.11** (Java 21).
 2. Drop [Fabric API](https://modrinth.com/mod/fabric-api) into `mods/`.
-3. Drop `update-ft-1.0.4.jar` into `mods/`.
+3. Drop `update-ft-1.0.5.jar` into `mods/`.
 
 That is all for singleplayer. **For a server, install it on both sides** — the mod registers blocks, items and a menu, so a client-only install cannot join.
 
@@ -50,13 +50,13 @@ That is all for singleplayer. **For a server, install it on both sides** — the
 
 | Source | Version | Notes |
 | --- | --- | --- |
-| [GitHub Releases](https://github.com/ztqjntm/Fletching-Works/releases) | 1.0.4 | Grab the jar under `Assets` |
-| [CurseForge](https://www.curseforge.com/minecraft/mc-mods/fletching-works) | 1.0.4 | One-click install via the CurseForge app |
+| [GitHub Releases](https://github.com/ztqjntm/Fletching-Works/releases) | 1.0.5 | Grab the jar under `Assets` |
+| [CurseForge](https://www.curseforge.com/minecraft/mc-mods/fletching-works) | 1.0.5 | One-click install via the CurseForge app |
 | Modrinth | — | Not listed yet |
 
 | Mod version | Minecraft | Loader |
 | --- | --- | --- |
-| 1.0.4 | 1.21.11 | Fabric |
+| 1.0.5 | 1.21.11 | Fabric |
 
 ## The fifteen arrows
 
@@ -125,7 +125,7 @@ A few rules:
 
 - The output is taken **as a whole batch** (right-click included), so you can never take 1 arrow and pay for a full set of materials.
 - **The table never keeps your items.** Closing the UI hands the inputs back to your inventory (whatever does not fit drops at your feet), so nothing can be forgotten inside.
-- **A table is shared while several players have it open.** Whoever closes it last takes all remaining inputs, including items another player put in; closing earlier does not settle the table or take anyone else's materials.
+- **Each player gets their own three slots.** Two players opening the same table cannot see or take each other's materials; closing the UI returns only what that player put in.
 - **Breaking the table** while someone has it open drops whatever is inside at its position. The output slot is a preview and never drops.
 - **If the table is destroyed by an explosion or piston**, anything inside drops at its old position within about a second instead of being stranded in the save.
 
@@ -135,8 +135,10 @@ A few rules:
 - **Recipes are datapack-driven**: every recipe lives in `data/update-ft/recipe/*.json` as `update-ft:fletching`, so packs can add or change them and `/reload` applies it. The tip slot's whitelist is a separate tag (`update-ft:fletching_tips`) — add your material there too, or it will not fit into the slot.
 - **JEI is supported out of the box.** JEI is only needed on the client: the mod registers its own recipe serializer with Fabric's sync API, so the recipe data reaches the client without JEI on the server. REI / EMI are not supported yet.
 - **The redstone pulse only powers the cell adjacent to the face it hit.** To light a lamp further away, route the signal with dust.
-- **TNT and fire arrows grief terrain.** On a multiplayer server that is infinite TNT and infinite fire; pair it with claim/protection plugins or turn off `doFireTick`.
-- **The fletching table has no block entity**: while the UI is open, contents are held in the level's saved data keyed by block position, so two players share one inventory and a crash does not eat them. Hoppers still cannot feed the table and nothing is displayed on it.
+- **TNT and fire arrows grief terrain.** On a multiplayer server that is infinite TNT and infinite fire; pair it with claim/protection plugins. With `mobGriefing` off, TNT arrows only damage entities, and fire arrows no longer place any fire (they still ignite the creature they hit).
+- **The fletching table has no block entity**: contents are held in the level's saved data keyed by block position and player, so each player only sees their own materials, closing the UI returns them, and a crash does not eat them. Hoppers still cannot feed the table and nothing is displayed on it.
+- **Empty the tables before uninstalling the mod.** Contents live in `world/data/update_ft_fletching_tables.dat`, which only this mod reads. Run `/fletchingworks dump` (permission level 2) first — it drops everything in the current dimension at your feet.
+- **Infinity only works with vanilla arrows.** The enchantment predicate matches `minecraft:arrow`, not the `#minecraft:arrows` tag, so the 15 new arrows are always consumed.
 
 ## FAQ
 
@@ -147,7 +149,7 @@ Yes. Without it the game fails to start.
 Yes. The mod registers blocks, items and a menu, so client and server must both have it.
 
 **Can I pick my arrows back up?**
-Normal, redstone, frost and grapple arrows stick in the ground and can be retrieved. TNT, web, fire, bee and wind charge arrows are consumed on impact; pearl arrows are consumed once the teleport succeeds.
+Normal, copper, redstone, frost and grapple arrows stick in the ground and can be retrieved. TNT and wind charge arrows are consumed on impact; pearl arrows are consumed once the teleport succeeds. Web, fire and bee arrows are only consumed when their effect actually happens (a web is placed, fire is lit, bees are summoned) — otherwise they stick in the ground like any other arrow.
 
 **Will it conflict with other mods?**
 It only rewrites vanilla arrow impact logic (one Mixin) and does not touch other mods' content. If something does break, open an issue with `latest.log` and reproduction steps.
@@ -161,7 +163,7 @@ It only rewrites vanilla arrow impact logic (one Mixin) and does not touch other
 ./gradlew build        # gradlew.bat on Windows
 ```
 
-Output lands in `build/libs/`: `update-ft-1.0.4.jar` (the one you install) and `-sources.jar`. Requires JDK 21.
+Output lands in `build/libs/`: `update-ft-1.0.5.jar` (the one you install) and `-sources.jar`. Requires JDK 21.
 
 Project layout, what each file does, the registration and crafting flow, and the release process all live in [docs/DEVELOPMENT.md](docs/DEVELOPMENT.md) (Chinese).
 
@@ -182,7 +184,7 @@ Project layout, what each file does, the registration and crafting flow, and the
 | Field | Value |
 | --- | --- |
 | Mod ID | `update-ft` |
-| Version | 1.0.4 |
+| Version | 1.0.5 |
 | Minecraft | 1.21.11 |
 | Fabric Loader | ≥ 0.19.5 |
 | Fabric API | 0.141.6+1.21.11 |

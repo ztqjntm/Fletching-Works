@@ -7,6 +7,7 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.projectile.arrow.AbstractArrow;
 import net.minecraft.world.level.block.BaseFireBlock;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.gamerules.GameRules;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
 
@@ -16,8 +17,9 @@ import net.minecraft.world.phys.EntityHitResult;
  * 落点按“命中面外侧”取，射到地面就是地面上方那一层，所以落地一定会烧起来，
  * 不是只有打中生物才有效果。
  * <p>
- * 火就是普通火（允许蔓延），这是明确要的效果，不属于失误。下雨/水下/doFireTick=false
- * 时原版自己会限制蔓延，这里不额外判断。
+ * 火就是普通火（允许蔓延），这是明确要的效果。但 {@code mobGriefing=false} 时整片火都不放，
+ * 和同包的 TNT 箭保持一致——远程纵火是服务器最容易引起投诉的行为。
+ * 点燃实体不受影响（原版火焰箭也照样点燃实体）。
  * <p>
  * 不依赖射手：发射器射出的无主箭照常点火。
  */
@@ -35,11 +37,12 @@ public final class FireArrowEffect implements ArrowEffect {
         // 以“命中面外侧”那一格为中心：射到地面时是地面上方，射到墙面时是墙边那一格。
         // 直接用 hit.getBlockPos() 会得到脚下那块实体方块，canBePlacedAt 全部为 false，一格火都放不出来。
         BlockPos anchor = hit.getBlockPos().relative(hit.getDirection());
-        if (!ignite(level, anchor)) {
-            // 打在悬空方块的侧面/底面时，外侧那一格下面是空的，火站不住；退回命中格上方再试一次。
-            ignite(level, hit.getBlockPos().above());
+        if (ignite(level, anchor)) {
+            return true;
         }
-        return true;
+        // 打在悬空方块的侧面/底面时，外侧那一格下面是空的，火站不住；退回命中格上方再试一次。
+        // 两处都点不着（含 mobGriefing=false）就不消耗这支箭，让它照常插在地上可以捡回。
+        return ignite(level, hit.getBlockPos().above());
     }
 
     @Override
@@ -59,6 +62,10 @@ public final class FireArrowEffect implements ArrowEffect {
      * @return 是否至少放成功了一格
      */
     private static boolean ignite(ServerLevel level, BlockPos center) {
+        // 管理员关了 mobGriefing 就不该被远程纵火。点燃实体在 onHitEntity 里，不受这条影响。
+        if (!level.getGameRules().get(GameRules.MOB_GRIEFING)) {
+            return false;
+        }
         boolean placed = false;
         for (BlockPos pos : BlockPos.betweenClosed(
                 center.offset(-1, 0, -1), center.offset(1, 0, 1))) {
