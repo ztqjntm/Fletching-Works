@@ -17,8 +17,8 @@ README 面向玩家（`README.md` 英文、`README.zh-CN.md` 中文），这里�
 
 产物：
 
-- `build/libs/update-ft-1.0.3.jar` —— 实际使用的模组文件
-- `build/libs/update-ft-1.0.3-sources.jar` —— 源码包
+- `build/libs/update-ft-1.0.4.jar` —— 实际使用的模组文件
+- `build/libs/update-ft-1.0.4-sources.jar` —— 源码包
 
 CI（`.github/workflows/build.yml`）在每次 push / PR 时用 JDK 21 跑一遍 `./gradlew build`，并把 `build/libs/` 上传为构建产物。
 
@@ -177,7 +177,7 @@ JEI 是可选依赖，不写进 `depends`：
 打 `v*` tag 即发布（`.github/workflows/release.yml`）：
 
 1. 改 `gradle.properties` 的 `mod_version`，同步 `CHANGELOG.md` 的 `## [版本]` 段落，提交。
-2. 打 tag 并推送：`git tag v1.0.3 && git push origin v1.0.3`。
+2. 打 tag 并推送：`git tag v1.0.4 && git push origin v1.0.4`。
 3. 工作流校验 **tag 去掉 `v` 后与 `mod_version` 完全一致**，不一致直接失败；版本号带 `-` 自动标记为预发布。
 4. 构建 → 校验 jar 内 `fabric.mod.json` 的版本 → 用 CHANGELOG 对应段落作为 Release 正文（没有就退回自动生成）→ 上传主 jar 与 sources jar → 并行上传 CurseForge。
 

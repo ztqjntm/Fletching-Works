@@ -3,7 +3,7 @@
 > release 工作流会取 `## [版本]` 到下一个 `## ` 之间的内容，作为 GitHub Release 和 CurseForge 的更新说明。
 > 版本号必须与 `gradle.properties` 的 `mod_version` 完全一致。
 
-## [Unreleased]
+## [1.0.4] - 2026-11-13
 
 ### 新增
 
