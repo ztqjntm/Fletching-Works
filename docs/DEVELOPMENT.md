@@ -17,8 +17,8 @@ README 面向玩家（`README.md` 英文、`README.zh-CN.md` 中文），这里�
 
 产物：
 
-- `build/libs/update-ft-1.0.5.jar` —— 实际使用的模组文件
-- `build/libs/update-ft-1.0.5-sources.jar` —— 源码包
+- `build/libs/update-ft-1.0.6.jar` —— 实际使用的模组文件
+- `build/libs/update-ft-1.0.6-sources.jar` —— 源码包
 
 CI（`.github/workflows/build.yml`）在每次 push / PR 时用 JDK 21 跑一遍 `./gradlew build`，并把 `build/libs/` 上传为构建产物。
 
@@ -56,7 +56,7 @@ update-ft/
 | 文件 | 作用 |
 | --- | --- |
 | `build.gradle` | 应用 `net.fabricmc.fabric-loom-remap` 插件，声明 Minecraft / Fabric Loader / Fabric API 依赖、Java 21 编译目标；开头把 `mod_version` 显式赋给 `project.version`；`loom { splitEnvironmentSourceSets() }` 把 `main` / `client` 拆成两个源集（`mods { }` 里同时声明两者），`processResources` 把 `fabric.mod.json` 里的 `${version}` 展开成真实版本号，`jar` 任务把 `LICENSE` 一并打进包里。 |
-| `gradle.properties` | 所有版本号的唯一来源：`minecraft_version=1.21.11`、`loader_version=0.19.5`、`loom_version=1.17.20`、`fabric_api_version`、`jei_version`（可选兼容目标，只用于编译）、`mod_version`（模组版本，发布时必须与 tag 一致）、`group`（包名前缀）。JVM 内存与并行/配置缓存开关也在这里。 |
+| `gradle.properties` | 所有版本号的唯一来源：`minecraft_version=1.21.11`、`loader_version=0.17.3`、`loom_version=1.17.20`、`fabric_api_version`、`jei_version`（可选兼容目标，只用于编译）、`mod_version`（模组版本，发布时必须与 tag 一致）、`group`（包名前缀）。JVM 内存与并行/配置缓存开关也在这里。 |
 | `settings.gradle` | 声明 Fabric Maven / Maven Central / Gradle Plugin Portal 三个插件仓库；`rootProject.name = 'update-ft'` 决定产物 jar 的文件名。 |
 | `gradlew`、`gradlew.bat` | Gradle Wrapper 启动脚本（Linux/macOS 与 Windows），保证不装 Gradle 也能构建。 |
 | `gradle/wrapper/gradle-wrapper.jar` | Wrapper 引导程序本体。 |
@@ -177,7 +177,7 @@ JEI 是可选依赖，不写进 `depends`：
 打 `v*` tag 即发布（`.github/workflows/release.yml`）：
 
 1. 改 `gradle.properties` 的 `mod_version`，同步 `CHANGELOG.md` 的 `## [版本]` 段落，提交。
-2. 打 tag 并推送：`git tag v1.0.5 && git push origin v1.0.5`。
+2. 打 tag 并推送：`git tag v1.0.6 && git push origin v1.0.6`。
 3. 工作流校验 **tag 去掉 `v` 后与 `mod_version` 完全一致**，不一致直接失败；版本号带 `-` 自动标记为预发布。
 4. 构建 → 校验 jar 内 `fabric.mod.json` 的版本 → 用 CHANGELOG 对应段落作为 Release 正文（没有就退回自动生成）→ 上传主 jar 与 sources jar → 并行上传 CurseForge。
 
