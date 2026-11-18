@@ -3,6 +3,28 @@
 > release 工作流会取 `## [版本]` 到下一个 `## ` 之间的内容，作为 GitHub Release 和 CurseForge 的更新说明。
 > 版本号必须与 `gradle.properties` 的 `mod_version` 完全一致。
 
+## [Unreleased]
+
+### 修复
+
+- **雪层掉落分支是死代码**：`preRemoveSideEffects` 先判 `asItem()`，而雪有物品形态，`SnowLayerBlock` 分支永远走不到；7 层雪被红石脉冲顶掉只还 1 个「雪」。现在雪层优先按层数掉雪球。
+- **蜜蜂寿命在区块卸载时暂停**：改用服务端 tick 计时（`Tracked(bee, expireAt)`），不再依赖实体的 `tickCount`，射到远处也不会变成永久蜜蜂。
+
+### 新增
+
+- **配置文件** `config/fletching-works.json`：TNT 箭开关/拆方块/伤害倍率、烈焰箭铺火半径与点燃秒数、铜箭是否必须雷雨、钩爪冷却与最大距离、关界面是否退还材料。`/fletchingworks reload` 即时生效，默认值等于原来的硬编码行为。
+
+### 工程
+
+- 创造页签把 15 支箭插到原版箭后面（`addAfter`），不再追加到页尾。
+- `build.yml` 只对 main 和 PR 构建，补 `permissions` / `concurrency` / `timeout-minutes` / Gradle 缓存，action 版本与 `release.yml` 对齐。
+- `.gitattributes` 加默认 `text=auto eol=lf` 和二进制规则，避免 Windows 提交整文件 CRLF diff。
+- 删掉 README 空的「截图」小节；`ArrowEffect` 注释改成「为将来移植预留的边界」；TODO 只保留前瞻项。
+
+### 文档
+
+- README 增加配置表（中英），补充 TNT/烈焰箭可按配置单独关闭。
+
 ## [1.0.6] - 2026-11-18
 
 ### 变更

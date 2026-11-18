@@ -1,6 +1,14 @@
 #
 # https://help.github.com/articles/dealing-with-line-endings/
 #
+# 默认全部按文本处理并统一成 LF，避免 Windows 贡献者提交 .java / .json 时带 CRLF
+* text=auto eol=lf
+
+# 二进制文件不要做换行转换
+*.png binary
+*.jar binary
+*.ogg binary
+
 # Linux start script should use lf
 /gradlew        text eol=lf
 
@@ -9,4 +17,3 @@
 
 # These are Windows script files and should use crlf
 *.bat           text eol=crlf
-

@@ -8,7 +8,7 @@ import net.minecraft.world.phys.EntityHitResult;
 /**
  * 箭命中后的特殊行为。
  * <p>
- * 这是三个平台（Fabric / NeoForge / Forge）唯一能共享的一层，所以有两条约束：
+ * 这是为将来移植预留的边界（本模组目前只做 Fabric），所以有两条约束：
  * <ul>
  *     <li>不引 {@code net.fabricmc.*}，只用原版类型；</li>
  *     <li>不假设调用方一定能拿到 {@link ServerLevel}——分派点自己判断，拿不到就干脆不调用。</li>

@@ -10,11 +10,14 @@ import net.minecraft.world.entity.projectile.arrow.AbstractArrow;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.Vec3;
+import ztqjntm.update.config.ModConfig;
 
 /**
  * 铜箭：雷雨天、且在能看到天空的位置命中时召唤一道真实闪电，做法和避雷针引雷一致。
  * <p>
- * 不是雷雨天、或落点在地下/室内就什么都不做，箭照常插在地上，所以不消耗。
+ * 是否必须雷雨天由 {@code config/fletching-works.json} 的
+ * {@code lightningArrow.requiresThunderstorm} 控制（默认 true）；落点在地下/室内时仍然不劈。
+ * 没劈成时箭照常插在地上，所以不消耗。
  * 注意这是真闪电：会点燃方块，也会劈到射手自己和附近的生物。
  */
 public final class LightningEffect implements ArrowEffect {
@@ -36,7 +39,7 @@ public final class LightningEffect implements ArrowEffect {
     }
 
     private void summon(ServerLevel level, AbstractArrow arrow, Vec3 hit) {
-        if (!level.isThundering()) {
+        if (ModConfig.get().lightningArrow.requiresThunderstorm && !level.isThundering()) {
             return;
         }
         BlockPos strikePos = BlockPos.containing(hit);

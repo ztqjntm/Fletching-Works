@@ -77,8 +77,9 @@ public class RedstonePulseBlockEntity extends BlockEntity {
      * 其余情况意味着玩家在 8 tick 内往这一格放了方块——原方块不会自己回来了，
      * 就地掉出来，别让它凭空消失。
      * <p>
-     * 有物品形态的方块直接掉原方块物品（高草、海草等都和 1.0.1 行为一致）；
-     * 雪层没有物品形态，战利品表又要求“有破坏实体”才会掉，所以按 {@code layers} 掉雪球；
+     * 有物品形态的方块直接掉原方块物品（高草、海草等都和 1.0.1 行为一致）。
+     * 雪层要**先**判：它也有物品形态（物品是「雪」），但原版只还 1 个方块，
+     * 7 层雪被顶掉就亏了 7 个雪球——这里按 {@code layers} 掉雪球。
      * 其他没有物品形态的方块走掉落表。水、岩浆这类流体没有物品形态，被方块顶掉是正常置换，不会掉东西。
      * <p>
      * 区块卸载不会走这个钩子，所以不会在卸载时往地上丢东西。
@@ -89,14 +90,15 @@ public class RedstonePulseBlockEntity extends BlockEntity {
         if (this.restoring || !(this.level instanceof ServerLevel server)) {
             return;
         }
-        ItemStack item = new ItemStack(this.originalState.getBlock().asItem());
-        if (!item.isEmpty()) {
-            Block.popResource(server, pos, item);
-            return;
-        }
+        // 雪层必须排在 asItem() 之前，否则永远走不到这个分支（雪有物品形态）
         if (this.originalState.getBlock() instanceof SnowLayerBlock) {
             int layers = this.originalState.getValue(SnowLayerBlock.LAYERS);
             Block.popResource(server, pos, new ItemStack(Items.SNOWBALL, layers));
+            return;
+        }
+        ItemStack item = new ItemStack(this.originalState.getBlock().asItem());
+        if (!item.isEmpty()) {
+            Block.popResource(server, pos, item);
             return;
         }
         for (ItemStack drop : Block.getDrops(this.originalState, server, pos, null)) {

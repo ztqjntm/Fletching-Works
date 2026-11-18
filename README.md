@@ -24,20 +24,6 @@ Right-click a fletching table to open a three-slot crafting UI: **tip + stick + 
 - **No more arrow shortages.** Out of flint? Cobblestone, copper and iron all work, so you craft from whatever you already have.
 - **Fifteen arrows, fifteen jobs.** Demolition, remote redstone, self-teleport, lightning — each one is worth carrying on its own.
 
-## Screenshots
-
-<!--
-  Four shots (16:9, ≤1000px wide) in docs/images/:
-  1. gui.png       The fletching table UI — the important one: three slots filled, output populated
-  2. arrows.png    All fifteen arrows with a tooltip open
-  3. tnt.png       A TNT arrow mid-explosion
-  4. redstone.png  A redstone arrow lighting up a redstone lamp
-  A 10-second GIF (right-click → take the arrows) beats four stills.
-  Uncomment once the files exist; delete this whole section until then.
-  ![Fletching table UI](docs/images/gui.png)
-  ![Fifteen arrows](docs/images/arrows.png)
--->
-
 ## Installation
 
 1. Install **Fabric Loader ≥ 0.17.3** for **Minecraft 1.21.11** (Java 21).
@@ -135,10 +121,26 @@ A few rules:
 - **Recipes are datapack-driven**: every recipe lives in `data/update-ft/recipe/*.json` as `update-ft:fletching`, so packs can add or change them and `/reload` applies it. The tip slot's whitelist is a separate tag (`update-ft:fletching_tips`) — add your material there too, or it will not fit into the slot.
 - **JEI is supported out of the box.** JEI is only needed on the client: the mod registers its own recipe serializer with Fabric's sync API, so the recipe data reaches the client without JEI on the server. REI / EMI are not supported yet.
 - **The redstone pulse only powers the cell adjacent to the face it hit.** To light a lamp further away, route the signal with dust.
-- **TNT and fire arrows grief terrain.** On a multiplayer server that is infinite TNT and infinite fire; pair it with claim/protection plugins. With `mobGriefing` off, TNT arrows only damage entities, and fire arrows no longer place any fire (they still ignite the creature they hit).
+- **TNT and fire arrows grief terrain.** On a multiplayer server that is infinite TNT and infinite fire; pair it with claim/protection plugins, or tune them down in `config/fletching-works.json` (`tntArrow.enabled`, `tntArrow.breaksBlocks`, `fireArrow.spread`). With `mobGriefing` off, TNT arrows only damage entities, and fire arrows no longer place any fire (they still ignite the creature they hit).
 - **The fletching table has no block entity**: contents are held in the level's saved data keyed by block position and player, so each player only sees their own materials, closing the UI returns them, and a crash does not eat them. Hoppers still cannot feed the table and nothing is displayed on it.
 - **Empty the tables before uninstalling the mod.** Contents live in `world/data/update_ft_fletching_tables.dat`, which only this mod reads. Run `/fletchingworks dump` (permission level 2) first — it drops everything in the current dimension at your feet.
 - **Infinity only works with vanilla arrows.** The enchantment predicate matches `minecraft:arrow`, not the `#minecraft:arrows` tag, so the 15 new arrows are always consumed.
+
+## Configuration
+
+Server-side settings live in `config/fletching-works.json`, generated on first launch. Edit it and run `/fletchingworks reload` (permission level 2) — no restart needed.
+
+| Key | Default | What it does |
+| --- | --- | --- |
+| `tntArrow.enabled` | `true` | Turn the explosion off; the arrow then sticks like a normal arrow |
+| `tntArrow.breaksBlocks` | `true` | Still requires `mobGriefing` |
+| `tntArrow.entityDamageMultiplier` | `0.5` | `1.0` = vanilla TNT damage |
+| `fireArrow.spread` | `1` | Fire radius: `0` = one block, `1` = 3×3, `2` = 5×5, `3` = 7×7 |
+| `fireArrow.igniteSeconds` | `5` | Burn time applied to a creature |
+| `lightningArrow.requiresThunderstorm` | `true` | `false` lets copper arrows call lightning in clear weather |
+| `grappleArrow.cooldownTicks` | `30` | `0` disables the cooldown |
+| `grappleArrow.maxDistance` | `32.0` | Maximum pull distance, in blocks |
+| `table.returnItemsOnClose` | `true` | `false` keeps the materials in the table |
 
 ## FAQ
 

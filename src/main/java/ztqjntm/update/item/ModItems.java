@@ -7,6 +7,7 @@ import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.item.CreativeModeTabs;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.Items;
 import ztqjntm.update.UpdateFt;
 import ztqjntm.update.effect.BeeArrowEffect;
 import ztqjntm.update.effect.ExplosiveEffect;
@@ -133,23 +134,24 @@ public class ModItems {
             new Item.Properties());
 
     public static void initialize() {
+        // 排到原版箭后面，而不是全部追加到页签末尾（那样会离原版箭很远）
         ItemGroupEvents.modifyEntriesEvent(CreativeModeTabs.COMBAT)
-                .register((itemGroup) -> {
-                    itemGroup.accept(ModItems.STONE_ARROW);
-                    itemGroup.accept(ModItems.COPPER_ARROW);
-                    itemGroup.accept(ModItems.IRON_ARROW);
-                    itemGroup.accept(ModItems.DIAMOND_ARROW);
-                    itemGroup.accept(ModItems.GOLD_ARROW);
-                    itemGroup.accept(ModItems.NETHERITE_ARROW);
-                    itemGroup.accept(ModItems.TNT_ARROW);
-                    itemGroup.accept(ModItems.REDSTONE_ARROW);
-                    itemGroup.accept(ModItems.PEARL_ARROW);
-                    itemGroup.accept(ModItems.WEB_ARROW);
-                    itemGroup.accept(ModItems.FIRE_ARROW);
-                    itemGroup.accept(ModItems.BEE_ARROW);
-                    itemGroup.accept(ModItems.FROST_ARROW);
-                    itemGroup.accept(ModItems.WIND_CHARGE_ARROW);
-                    itemGroup.accept(ModItems.GRAPPLE_ARROW);
-                });
+                .register((itemGroup) -> itemGroup.addAfter(Items.ARROW,
+                        ModItems.STONE_ARROW,
+                        ModItems.COPPER_ARROW,
+                        ModItems.IRON_ARROW,
+                        ModItems.DIAMOND_ARROW,
+                        ModItems.GOLD_ARROW,
+                        ModItems.NETHERITE_ARROW,
+                        ModItems.TNT_ARROW,
+                        ModItems.REDSTONE_ARROW,
+                        ModItems.PEARL_ARROW,
+                        ModItems.WEB_ARROW,
+                        ModItems.FIRE_ARROW,
+                        ModItems.BEE_ARROW,
+                        ModItems.FROST_ARROW,
+                        ModItems.WIND_CHARGE_ARROW,
+                        ModItems.GRAPPLE_ARROW
+                ));
     }
 }

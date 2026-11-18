@@ -73,5 +73,6 @@
   "tooltip.update-ft.grapple_arrow.2": "Pulls a creature 5 blocks toward you.",
   "tooltip.update-ft.grapple_arrow.3": "Damage bonus: -1",
   "jei.update-ft.fletching": "Fletching Table",
-  "command.update-ft.dump": "Dumped %s stacks from fletching tables"
+  "command.update-ft.dump": "Dumped %s stacks from fletching tables",
+  "command.update-ft.reload": "Reloaded fletching-works.json"
 }

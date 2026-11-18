@@ -24,20 +24,6 @@
 - **前期不缺箭。** 没燧石就用圆石、铜锭、铁锭顶上，材料就地取材。
 - **十五种箭各有各的用法。** 拆家、远程开关红石、位移、引雷，每一种都值得往背包里塞一沓。
 
-## 截图
-
-<!--
-  建议放 4 张图（16:9，宽度 ≤1000px），存 docs/images/：
-  1. gui.png       制箭台界面 —— 最重要的一张：三格放好材料、产物格有箭
-  2. arrows.png    十五种箭 + 悬停 tooltip
-  3. tnt.png       TNT 箭爆炸瞬间
-  4. redstone.png  红石箭点亮红石灯
-  换成一段 10 秒 GIF（右键制箭台 → 取走成品）比四张静图更有说服力。
-  图片就位后取消下面的注释；补齐之前先把这一节整节删掉。
-  ![制箭台界面](docs/images/gui.png)
-  ![十五种箭](docs/images/arrows.png)
--->
-
 ## 安装
 
 1. 安装 **Fabric Loader ≥ 0.17.3**（Minecraft **1.21.11**），需要 Java 21。
@@ -135,10 +121,26 @@
 - **配方由数据包驱动**：每条配方都是 `data/update-ft/recipe/*.json` 里的 `update-ft:fletching`，整合包可以自己增删改，`/reload` 生效。箭头格的白名单是另一个标签 `update-ft:fletching_tips`，新材料要同时加进标签，否则放不进格子。
 - **已内置 JEI 支持**。JEI 只需要装在客户端：模组自己用 Fabric 的配方同步 API 注册了序列化器，服务端不装 JEI 也能把配方送到客户端。REI / EMI 暂不支持。
 - **红石箭的脉冲只作用于命中面相邻的那一格**，想让远处亮灯得靠红石粉把信号传过去。
-- **TNT 箭和烈焰箭都会拆家**，多人服等于无限 TNT / 无限火，建议配合领地/保护插件。关掉 `mobGriefing` 后 TNT 箭只伤人，烈焰箭也不再铺火（点燃命中的生物仍然生效）。
+- **TNT 箭和烈焰箭都会拆家**，多人服等于无限 TNT / 无限火，建议配合领地/保护插件，或在 `config/fletching-works.json` 里单独关掉（`tntArrow.enabled`、`tntArrow.breaksBlocks`、`fireArrow.spread`）。关掉 `mobGriefing` 后 TNT 箭只伤人，烈焰箭也不再铺火（点燃命中的生物仍然生效）。
 - 制箭台**没有方块实体**：内容按“坐标 + 玩家”存在存档数据里，所以每个人只看到自己放的材料，关界面会退还，崩溃也不丢；但漏斗接不进去，桌面也不会展示材料。
 - **卸载模组前先把桌子清空**：内容物在 `world/data/update_ft_fletching_tables.dat`，只有本模组会读它。卸载前用 `/fletchingworks dump`（权限等级 2）可以把当前维度所有残留物品倒到脚下。
 - **无限附魔只对原版箭生效**：附魔条件匹配的是 `minecraft:arrow` 单个物品，不是 `#minecraft:arrows` 标签，所以 15 种新箭照常消耗。
+
+## 配置
+
+服务端配置在 `config/fletching-works.json`，首次启动自动生成。改完执行 `/fletchingworks reload`（权限等级 2）即可生效，不用重启。
+
+| 键 | 默认值 | 作用 |
+| --- | --- | --- |
+| `tntArrow.enabled` | `true` | 关掉后不再爆炸，TNT 箭像普通箭一样插在地上 |
+| `tntArrow.breaksBlocks` | `true` | 仍然受 `mobGriefing` 约束 |
+| `tntArrow.entityDamageMultiplier` | `0.5` | `1.0` = 原版 TNT 伤害 |
+| `fireArrow.spread` | `1` | 铺火半径：`0` = 单格，`1` = 3×3，`2` = 5×5，`3` = 7×7 |
+| `fireArrow.igniteSeconds` | `5` | 命中生物时的燃烧秒数 |
+| `lightningArrow.requiresThunderstorm` | `true` | 改成 `false` 后晴天也能引雷 |
+| `grappleArrow.cooldownTicks` | `30` | `0` = 关闭冷却 |
+| `grappleArrow.maxDistance` | `32.0` | 最大牵引距离（格） |
+| `table.returnItemsOnClose` | `true` | 改成 `false` 后关界面不退还材料，留在桌子里 |
 
 ## 常见问题
 

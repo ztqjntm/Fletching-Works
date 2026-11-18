@@ -21,6 +21,7 @@ import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.level.block.Blocks;
 import ztqjntm.update.block.ModBlockEntities;
 import ztqjntm.update.block.ModBlocks;
+import ztqjntm.update.config.ModConfig;
 import ztqjntm.update.entity.BeeArrowManager;
 import ztqjntm.update.entity.GrappleManager;
 import ztqjntm.update.item.ModItems;
@@ -34,6 +35,7 @@ public class UpdateFt implements ModInitializer {
 
 	@Override
 	public void onInitialize() {
+		ModConfig.initialize();         // 读 config/fletching-works.json，没有就生成默认的
 		ModItems.initialize();          // 注册物品
 		ModBlocks.initialize();         // 注册方块（红石脉冲）
 		ModBlockEntities.initialize();  // 红石脉冲的方块实体（要在方块之后）
@@ -57,6 +59,14 @@ public class UpdateFt implements ModInitializer {
 									context.getSource().sendSuccess(
 											() -> Component.translatable("command.update-ft.dump", stacks), false);
 									return stacks;
+								}))
+						.then(Commands.literal("reload")
+								.requires(Commands.hasPermission(Commands.LEVEL_GAMEMASTERS))
+								.executes(context -> {
+									ModConfig.load();
+									context.getSource().sendSuccess(
+											() -> Component.translatable("command.update-ft.reload"), false);
+									return 1;
 								}))));
 
 

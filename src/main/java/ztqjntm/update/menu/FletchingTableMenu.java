@@ -13,6 +13,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.phys.Vec3;
+import ztqjntm.update.config.ModConfig;
 import ztqjntm.update.recipe.FletchingRecipes;
 
 import java.util.Optional;
@@ -258,9 +259,8 @@ public class FletchingTableMenu extends AbstractContainerMenu {
 	 * 关界面时把桌上**自己放进去的**原料还回背包（和工作台一致，背包满了掉在脚下）。
 	 * <p>
 	 * 每个玩家一份容器，所以只管自己这一份：不用等别人关闭，也不会把别人的材料收走。
-	 * <p>
-	 * 桌面不留东西：玩家很容易忘在里面，关掉之后看起来就像被吞了。
-	 * 内容物按坐标存进存档只服务两件事——界面开着时崩溃不至于丢、重启后还在。
+	 * 桌面不留东西：玩家很容易忘在里面，关掉之后看起来就像被吞了。若服务器在配置里把
+	 * {@code table.returnItemsOnClose} 关掉，则保留容器，下次打开还在。
 	 */
 	@Override
 	public void removed(Player player) {
@@ -273,6 +273,9 @@ public class FletchingTableMenu extends AbstractContainerMenu {
 
 		// 客户端（level 为 null）也会回调 removed()，但它不做任何实际动作，避免刷出幽灵物品
 		if (this.level == null) {
+			return;
+		}
+		if (!ModConfig.get().table.returnItemsOnClose) {
 			return;
 		}
 

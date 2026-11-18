@@ -73,5 +73,6 @@
   "tooltip.update-ft.grapple_arrow.2": "命中生物把它拉向你 5 格。",
   "tooltip.update-ft.grapple_arrow.3": "伤害加成：-1",
   "jei.update-ft.fletching": "制箭台",
-  "command.update-ft.dump": "已从制箭台倒出 %s 组物品"
+  "command.update-ft.dump": "已从制箭台倒出 %s 组物品",
+  "command.update-ft.reload": "已重新加载 fletching-works.json"
 }

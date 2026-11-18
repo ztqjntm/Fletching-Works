@@ -73,7 +73,7 @@ update-ft/
 
 | 文件 | 作用 |
 | --- | --- |
-| `UpdateFt.java` | **主入口**（`ModInitializer`）。持有 `MOD_ID = "update-ft"` 和 `id(path)` 工具方法；在 `onInitialize()` 里按 物品 → 方块 → 方块实体 → MenuType → 实体管理器 的顺序注册，并挂三个事件 + 一个命令：`UseBlockCallback`（主手右键制箭台 → 服务端 `openMenu`，容器从 `FletchingTableData` 按坐标 + 玩家取）、`PlayerBlockBreakEvents.AFTER`（拆桌时把内容物掉在原地并删条目）、`ServerTickEvents.END_SERVER_TICK`（每 20 tick 扫一次爆炸/活塞留下的残条目）、`/fletchingworks dump`（卸载前清理残留）。 |
+| `UpdateFt.java` | **主入口**（`ModInitializer`）。持有 `MOD_ID = "update-ft"` 和 `id(path)` 工具方法；在 `onInitialize()` 里按 物品 → 方块 → 方块实体 → MenuType → 实体管理器 的顺序注册，并挂三个事件 + 一个命令：`UseBlockCallback`（主手右键制箭台 → 服务端 `openMenu`，容器从 `FletchingTableData` 按坐标 + 玩家取）、`PlayerBlockBreakEvents.AFTER`（拆桌时把内容物掉在原地并删条目）、`ServerTickEvents.END_SERVER_TICK`（每 20 tick 扫一次爆炸/活塞留下的残条目）、`/fletchingworks dump|reload`（卸载前清理残留 / 重读配置）。 |
 | `HalfExplosionDamageCalculator.java` | 自定义爆炸伤害计算器，单例 `INSTANCE`。覆写 `getEntityDamageAmount`，把实体受到的爆炸伤害乘 `0.5`；**不影响方块破坏和击退**。供 TNT 箭使用。 |
 | `NoEntityDamageCalculator.java` | 另一个爆炸伤害计算器：`shouldDamageEntity` 返回 `false`、`getKnockbackMultiplier` 返回 `0`，让爆炸对实体完全无效。供红石箭的“脉冲”使用。 |
 | `block/ModBlocks.java` | 方块注册表：`update-ft:redstone_pulse`（隐形红石脉冲）和 `update-ft:temporary_cobweb`（临时蛛网）。两者都没有物品形态；临时蛛网的属性复制原版蛛网，并在 `initialize()` 里注册进 Fabric 的可燃方块表。 |
@@ -83,6 +83,7 @@ update-ft/
 | `block/ModBlockEntities.java` | 方块实体注册表。`BlockEntityType` 在 1.21.11 是私有构造，用 Fabric 的 `FabricBlockEntityTypeBuilder.create(...).build()` 注册 `update-ft:redstone_pulse`。 |
 | `item/ModItems.java` | 15 种箭的注册表。`register()` 用 `Item.Properties.setId(ResourceKey)` 绑定 ID 后注册进 `BuiltInRegistries.ITEM`；`initialize()` 把 15 种箭加入创造模式「战斗」页签。数值（伤害加成、命中效果）与悬停介绍的语言键都写在这个文件里。 |
 | `item/ModArrowItem.java` | 自定义箭物品类，继承 `ArrowItem`，多三个字段：`damageBonus`（伤害加成）、`effect`（`ArrowEffect` 实例，决定命中后干什么）、`descriptionKeys`（悬停介绍的语言键列表）。覆写的 `appendHoverText` 会把每个键渲染成一行灰色小字。 |
+| `config/ModConfig.java` | 服务端配置：读写 `config/fletching-works.json`，Gson 缺失字段保留默认、`sanitize()` 钳制越界值；覆盖 TNT 箭开关/拆方块/伤害倍率、烈焰箭半径与点燃秒数、铜箭是否必须雷雨、钩爪冷却与最大距离、关界面是否退还材料。效果类每次触发时现读 `ModConfig.get()`，所以 `/fletchingworks reload` 立即生效。 |
 | `effect/ArrowEffect.java` | **命中行为的接口**：`onHitBlock` / `onHitEntity` 都返回 `boolean`，表示“这支箭是否应该被消耗”，默认 `false`。不引 `net.fabricmc.*`、不假设调用方一定拿得到 `ServerLevel`——效果层本身可以跨平台复用；每换一个版本真正要重写的是 `AbstractArrowMixin` 的注入点（`hurtOrSimulate` 的方法引用和 `onHitEntity` / `onHitBlock` 的签名），编译期不报错、运行期会静默失效。 |
 | `effect/NoneEffect.java` | 普通箭：什么都不做，完全交给原版。 |
 | `effect/ExplosiveEffect.java` | TNT 箭：半径 4、不点火、实体伤害减半，`mobGriefing` 关闭时不破坏方块；命中方块或实体都消耗。 |
@@ -139,7 +140,7 @@ update-ft/
 
 ## 关键流程
 
-**注册**：`UpdateFt.onInitialize()` → `ModItems.initialize()`（触发静态字段注册物品、加入创造页签）→ `ModBlocks.initialize()`（注册红石脉冲/临时蛛网并登记可燃性）→ `ModBlockEntities.initialize()`（注册方块实体，必须在方块之后）→ `ModMenuTypes.initialize()`（触发 `MenuType` 注册）→ `ModRecipes.initialize()`（注册 `RecipeType` 与 `RecipeSerializer`，必须在配方加载之前）→ `RecipeSynchronization.synchronizeRecipeSerializer(ModRecipes.FLETCHING_SERIALIZER)`（让 Fabric 把我们的配方同步到客户端）→ `BeeArrowManager.register()` / `GrappleManager.register()`（蜜蜂寿命与钩爪 tick 循环）→ 注册右键、拆桌、每秒扫描事件，以及 `/fletchingworks dump` 命令（`CommandRegistrationCallback`）。客户端 `UpdateFtClient.onInitializeClient()` → 绑定 `MenuType` 与 `Screen` → 注册临时蛛网的 `CUTOUT` 渲染层 → 监听 `ClientRecipeSynchronizedEvent` 缓存配方给 JEI。
+**注册**：`UpdateFt.onInitialize()` → `ModConfig.initialize()`（读 `config/fletching-works.json`，没有就生成默认）→ `ModItems.initialize()`（触发静态字段注册物品、加入创造页签）→ `ModBlocks.initialize()`（注册红石脉冲/临时蛛网并登记可燃性）→ `ModBlockEntities.initialize()`（注册方块实体，必须在方块之后）→ `ModMenuTypes.initialize()`（触发 `MenuType` 注册）→ `ModRecipes.initialize()`（注册 `RecipeType` 与 `RecipeSerializer`，必须在配方加载之前）→ `RecipeSynchronization.synchronizeRecipeSerializer(ModRecipes.FLETCHING_SERIALIZER)`（让 Fabric 把我们的配方同步到客户端）→ `BeeArrowManager.register()` / `GrappleManager.register()`（蜜蜂寿命与钩爪 tick 循环）→ 注册右键、拆桌、每秒扫描事件，以及 `/fletchingworks dump|reload` 命令（`CommandRegistrationCallback`）。客户端 `UpdateFtClient.onInitializeClient()` → 绑定 `MenuType` 与 `Screen` → 注册临时蛛网的 `CUTOUT` 渲染层 → 监听 `ClientRecipeSynchronizedEvent` 缓存配方给 JEI。
 
 **开界面与合成**：主手右键制箭台 → 服务端 `UseBlockCallback` 返回 `SUCCESS` 并 `openMenu` → `FletchingTableData.get(level).getOrCreate(pos, 玩家UUID)` 取出**这个玩家**在这张桌子上的容器（第一次为空，之后是上次留下的东西）→ 创建 `FletchingTableMenu` → 发送 `ClientboundOpenScreenPacket` → 客户端用 `MenuType` 新建菜单与 `FletchingTableScreen`，槽位内容由 `AbstractContainerMenu` 自动同步 → 放入三样原料后容器监听触发 `FletchingRecipes.findResult(level, input)`：服务端用 `RecipeManager.getRecipeFor(update-ft:fletching)` 匹配配方并把产物写进产物格，客户端**不计算**，等槽位同步 → 取走产物时消耗每个原料 1 个 → 关界面把剩下的原料退回自己的背包、删掉自己那份条目（别人的材料不受影响）。
 
@@ -161,6 +162,12 @@ update-ft/
 8. `data/update-ft/recipe/<id>.json` —— 加一条 `update-ft:fletching` 配方，写明 `tip` 和 `result`
 
 第 7、8 步必须成对改：标签决定“能不能放进箭头格”，配方决定“能做出什么”。客户端没有配方表，`mayPlace` 只能用标签预判，所以只加配方不加标签时，材料根本放不进去；只加标签不加配方时，材料放得进去但产物永远是空的。两者都改完 `/reload` 即可生效，不用重新发版。
+
+## 配置
+
+运行时配置在 `config/fletching-works.json`，由 `ModConfig` 在 `onInitialize()` 里读取（不存在就写一份默认的）。
+Gson 反序列化时缺失字段保留默认值，所以新版本加配置项不会让旧文件失效；`sanitize()` 把数值钳到合理范围（例如铺火半径 0–3）。
+改完执行 `/fletchingworks reload`（权限等级 2）立即生效：效果类每次触发时现读 `ModConfig.get()`，不做缓存。
 
 ## JEI 兼容
 
