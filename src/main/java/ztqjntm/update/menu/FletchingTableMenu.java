@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: MPL-2.0
+
 package ztqjntm.update.menu;
 
 import net.minecraft.core.BlockPos;
@@ -108,7 +110,8 @@ public class FletchingTableMenu extends AbstractContainerMenu {
 	}
 
 	/** 物品该进哪个原料格；返回 -1 表示三个格子都不收 */
-	private static int inputSlotFor(ItemStack stack) {
+	/** 包级可见，单测直接校验栏位路由；Shift 点击和槽位过滤都走这里 */
+	static int inputSlotFor(ItemStack stack) {
 		if (stack.is(Items.STICK)) {
 			return FletchingRecipes.SHAFT_SLOT;
 		}

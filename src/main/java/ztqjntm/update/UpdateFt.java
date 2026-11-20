@@ -1,13 +1,17 @@
+// SPDX-License-Identifier: MPL-2.0
+
 package ztqjntm.update;
 
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
+import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.fabricmc.fabric.api.event.player.PlayerBlockBreakEvents;
 import net.fabricmc.fabric.api.event.player.UseBlockCallback;
 import net.fabricmc.fabric.api.recipe.v1.sync.RecipeSynchronization;
 import net.minecraft.commands.Commands;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Holder;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerLevel;
@@ -18,7 +22,12 @@ import net.minecraft.world.MenuProvider;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.level.block.Blocks;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ztqjntm.update.block.ModBlockEntities;
 import ztqjntm.update.block.ModBlocks;
 import ztqjntm.update.config.ModConfig;
@@ -28,10 +37,16 @@ import ztqjntm.update.item.ModItems;
 import ztqjntm.update.menu.FletchingTableData;
 import ztqjntm.update.menu.FletchingTableMenu;
 import ztqjntm.update.menu.ModMenuTypes;
+import ztqjntm.update.recipe.FletchingRecipe;
 import ztqjntm.update.recipe.ModRecipes;
+import ztqjntm.update.tag.ModTags;
+
+import java.util.HashSet;
+import java.util.Set;
 
 public class UpdateFt implements ModInitializer {
 	public static final String MOD_ID = "update-ft";
+	private static final Logger LOGGER = LoggerFactory.getLogger("FletchingWorks");
 
 	@Override
 	public void onInitialize() {
@@ -41,6 +56,7 @@ public class UpdateFt implements ModInitializer {
 		ModBlockEntities.initialize();  // 红石脉冲的方块实体（要在方块之后）
 		ModMenuTypes.initialize();      // 注册 MenuType
 		ModRecipes.initialize();        // 注册制箭台的配方类型与序列化器（配方本体在 data/update-ft/recipe/）
+		registerRecipeSelfCheck();      // 启动时检查配方箭头材料是否都在 fletching_tips 标签里
 		// 1.21.11 原版不再把配方同步给客户端；注册序列化器后 Fabric 会把我们的配方发过去，
 		// 客户端（JEI 和配方缓存）才能拿到 update-ft:fletching 的条目。必须两端都执行。
 		RecipeSynchronization.synchronizeRecipeSerializer(ModRecipes.FLETCHING_SERIALIZER);
@@ -139,5 +155,28 @@ public class UpdateFt implements ModInitializer {
 
 	public static Identifier id(String path) {
 		return Identifier.fromNamespaceAndPath(MOD_ID, path);
+	}
+
+	/**
+	 * 启动自检：配方的箭头材料必须同时在 {@code #update-ft:fletching_tips} 里。
+	 * <p>
+	 * 两个数据文件是分开的，漏加标签时 JEI 会显示“能合成”，但箭头格拒绝放入，
+	 * 玩家会以为模组坏了。这里只打日志，不改任何行为。
+	 */
+	private static void registerRecipeSelfCheck() {
+		ServerLifecycleEvents.SERVER_STARTED.register(server -> {
+			Set<Item> warned = new HashSet<>();
+			for (RecipeHolder<?> holder : server.getRecipeManager().getRecipes()) {
+				if (!(holder.value() instanceof FletchingRecipe recipe)) {
+					continue;
+				}
+				for (Holder<Item> item : recipe.tip().items().toList()) {
+					if (!new ItemStack(item.value()).is(ModTags.FLETCHING_TIPS) && warned.add(item.value())) {
+						LOGGER.warn("Recipe {} uses {} which is not in #update-ft:fletching_tips",
+								holder.id().identifier(), item.value());
+					}
+				}
+			}
+		});
 	}
 }

@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: MPL-2.0
+
 package ztqjntm.update.block;
 
 import net.fabricmc.fabric.api.registry.FlammableBlockRegistry;

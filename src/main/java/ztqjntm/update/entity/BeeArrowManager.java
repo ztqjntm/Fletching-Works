@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: MPL-2.0
+
 package ztqjntm.update.entity;
 
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;

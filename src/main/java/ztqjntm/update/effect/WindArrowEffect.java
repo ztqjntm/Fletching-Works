@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: MPL-2.0
+
 package ztqjntm.update.effect;
 
 import net.minecraft.core.particles.ParticleTypes;

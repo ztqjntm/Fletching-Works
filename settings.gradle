@@ -9,5 +9,5 @@ pluginManagement {
 	}
 }
 
-// Should match your modid
-rootProject.name = 'update-ft'
+// 产物名跟显示名一致；mod id 仍是 update-ft，不影响存档
+rootProject.name = 'fletching-works'

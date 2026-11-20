@@ -3,6 +3,16 @@
 > release 工作流会取 `## [版本]` 到下一个 `## ` 之间的内容，作为 GitHub Release 和 CurseForge 的更新说明。
 > 版本号必须与 `gradle.properties` 的 `mod_version` 完全一致。
 
+## [Unreleased]
+
+### 工程
+
+- **第一套自动化测试**：`src/test` 加了三组单元测试（配方匹配矩阵、栏位路由、`FletchingTableData` v1→v2 codec），CI 增加 `./gradlew test`。
+- **构建不再依赖镜像**：Gradle Wrapper 指回 `services.gradle.org` 并补上 `distributionSha256Sum`。
+- **jar 名与显示名统一**：`rootProject.name` 改为 `fletching-works`，产物变成 `fletching-works-<版本>.jar`；`release.yml` 和文档同步。mod id 仍是 `update-ft`，存档不受影响。
+- 所有 Java 文件加 `SPDX-License-Identifier: MPL-2.0`。
+- 启动自检：配方箭头材料不在 `#update-ft:fletching_tips` 时打 warn，避免“JEI 能看、箭头格放不进”。
+
 ## [1.0.7] - 2026-11-18
 
 ### 修复

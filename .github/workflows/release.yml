@@ -131,7 +131,7 @@ jobs:
       - name: 校验构建产物
         run: |
           set -euo pipefail
-          JAR="build/libs/update-ft-${VERSION}.jar"
+          JAR="build/libs/fletching-works-${VERSION}.jar"
           if [ ! -f "$JAR" ]; then
             echo "::error::没有生成 ${JAR}"
             ls -l build/libs || true
@@ -144,7 +144,7 @@ jobs:
           fi
           mkdir -p dist
           cp "$JAR" dist/
-          SRC="build/libs/update-ft-${VERSION}-sources.jar"
+          SRC="build/libs/fletching-works-${VERSION}-sources.jar"
           if [ -f "$SRC" ]; then
             cp "$SRC" dist/
           fi
@@ -258,7 +258,7 @@ jobs:
           MC_VERSION: ${{ needs.build.outputs.mc_version }}
         run: |
           set -euo pipefail
-          JAR="dist/update-ft-${VERSION}.jar"
+          JAR="dist/fletching-works-${VERSION}.jar"
           if [ ! -f "$JAR" ]; then
             echo "::error::找不到 ${JAR}"
             ls -l dist
@@ -266,7 +266,7 @@ jobs:
           fi
 
           API="https://minecraft.curseforge.com/api"
-          UA="update-ft-release-workflow (+https://github.com/${GITHUB_REPOSITORY})"
+          UA="fletching-works-release-workflow (+https://github.com/${GITHUB_REPOSITORY})"
 
           # gameVersions 要的是数字 ID，必须现查，不能猜。
           VHTTP="$(curl -sS --max-time 60 -A "$UA" \

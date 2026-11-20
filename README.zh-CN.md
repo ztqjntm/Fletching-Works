@@ -28,7 +28,7 @@
 
 1. 安装 **Fabric Loader ≥ 0.17.3**（Minecraft **1.21.11**），需要 Java 21。
 2. 把 [Fabric API](https://modrinth.com/mod/fabric-api) 放进 `mods/`。
-3. 把 `update-ft-1.0.7.jar` 放进 `mods/`。
+3. 把 `fletching-works-1.0.7.jar` 放进 `mods/`。
 
 单人游戏这样就够了。**开服的话服务端也要装**——模组会注册方块、物品和菜单，只有客户端装是连不上的。
 
@@ -163,9 +163,10 @@
 
 ```bash
 ./gradlew build        # Windows 用 gradlew.bat
+./gradlew test         # 只跑单元测试
 ```
 
-产物在 `build/libs/`：`update-ft-1.0.7.jar`（实际用的）和 `-sources.jar`（源码包）。需要 JDK 21。
+产物在 `build/libs/`：`fletching-works-1.0.7.jar`（实际用的）和 `-sources.jar`（源码包）。需要 JDK 21。
 
 目录结构、每个文件干什么、注册与合成流程、发布流程，都在 [docs/DEVELOPMENT.md](docs/DEVELOPMENT.md)。
 

@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: MPL-2.0
+
 package ztqjntm.update.client.jei;
 
 import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;

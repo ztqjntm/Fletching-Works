@@ -10,9 +10,8 @@
 ## P2 · 技术债
 
 1. **配方查看器**：JEI 已支持；REI / EMI 未适配。
-2. **没有自动化测试**：`test NO-SOURCE`。最值得补的是 `FletchingRecipe.matches()` 的匹配矩阵、`InputSlot.mayPlace` 的栏位过滤、`FletchingTableData` 的 v1→v2 codec。
-3. **CI**：`build.yml` 现在只负责构建；`test` 还没有东西可跑。
-4. **配置界面**：`config/fletching-works.json` 已覆盖主要数值，但没有游戏内 GUI（见 P1 第 2 条）。
+2. **测试覆盖**：单元测试已覆盖配方匹配、栏位路由、存档 v1→v2 codec；箭矢效果和 `AbstractArrowMixin` 仍没有自动化测试（要 GameTest，成本更高）。
+3. **配置界面**：`config/fletching-works.json` 已覆盖主要数值，但没有游戏内 GUI（见 P1 第 2 条）。
 
 ## P3 · 可选特性
 

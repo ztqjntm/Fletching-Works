@@ -28,7 +28,7 @@ Right-click a fletching table to open a three-slot crafting UI: **tip + stick + 
 
 1. Install **Fabric Loader ≥ 0.17.3** for **Minecraft 1.21.11** (Java 21).
 2. Drop [Fabric API](https://modrinth.com/mod/fabric-api) into `mods/`.
-3. Drop `update-ft-1.0.7.jar` into `mods/`.
+3. Drop `fletching-works-1.0.7.jar` into `mods/`.
 
 That is all for singleplayer. **For a server, install it on both sides** — the mod registers blocks, items and a menu, so a client-only install cannot join.
 
@@ -163,9 +163,10 @@ It only rewrites vanilla arrow impact logic (one Mixin) and does not touch other
 
 ```bash
 ./gradlew build        # gradlew.bat on Windows
+./gradlew test         # unit tests only
 ```
 
-Output lands in `build/libs/`: `update-ft-1.0.7.jar` (the one you install) and `-sources.jar`. Requires JDK 21.
+Output lands in `build/libs/`: `fletching-works-1.0.7.jar` (the one you install) and `-sources.jar`. Requires JDK 21.
 
 Project layout, what each file does, the registration and crafting flow, and the release process all live in [docs/DEVELOPMENT.md](docs/DEVELOPMENT.md) (Chinese).
 

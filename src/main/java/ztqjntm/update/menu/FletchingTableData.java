@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: MPL-2.0
+
 package ztqjntm.update.menu;
 
 import com.mojang.datafixers.util.Either;

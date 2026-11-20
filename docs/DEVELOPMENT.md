@@ -13,16 +13,21 @@ README 面向玩家（`README.md` 英文、`README.zh-CN.md` 中文），这里�
 
 ```bash
 ./gradlew build          # Windows 下用 gradlew.bat
+./gradlew test           # 只跑单元测试
 ```
 
-产物：
+产物名跟显示名一致（mod id 仍是 `update-ft`）：
 
-- `build/libs/update-ft-1.0.7.jar` —— 实际使用的模组文件
-- `build/libs/update-ft-1.0.7-sources.jar` —— 源码包
+- `build/libs/fletching-works-1.0.7.jar` —— 实际使用的模组文件
+- `build/libs/fletching-works-1.0.7-sources.jar` —— 源码包
 
-CI（`.github/workflows/build.yml`）在每次 push / PR 时用 JDK 21 跑一遍 `./gradlew build`，并把 `build/libs/` 上传为构建产物。
+CI（`.github/workflows/build.yml`）在每次 push / PR 时用 JDK 21 跑 `./gradlew test` 和 `./gradlew build`，并把 `build/libs/` 上传为构建产物。
 
-首次构建需要联网：Fabric Loom 要下载 Minecraft/映射，JEI 从 Modrinth Maven 拉取（`modCompileOnly`，不会进 jar）。拉过之后 `--offline` 可以正常构建。
+测试在 `src/test/java`，用 `fabric-loader-junit` 启动 Knot，测试类里先 `SharedConstants.tryDetectVersion()` + `Bootstrap.bootStrap()` 再用原版注册表。注意单测环境没有数据包，标签（`#update-ft:fletching_tips`）未绑定，涉及标签的路径不在单测覆盖范围内。
+
+首次构建需要联网：Fabric Loom 要下载 Minecraft/映射，JEI 从 Modrinth Maven 拉取（`modCompileOnly`，不会进 jar），JUnit 从 Maven Central 拉取。拉过之后 `--offline` 可以正常构建。
+
+Gradle Wrapper 指向官方 `services.gradle.org` 并带 `distributionSha256Sum`；国内网络需要镜像时，在本机 `~/.gradle` 或 init script 里覆盖，不要改回仓库。
 
 ## 目录结构
 
