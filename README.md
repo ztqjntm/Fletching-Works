@@ -4,7 +4,7 @@
 
 > The fletching table has been decoration since 1.14. This mod gives it the one job its name promises.
 
-Right-click a fletching table to open a three-slot crafting UI: **tip + stick + feather**. Most recipes yield 4 arrows (TNT 1, redstone 3, pearl / web / fire / frost / wind charge / grapple 2, bee 1). On top of that, **15 arrow types** — from stone and copper to explosive TNT arrows, redstone-pulsing arrows, and a pearl arrow that teleports *you*.
+Right-click a fletching table to open a three-slot crafting UI: **tip + stick + feather**. Most recipes yield 4 arrows (TNT 1, redstone 3, pearl / web / fire / frost / wind charge / grapple 2, bee 1, netherite 16). On top of that, **15 arrow types** — from stone and copper to explosive TNT arrows, redstone-pulsing arrows, and a pearl arrow that teleports *you*.
 
 [![Release](https://img.shields.io/github/v/release/ztqjntm/Fletching-Works?style=flat-square&label=release)](https://github.com/ztqjntm/Fletching-Works/releases)
 [![Minecraft](https://img.shields.io/badge/Minecraft-1.21.11-3C8527?style=flat-square)](https://www.minecraft.net/)
@@ -28,7 +28,7 @@ Right-click a fletching table to open a three-slot crafting UI: **tip + stick + 
 
 1. Install **Fabric Loader ≥ 0.17.3** for **Minecraft 1.21.11** (Java 21).
 2. Drop [Fabric API](https://modrinth.com/mod/fabric-api) into `mods/`.
-3. Drop `fletching-works-1.0.8.jar` into `mods/`.
+3. Drop `fletching-works-1.0.9.jar` into `mods/`.
 
 That is all for singleplayer. **For a server, install it on both sides** — the mod registers blocks, items and a menu, so a client-only install cannot join.
 
@@ -36,13 +36,13 @@ That is all for singleplayer. **For a server, install it on both sides** — the
 
 | Source | Version | Notes |
 | --- | --- | --- |
-| [GitHub Releases](https://github.com/ztqjntm/Fletching-Works/releases) | 1.0.8 | Grab the jar under `Assets` |
-| [CurseForge](https://www.curseforge.com/minecraft/mc-mods/fletching-works) | 1.0.8 | One-click install via the CurseForge app |
+| [GitHub Releases](https://github.com/ztqjntm/Fletching-Works/releases) | 1.0.9 | Grab the jar under `Assets` |
+| [CurseForge](https://www.curseforge.com/minecraft/mc-mods/fletching-works) | 1.0.9 | One-click install via the CurseForge app |
 | Modrinth | — | Not listed yet |
 
 | Mod version | Minecraft | Loader |
 | --- | --- | --- |
-| 1.0.8 | 1.21.11 | Fabric |
+| 1.0.9 | 1.21.11 | Fabric |
 
 ## The fifteen arrows
 
@@ -96,7 +96,7 @@ Right-click a fletching table to open the UI. The three input slots are **fixed*
 | Iron Ingot | Iron Arrow | 4 |
 | Gold Ingot | Gold Arrow | 4 |
 | Diamond | Diamond Arrow | 4 |
-| Netherite Ingot | Netherite Arrow | 4 |
+| Netherite Ingot | Netherite Arrow | 16 |
 | Block of TNT | TNT Arrow | 1 |
 | Redstone | Redstone Arrow | 3 |
 | Ender Pearl | Pearl Arrow | 2 |
@@ -166,7 +166,7 @@ It only rewrites vanilla arrow impact logic (one Mixin) and does not touch other
 ./gradlew test         # unit tests only
 ```
 
-Output lands in `build/libs/`: `fletching-works-1.0.8.jar` (the one you install) and `-sources.jar`. Requires JDK 21.
+Output lands in `build/libs/`: `fletching-works-1.0.9.jar` (the one you install) and `-sources.jar`. Requires JDK 21.
 
 Project layout, what each file does, the registration and crafting flow, and the release process all live in [docs/DEVELOPMENT.md](docs/DEVELOPMENT.md) (Chinese).
 
@@ -187,7 +187,7 @@ Project layout, what each file does, the registration and crafting flow, and the
 | Field | Value |
 | --- | --- |
 | Mod ID | `update-ft` |
-| Version | 1.0.8 |
+| Version | 1.0.9 |
 | Minecraft | 1.21.11 |
 | Fabric Loader | ≥ 0.17.3 |
 | Fabric API | ≥ 0.139.4 |

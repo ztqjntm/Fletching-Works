@@ -4,7 +4,7 @@
 
 > 制箭台从 1.14 起就是个装饰方块。这个模组给它补上了名字里承诺的那件工作。
 
-右键制箭台打开三格合成：**箭头材料 + 木棍 + 羽毛**。多数配方一次出 4 支（TNT 箭 1 支，红石箭 3 支，珍珠 / 蛛网 / 烈焰 / 冰冻 / 风弹 / 钩爪箭 2 支，蜜蜂箭 1 支）。另外新增 **15 种箭**——从石箭、铜箭，到会炸的 TNT 箭、能远程通电的红石箭，以及把你自己送出去的珍珠箭。
+右键制箭台打开三格合成：**箭头材料 + 木棍 + 羽毛**。多数配方一次出 4 支（TNT 箭 1 支，红石箭 3 支，珍珠 / 蛛网 / 烈焰 / 冰冻 / 风弹 / 钩爪箭 2 支，蜜蜂箭 1 支，下界合金箭 16 支）。另外新增 **15 种箭**——从石箭、铜箭，到会炸的 TNT 箭、能远程通电的红石箭，以及把你自己送出去的珍珠箭。
 
 [![Release](https://img.shields.io/github/v/release/ztqjntm/Fletching-Works?style=flat-square&label=release)](https://github.com/ztqjntm/Fletching-Works/releases)
 [![Minecraft](https://img.shields.io/badge/Minecraft-1.21.11-3C8527?style=flat-square)](https://www.minecraft.net/)
@@ -28,7 +28,7 @@
 
 1. 安装 **Fabric Loader ≥ 0.17.3**（Minecraft **1.21.11**），需要 Java 21。
 2. 把 [Fabric API](https://modrinth.com/mod/fabric-api) 放进 `mods/`。
-3. 把 `fletching-works-1.0.8.jar` 放进 `mods/`。
+3. 把 `fletching-works-1.0.9.jar` 放进 `mods/`。
 
 单人游戏这样就够了。**开服的话服务端也要装**——模组会注册方块、物品和菜单，只有客户端装是连不上的。
 
@@ -36,13 +36,13 @@
 
 | 渠道 | 版本 | 说明 |
 | --- | --- | --- |
-| [GitHub Releases](https://github.com/ztqjntm/Fletching-Works/releases) | 1.0.8 | 在 `Assets` 里下 jar |
-| [CurseForge](https://www.curseforge.com/minecraft/mc-mods/fletching-works) | 1.0.8 | 支持 CurseForge App 一键安装 |
+| [GitHub Releases](https://github.com/ztqjntm/Fletching-Works/releases) | 1.0.9 | 在 `Assets` 里下 jar |
+| [CurseForge](https://www.curseforge.com/minecraft/mc-mods/fletching-works) | 1.0.9 | 支持 CurseForge App 一键安装 |
 | Modrinth | — | 未上架 |
 
 | 模组版本 | Minecraft | 加载器 |
 | --- | --- | --- |
-| 1.0.8 | 1.21.11 | Fabric |
+| 1.0.9 | 1.21.11 | Fabric |
 
 ## 十五种箭
 
@@ -96,7 +96,7 @@
 | 铁锭 | 铁箭 | 4 |
 | 金锭 | 金箭 | 4 |
 | 钻石 | 钻石箭 | 4 |
-| 下界合金锭 | 下界合金箭 | 4 |
+| 下界合金锭 | 下界合金箭 | 16 |
 | TNT 方块 | TNT 箭 | 1 |
 | 红石 | 红石箭 | 3 |
 | 末影珍珠 | 珍珠箭 | 2 |
@@ -166,7 +166,7 @@
 ./gradlew test         # 只跑单元测试
 ```
 
-产物在 `build/libs/`：`fletching-works-1.0.8.jar`（实际用的）和 `-sources.jar`（源码包）。需要 JDK 21。
+产物在 `build/libs/`：`fletching-works-1.0.9.jar`（实际用的）和 `-sources.jar`（源码包）。需要 JDK 21。
 
 目录结构、每个文件干什么、注册与合成流程、发布流程，都在 [docs/DEVELOPMENT.md](docs/DEVELOPMENT.md)。
 
@@ -187,7 +187,7 @@
 | 项目 | 值 |
 | --- | --- |
 | 模组 ID | `update-ft` |
-| 版本 | 1.0.8 |
+| 版本 | 1.0.9 |
 | Minecraft | 1.21.11 |
 | Fabric Loader | ≥ 0.17.3 |
 | Fabric API | ≥ 0.139.4 |
