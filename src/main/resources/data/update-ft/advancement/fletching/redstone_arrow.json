@@ -1,0 +1,29 @@
+{
+  "parent": "update-ft:fletching/first_arrow",
+  "display": {
+    "icon": {
+      "id": "update-ft:redstone_arrow"
+    },
+    "title": {
+      "translate": "advancement.update-ft.fletching.redstone_arrow.title"
+    },
+    "description": {
+      "translate": "advancement.update-ft.fletching.redstone_arrow.description"
+    },
+    "frame": "goal",
+    "show_toast": true,
+    "announce_to_chat": true
+  },
+  "criteria": {
+    "get_redstone_arrow": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "update-ft:redstone_arrow"
+          }
+        ]
+      }
+    }
+  }
+}

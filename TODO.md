@@ -4,8 +4,7 @@
 
 ## P1 · 体验缺口
 
-1. **配方引导**：自定义 `RecipeType` 没有配方书入口，箭头格也没有提示；不装 JEI 的玩家只能翻 README。考虑两条 advancement（第一支箭 / 红石射手），或给空槽加 tooltip。
-2. **Mod Menu 集成**：装 Mod Menu 的玩家没有入口；配置目前只能改文件 + `/fletchingworks reload`。
+1. **Mod Menu 集成**：装 Mod Menu 的玩家没有入口；配置目前只能改文件 + `/fletchingworks reload`。
 
 ## P2 · 技术债
 

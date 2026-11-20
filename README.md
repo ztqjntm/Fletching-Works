@@ -86,7 +86,7 @@ The bonus is added **directly to vanilla's final damage** (vanilla rolls speed a
 
 ## The fletching table
 
-Right-click a fletching table to open the UI. The three input slots are **fixed**: tip top-right, stick in the middle, feather bottom-left. Wrong items simply will not go in. Once all three are filled the output slot shows your arrows, and taking them consumes one of each input.
+Right-click a fletching table to open the UI. The three input slots are **fixed**: tip top-right, stick in the middle, feather bottom-left; empty slots show a faint hint of what goes in, so you do not need JEI to get started. Wrong items simply will not go in. Once all three are filled the output slot shows your arrows, and taking them consumes one of each input.
 
 | Tip material | Output | Per craft |
 | --- | --- | --- |

@@ -2,7 +2,9 @@
 
 package ztqjntm.update.effect;
 
+import net.minecraft.advancements.AdvancementHolder;
 import net.minecraft.core.BlockPos;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.EntitySpawnReason;
@@ -12,6 +14,7 @@ import net.minecraft.world.entity.projectile.arrow.AbstractArrow;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.Vec3;
+import ztqjntm.update.UpdateFt;
 import ztqjntm.update.config.ModConfig;
 
 /**
@@ -21,9 +24,14 @@ import ztqjntm.update.config.ModConfig;
  * {@code lightningArrow.requiresThunderstorm} 控制（默认 true）；落点在地下/室内时仍然不劈。
  * 没劈成时箭照常插在地上，所以不消耗。
  * 注意这是真闪电：会点燃方块，也会劈到射手自己和附近的生物。
+ * <p>
+ * 劈中时直接授予「雷电！是巫术！」进度——原版没有“这闪电是某支箭招来的”触发器，
+ * 所以用 {@code minecraft:impossible} 配合 {@code PlayerAdvancements#award}。
  */
 public final class LightningEffect implements ArrowEffect {
     public static final LightningEffect INSTANCE = new LightningEffect();
+
+    private static final Identifier LIGHTNING_ADVANCEMENT = UpdateFt.id("fletching/lightning_witchcraft");
 
     private LightningEffect() {
     }
@@ -60,6 +68,10 @@ public final class LightningEffect implements ArrowEffect {
         // 让伤害/击杀算在射手头上（发射器射出的没有主人，则为 null）
         if (arrow.getOwner() instanceof ServerPlayer player) {
             bolt.setCause(player);
+            AdvancementHolder advancement = level.getServer().getAdvancements().get(LIGHTNING_ADVANCEMENT);
+            if (advancement != null) {
+                player.getAdvancements().award(advancement, "code");
+            }
         }
         level.addFreshEntity(bolt);
     }

@@ -1,0 +1,29 @@
+{
+  "parent": "update-ft:fletching/first_arrow",
+  "display": {
+    "icon": {
+      "id": "update-ft:netherite_arrow"
+    },
+    "title": {
+      "translate": "advancement.update-ft.fletching.strongest_arrow.title"
+    },
+    "description": {
+      "translate": "advancement.update-ft.fletching.strongest_arrow.description"
+    },
+    "frame": "challenge",
+    "show_toast": true,
+    "announce_to_chat": true
+  },
+  "criteria": {
+    "get_netherite_arrow": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "update-ft:netherite_arrow"
+          }
+        ]
+      }
+    }
+  }
+}

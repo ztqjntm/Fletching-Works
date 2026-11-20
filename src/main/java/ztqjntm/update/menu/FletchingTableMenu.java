@@ -17,6 +17,7 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.phys.Vec3;
 import ztqjntm.update.config.ModConfig;
 import ztqjntm.update.recipe.FletchingRecipes;
+import ztqjntm.update.tag.ModTags;
 
 import java.util.Optional;
 import java.util.function.Predicate;
@@ -112,10 +113,10 @@ public class FletchingTableMenu extends AbstractContainerMenu {
 	/** 物品该进哪个原料格；返回 -1 表示三个格子都不收 */
 	/** 包级可见，单测直接校验栏位路由；Shift 点击和槽位过滤都走这里 */
 	static int inputSlotFor(ItemStack stack) {
-		if (stack.is(Items.STICK)) {
+		if (stack.is(Items.STICK) || ModTags.isIn(stack, ModTags.SHAFTS)) {
 			return FletchingRecipes.SHAFT_SLOT;
 		}
-		if (stack.is(Items.FEATHER)) {
+		if (stack.is(Items.FEATHER) || ModTags.isIn(stack, ModTags.FLETCHINGS)) {
 			return FletchingRecipes.FLETCHING_SLOT;
 		}
 		if (FletchingRecipes.isTipMaterial(stack)) {

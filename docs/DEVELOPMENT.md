@@ -101,17 +101,17 @@ update-ft/
 | `effect/FrostArrowEffect.java` | 冰冻箭：命中实体 `setTicksFrozen(200)`（10 秒），命中方块把 3×3 水源换成 `FROSTED_ICE[age=0]`；不消耗。 |
 | `effect/WindArrowEffect.java` | 风弹箭：手写 3×3×3 AABB 遍历做纯击退，玩家补 `ClientboundSetEntityMotionPacket`；风爆音效/粒子；不调用 `explode()`；消耗。 |
 | `effect/GrappleArrowEffect.java` | 钩爪箭：方块命中拉射手（32 格内，锚点回退 0.6 格），实体命中把目标拉向射手最多 5 格；交给 `GrappleManager` 逐 tick 牵引。成功后给射手记 30 tick（1.5 秒）物品冷却，冷却期间再命中不拉——判定在效果层做，因为弓不会替弹药检查物品冷却。不消耗。 |
-| `entity/BeeArrowManager.java` | 蜜蜂寿命管理：`Bee` 在 1.21.11 没有 `setLimitedLife`，用列表记录召唤的蜜蜂，`tickCount >= 600` 时 `discard()`；服务器停止时清空。 |
+| `entity/BeeArrowManager.java` | 蜜蜂寿命管理：`Bee` 在 1.21.11 没有 `setLimitedLife`，用 `Tracked(bee, expireAt)` 记录召唤的蜜蜂，按**服务端 tick** 到期 `discard()`（区块卸载期间照样计时）；服务器停止时清空。 |
 | `entity/GrappleManager.java` | 钩爪牵引会话：每 tick 移动 0.8 格、最多 40 tick、`noCollision` 撞墙即停；玩家每 tick 补速度包；退出/死亡/换维度/移除时清理。 |
 | `menu/ModMenuTypes.java` | 注册 `MenuType<FletchingTableMenu>`，ID 为 `update-ft:fletching_table`；客户端用它来决定打开哪个 `Screen`，服务端用它来反序列化菜单。 |
 | `menu/FletchingTableMenu.java` | 制箭台容器逻辑（`AbstractContainerMenu`）：3 个斜向原料格（`InputSlot` 用 `mayPlace` 做栏位限定）+ 1 个产物格 + 玩家背包（坐标与 `ft_gui.png` 一一对应）；监听原料容器变化重算产物；产物格自定义 `onTake` 消耗原料、`tryRemove` 强制整份取走；`quickMoveStack` 按物品类型把 Shift 点击的物品路由到对应原料格。服务端菜单额外保存建菜单时的 `ServerLevel`，`stillValid()`/`removed()` 都查这个维度而不是 `player.level()`，玩家换维度后旧菜单会立即失效、也不会删错维度的条目。`removed()` 用 `clearContainer` 把**自己这份**原料退回背包（装不下的掉在脚下），并删掉自己的存档条目——桌面不留东西。 |
 | `menu/FletchingTableData.java` | 制箭台的持久化（`SavedData`）：每个 `ServerLevel` 一份，内部 `Map<BlockPos, Map<UUID, SimpleContainer>>`，**每个玩家一份容器**，两人同开互不可见、也拿不走对方材料。codec 带 `version`（当前 2），同时能读 v1 的 `{"tables":[{pos, items}]}`：老数据挂在全零 UUID 下，等第一个打开桌子的玩家认领。每个容器挂了监听调 `setDirty()`，否则崩溃后内容会丢；`sweep()` 每 20 tick 扫描已加载区块，给爆炸/活塞/结构破坏留下的残条目兜底（所有玩家的内容物一起掉在原地）；`dropAndRemove` 掉内容物，`discard(pos, uuid)` 只删某个玩家自己的条目；`dumpTo(player)` 供 `/fletchingworks dump` 使用。 |
-| `recipe/FletchingRecipe.java` | 单个制箭台配方（`Recipe<FletchingRecipeInput>` 的 record）：保存箭头材料的 `Ingredient` 与产物；`matches()` 校验“中间木棍 + 左下羽毛 + 右上匹配箭头材料”；`placementInfo()` 必须给出三个栏位（返回空列表会被 `RecipeManager` 从展示数据里剔除并刷警告）；内部 `Serializer` 提供 JSON 的 `MapCodec` 与网络同步的 `StreamCodec`。 |
+| `recipe/FletchingRecipe.java` | 单个制箭台配方（`Recipe<FletchingRecipeInput>` 的 record）：保存箭头材料的 `Ingredient` 与产物；`matches()` 校验“中间在 `#update-ft:shafts` + 左下在 `#update-ft:fletchings` + 右上匹配箭头材料”（默认就是木棍/羽毛，整合包可通过标签扩展）；`placementInfo()` 必须给出三个栏位（返回空列表会被 `RecipeManager` 从展示数据里剔除并刷警告）；内部 `Serializer` 提供 JSON 的 `MapCodec` 与网络同步的 `StreamCodec`。 |
 | `recipe/FletchingRecipeInput.java` | 配方输入（`RecipeInput`）的三格快照：箭头材料 / 木棍 / 羽毛，下标与菜单槽位一致。 |
 | `recipe/ModRecipes.java` | 注册 `RecipeType<FletchingRecipe>` 与 `RecipeSerializer<FletchingRecipe>`，ID 都是 `update-ft:fletching`；配方本体不在这里，由数据包加载。 |
 | `recipe/FletchingRecipes.java` | 栏位定义与查询入口：`TIP_SLOT`/`SHAFT_SLOT`/`FLETCHING_SLOT` 三个常量对应界面右上/中间/左下；`findResult(level, container)` **只在服务端**用 `RecipeManager.getRecipeFor()` 查 `update-ft:fletching` 配方并 `assemble()`（客户端没有配方表，产物格靠容器同步）；`isTipMaterial()` 给箭头格做 `mayPlace` 过滤，只查 `ModTags.FLETCHING_TIPS` 标签。 |
 | `client/UpdateFtClient.java` | **客户端入口**（`ClientModInitializer`）。调用 `MenuScreens.register` 把 `MenuType` 与 `FletchingTableScreen` 绑定。 |
-| `client/FletchingTableScreen.java` | 界面渲染：176×166 布局，背景用 `update-ft:textures/gui/ft_gui.png`（从 256×256 画布的 (0,0) 取 176×166）；`init()` 里把标题居中；`render()` 末尾手动调 `renderTooltip`（1.21.11 的父类已不再自动调用）。 |
+| `client/FletchingTableScreen.java` | 界面渲染：176×166 布局，背景用 `update-ft:textures/gui/ft_gui.png`（从 256×256 画布的 (0,0) 取 176×166）；`init()` 里把标题居中；`renderBg()` 在空槽上画半透明幽灵图标（箭头格每秒轮播 `fletching_tips` 里的一种材料），`render()` 末尾手动调 `renderTooltip`（1.21.11 的父类已不再自动调用）并给空槽补一句悬停说明。 |
 | `client/jei/FletchingJeiPlugin.java` | JEI 插件（`@JeiPlugin` + `fabric.mod.json` 的 `jei_mod_plugin` 入口点）：注册分类、把缓存里的配方交给 `IRecipeRegistration.addRecipes`、把制箭台登记为 `addCraftingStation`。 |
 | `client/jei/FletchingRecipeCategory.java` | JEI 分类：`AbstractRecipeCategory<RecipeHolder<FletchingRecipe>>`，右上箭头材料 / 中间木棍 / 左下羽毛 / 右侧产物，和模组界面一致；原料用 `add(Ingredient)`，标签配方也能展开。 |
 | `client/jei/SyncedFletchingRecipes.java` | 客户端配方缓存：监听 `ClientRecipeSynchronizedEvent`，把 `getAllOfType(ModRecipes.FLETCHING)` 存下来给 JEI 用；断开连接时清空。 |
@@ -131,7 +131,11 @@ update-ft/
 | `assets/update-ft/textures/gui/ft_gui.png` | **制箭台界面贴图**，256×256 画布、面板画在 (0,0) 的 176×166 区域；设计稿的坐标表与标注图可在 git 历史（提交 `627e937`）里找到。 |
 | `assets/update-ft/lang/zh_cn.json` | 简体中文文本：15 个 `item.update-ft.*` 物品名、`container.update-ft.fletching_table`（界面标题），以及 40 条 `tooltip.update-ft.*` 悬停介绍（每行一个键）。 |
 | `assets/update-ft/lang/en_us.json` | 英文文本，键名与中文文件一一对应。 |
+| `data/update-ft/tags/item/shafts.json` | 中间格的白名单：默认 `minecraft:stick`，可选并入 `#c:rods/wooden`（`required: false`，标签不存在也不会加载失败）。代码侧用 `ModTags.SHAFTS`。 |
+| `data/update-ft/tags/item/fletchings.json` | 左下格的白名单：默认 `minecraft:feather`，可选并入 `#c:feathers`。代码侧用 `ModTags.FLETCHINGS`。 |
+| `data/update-ft/tags/item/arrows.json` | 15 种模组箭，进度判定用（`#update-ft:arrows`）。新增箭种时要同步。 |
 | `data/update-ft/tags/item/fletching_tips.json` | **箭头格的白名单**：能放进箭头格的物品。数据包可增删（支持嵌套标签），`/reload` 即生效，不用改代码；默认 16 条与 `data/update-ft/recipe/` 里的箭头材料一一对应。 |
+| `data/update-ft/advancement/fletching/*.json` | 引导进度：制箭工艺（制箭台）→ 第一支箭（任意模组箭）→ 红石射手 / 毁灭性打击 / 最强之箭（对应箭种）；雷电！是巫术！由 `LightningEffect` 直接授予（`minecraft:impossible` + `PlayerAdvancements.award`）。 |
 | `data/update-ft/recipe/*.json` | **制箭台配方**（16 条）：`{"type": "update-ft:fletching", "tip": ..., "result": {...}}`。数据包可增删改，`/reload` 生效；`tip` 用原版 `Ingredient` 编码，支持物品 ID、物品列表和 `#标签`。 |
 | `data/minecraft/tags/item/arrows.json` | 把 15 种箭并入原版 `minecraft:arrows` 物品标签，显式写了 `"replace": false`（与默认行为一致，即**合并**而非覆盖），这样弓、弩、发射器都会把它们当作合法弹药。 |
 

@@ -2,13 +2,12 @@
 
 package ztqjntm.update.recipe;
 
-import net.minecraft.SharedConstants;
-import net.minecraft.server.Bootstrap;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.Ingredient;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import ztqjntm.update.GameTestBootstrap;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -18,12 +17,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  * 配方匹配矩阵：三件套必须齐、木棍和羽毛位置不能错、箭头材料必须匹配。
  */
 class FletchingRecipeTest {
-
-    @BeforeAll
-    static void bootstrap() {
-        SharedConstants.tryDetectVersion();
-        Bootstrap.bootStrap();
-    }
 
     private static FletchingRecipe recipe() {
         return new FletchingRecipe(Ingredient.of(Items.FLINT), new ItemStack(Items.ARROW, 4));
@@ -35,6 +28,11 @@ class FletchingRecipeTest {
 
     private static ItemStack stack(net.minecraft.world.level.ItemLike item) {
         return new ItemStack(item);
+    }
+
+    @BeforeAll
+    static void bootstrap() {
+        GameTestBootstrap.bootstrap();
     }
 
     @Test

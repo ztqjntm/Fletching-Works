@@ -40,7 +40,7 @@ public final class FletchingRecipes {
      * 两端看到的是同一份，预判不会和服务端打架。
      */
     public static boolean isTipMaterial(ItemStack stack) {
-        return !stack.isEmpty() && stack.is(ModTags.FLETCHING_TIPS);
+        return ModTags.isIn(stack, ModTags.FLETCHING_TIPS);
     }
 
     /**

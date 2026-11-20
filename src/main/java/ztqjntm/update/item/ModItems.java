@@ -36,103 +36,88 @@ public class ModItems {
     // 参数依次是：物品 ID、伤害加成、命中效果、悬停介绍的语言文件 key（每个 key 一行）
     public static final ModArrowItem STONE_ARROW = register("stone_arrow",
             props -> new ModArrowItem(props, 0, NoneEffect.INSTANCE,
-                    "tooltip.update-ft.stone_arrow.1",
-                    "tooltip.update-ft.stone_arrow.2"),
+                    "tooltip.update-ft.stone_arrow.1"),
             new Item.Properties());
 
     public static final ModArrowItem COPPER_ARROW = register("copper_arrow",
             props -> new ModArrowItem(props, 0, LightningEffect.INSTANCE,
                     "tooltip.update-ft.copper_arrow.1",
-                    "tooltip.update-ft.copper_arrow.2",
-                    "tooltip.update-ft.copper_arrow.3"),
+                    "tooltip.update-ft.copper_arrow.2"),
             new Item.Properties());
 
     public static final ModArrowItem IRON_ARROW = register("iron_arrow",
             props -> new ModArrowItem(props, 1, NoneEffect.INSTANCE,
-                    "tooltip.update-ft.iron_arrow.1",
-                    "tooltip.update-ft.iron_arrow.2"),
+                    "tooltip.update-ft.iron_arrow.1"),
             new Item.Properties());
 
     public static final ModArrowItem DIAMOND_ARROW = register("diamond_arrow",
             props -> new ModArrowItem(props, 2, NoneEffect.INSTANCE,
-                    "tooltip.update-ft.diamond_arrow.1",
-                    "tooltip.update-ft.diamond_arrow.2"),
+                    "tooltip.update-ft.diamond_arrow.1"),
             new Item.Properties());
 
     public static final ModArrowItem GOLD_ARROW = register("gold_arrow",
             props -> new ModArrowItem(props, -1, NoneEffect.INSTANCE,
-                    "tooltip.update-ft.gold_arrow.1",
-                    "tooltip.update-ft.gold_arrow.2"),
+                    "tooltip.update-ft.gold_arrow.1"),
             new Item.Properties());
 
     public static final ModArrowItem NETHERITE_ARROW = register("netherite_arrow",
             props -> new ModArrowItem(props, 4, NoneEffect.INSTANCE,
-                    "tooltip.update-ft.netherite_arrow.1",
-                    "tooltip.update-ft.netherite_arrow.2"),
+                    "tooltip.update-ft.netherite_arrow.1"),
             new Item.Properties());
 
     public static final ModArrowItem TNT_ARROW = register("tnt_arrow",
             props -> new ModArrowItem(props, -1, ExplosiveEffect.INSTANCE,
                     "tooltip.update-ft.tnt_arrow.1",
-                    "tooltip.update-ft.tnt_arrow.2",
-                    "tooltip.update-ft.tnt_arrow.3"),
+                    "tooltip.update-ft.tnt_arrow.2"),
             new Item.Properties());
 
     public static final ModArrowItem REDSTONE_ARROW = register("redstone_arrow",
             props -> new ModArrowItem(props, -1, RedstonePulseEffect.INSTANCE,
                     "tooltip.update-ft.redstone_arrow.1",
-                    "tooltip.update-ft.redstone_arrow.2",
-                    "tooltip.update-ft.redstone_arrow.3"),
+                    "tooltip.update-ft.redstone_arrow.2"),
             new Item.Properties());
 
     public static final ModArrowItem PEARL_ARROW = register("pearl_arrow",
             props -> new ModArrowItem(props, 0, TeleportEffect.INSTANCE,
                     "tooltip.update-ft.pearl_arrow.1",
-                    "tooltip.update-ft.pearl_arrow.2",
-                    "tooltip.update-ft.pearl_arrow.3"),
+                    "tooltip.update-ft.pearl_arrow.2"),
             new Item.Properties());
 
     // 1.0.2 六支功能箭：统一 -1 伤害，用伤害换效果
     public static final ModArrowItem WEB_ARROW = register("web_arrow",
             props -> new ModArrowItem(props, -1, WebArrowEffect.INSTANCE,
                     "tooltip.update-ft.web_arrow.1",
-                    "tooltip.update-ft.web_arrow.2",
-                    "tooltip.update-ft.web_arrow.3"),
+                    "tooltip.update-ft.web_arrow.2"),
             new Item.Properties());
 
     public static final ModArrowItem FIRE_ARROW = register("fire_arrow",
             props -> new ModArrowItem(props, -1, FireArrowEffect.INSTANCE,
                     "tooltip.update-ft.fire_arrow.1",
-                    "tooltip.update-ft.fire_arrow.2",
-                    "tooltip.update-ft.fire_arrow.3"),
+                    "tooltip.update-ft.fire_arrow.2"),
             new Item.Properties());
 
     public static final ModArrowItem BEE_ARROW = register("bee_arrow",
             props -> new ModArrowItem(props, -1, BeeArrowEffect.INSTANCE,
                     "tooltip.update-ft.bee_arrow.1",
-                    "tooltip.update-ft.bee_arrow.2",
-                    "tooltip.update-ft.bee_arrow.3"),
+                    "tooltip.update-ft.bee_arrow.2"),
             new Item.Properties());
 
     public static final ModArrowItem FROST_ARROW = register("frost_arrow",
             props -> new ModArrowItem(props, -1, FrostArrowEffect.INSTANCE,
                     "tooltip.update-ft.frost_arrow.1",
-                    "tooltip.update-ft.frost_arrow.2",
-                    "tooltip.update-ft.frost_arrow.3"),
+                    "tooltip.update-ft.frost_arrow.2"),
             new Item.Properties());
 
     public static final ModArrowItem WIND_CHARGE_ARROW = register("wind_charge_arrow",
             props -> new ModArrowItem(props, -1, WindArrowEffect.INSTANCE,
                     "tooltip.update-ft.wind_charge_arrow.1",
-                    "tooltip.update-ft.wind_charge_arrow.2",
-                    "tooltip.update-ft.wind_charge_arrow.3"),
+                    "tooltip.update-ft.wind_charge_arrow.2"),
             new Item.Properties());
 
     public static final ModArrowItem GRAPPLE_ARROW = register("grapple_arrow",
             props -> new ModArrowItem(props, -1, GrappleArrowEffect.INSTANCE,
                     "tooltip.update-ft.grapple_arrow.1",
-                    "tooltip.update-ft.grapple_arrow.2",
-                    "tooltip.update-ft.grapple_arrow.3"),
+                    "tooltip.update-ft.grapple_arrow.2"),
             new Item.Properties());
 
     public static void initialize() {

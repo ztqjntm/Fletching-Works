@@ -1,0 +1,22 @@
+{
+  "parent": "update-ft:fletching/first_arrow",
+  "display": {
+    "icon": {
+      "id": "update-ft:copper_arrow"
+    },
+    "title": {
+      "translate": "advancement.update-ft.fletching.lightning_witchcraft.title"
+    },
+    "description": {
+      "translate": "advancement.update-ft.fletching.lightning_witchcraft.description"
+    },
+    "frame": "goal",
+    "show_toast": true,
+    "announce_to_chat": true
+  },
+  "criteria": {
+    "code": {
+      "trigger": "minecraft:impossible"
+    }
+  }
+}

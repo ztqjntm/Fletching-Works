@@ -1,0 +1,29 @@
+{
+  "parent": "update-ft:fletching/root",
+  "display": {
+    "icon": {
+      "id": "update-ft:stone_arrow"
+    },
+    "title": {
+      "translate": "advancement.update-ft.fletching.first_arrow.title"
+    },
+    "description": {
+      "translate": "advancement.update-ft.fletching.first_arrow.description"
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true
+  },
+  "criteria": {
+    "get_arrow": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "#update-ft:arrows"
+          }
+        ]
+      }
+    }
+  }
+}

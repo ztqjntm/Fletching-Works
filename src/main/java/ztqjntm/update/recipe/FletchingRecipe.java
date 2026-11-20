@@ -17,6 +17,7 @@ import net.minecraft.world.item.crafting.RecipeBookCategory;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.level.Level;
+import ztqjntm.update.tag.ModTags;
 
 import java.util.List;
 
@@ -41,8 +42,8 @@ public record FletchingRecipe(Ingredient tip, ItemStack result) implements Recip
 
     @Override
     public boolean matches(FletchingRecipeInput input, Level level) {
-        return input.shaft().is(Items.STICK)
-                && input.fletching().is(Items.FEATHER)
+        return (input.shaft().is(Items.STICK) || ModTags.isIn(input.shaft(), ModTags.SHAFTS))
+                && (input.fletching().is(Items.FEATHER) || ModTags.isIn(input.fletching(), ModTags.FLETCHINGS))
                 && this.tip.test(input.tip());
     }
 

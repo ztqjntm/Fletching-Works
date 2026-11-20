@@ -5,13 +5,12 @@ package ztqjntm.update.menu;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
 import com.mojang.serialization.JsonOps;
-import net.minecraft.SharedConstants;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.RegistryOps;
-import net.minecraft.server.Bootstrap;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import ztqjntm.update.GameTestBootstrap;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -19,12 +18,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  * 存档 codec：v1（共享容器，只有 {@code items}）要能读进来，并且以后一直按 v2 写出去。
  */
 class FletchingTableDataCodecTest {
-
-    @BeforeAll
-    static void bootstrap() {
-        SharedConstants.tryDetectVersion();
-        Bootstrap.bootStrap();
-    }
 
     private static RegistryOps<JsonElement> ops() {
         return RegistryOps.create(JsonOps.INSTANCE,
@@ -38,6 +31,11 @@ class FletchingTableDataCodecTest {
                 .result()
                 .orElseThrow()
                 .toString();
+    }
+
+    @BeforeAll
+    static void bootstrap() {
+        GameTestBootstrap.bootstrap();
     }
 
     @Test

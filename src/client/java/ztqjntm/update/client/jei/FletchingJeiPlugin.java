@@ -4,11 +4,15 @@ package ztqjntm.update.client.jei;
 
 import mezz.jei.api.IModPlugin;
 import mezz.jei.api.JeiPlugin;
+import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.recipe.types.IRecipeHolderType;
 import mezz.jei.api.registration.IRecipeCatalystRegistration;
 import mezz.jei.api.registration.IRecipeCategoryRegistration;
 import mezz.jei.api.registration.IRecipeRegistration;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.Blocks;
 import ztqjntm.update.recipe.FletchingRecipe;
 import ztqjntm.update.recipe.ModRecipes;
@@ -42,6 +46,11 @@ public final class FletchingJeiPlugin implements IModPlugin {
     @Override
     public void registerRecipes(IRecipeRegistration registration) {
         registration.addRecipes(FLETCHING, SyncedFletchingRecipes.get());
+        // 制箭台物品的信息页：说明三个槽分别放什么
+        registration.addIngredientInfo(
+                new ItemStack(Items.FLETCHING_TABLE),
+                VanillaTypes.ITEM_STACK,
+                Component.translatable("jei.update-ft.fletching.info"));
     }
 
     @Override

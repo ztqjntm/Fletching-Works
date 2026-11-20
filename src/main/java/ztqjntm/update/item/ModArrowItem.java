@@ -38,7 +38,8 @@ public class ModArrowItem extends ArrowItem {
     }
 
     // 物品栏里把鼠标停在物品上时显示的介绍文字。
-    // 每行一个独立的 key，方便翻译时单独调整；建议每个物品不要超过 3 行。
+    // 每行一个独立的 key，方便翻译时单独调整；建议每个物品不要超过 2 行。
+    // 伤害加成不写进 lang，按 damageBonus 动态生成并按正负上色。
     @Override
     public void appendHoverText(ItemStack stack, Item.TooltipContext context, TooltipDisplay display,
                                 Consumer<Component> tooltip, TooltipFlag flag) {
@@ -47,5 +48,13 @@ public class ModArrowItem extends ArrowItem {
         for (String key : this.descriptionKeys) {
             tooltip.accept(Component.translatable(key).withStyle(ChatFormatting.GRAY));
         }
+
+        ChatFormatting color = this.damageBonus > 0 ? ChatFormatting.GREEN
+                : this.damageBonus < 0 ? ChatFormatting.RED
+                : ChatFormatting.DARK_GRAY;
+        String value = this.damageBonus > 0 ? "+" + this.damageBonus
+                : this.damageBonus < 0 ? Integer.toString(this.damageBonus)
+                : "±0";
+        tooltip.accept(Component.translatable("tooltip.update-ft.damage_bonus", value).withStyle(color));
     }
 }

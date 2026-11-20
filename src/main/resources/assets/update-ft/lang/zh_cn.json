@@ -17,62 +17,53 @@
   "container.update-ft.fletching_table": "制箭台",
   "block.update-ft.redstone_pulse": "红石脉冲",
   "block.update-ft.temporary_cobweb": "临时蛛网",
-
   "tooltip.update-ft.stone_arrow.1": "最简陋的箭头，胜在随处可得。",
-  "tooltip.update-ft.stone_arrow.2": "伤害加成：±0",
-
   "tooltip.update-ft.copper_arrow.1": "铜制箭头，锋利度刚好够用。",
   "tooltip.update-ft.copper_arrow.2": "雷雨天时或许会获得…奇特的力量？",
-  "tooltip.update-ft.copper_arrow.3": "伤害加成：±0",
-
   "tooltip.update-ft.iron_arrow.1": "铁制箭头，结实可靠。",
-  "tooltip.update-ft.iron_arrow.2": "伤害加成：+1",
-
   "tooltip.update-ft.diamond_arrow.1": "钻石箭头，轻易撕开护甲的缝隙。",
-  "tooltip.update-ft.diamond_arrow.2": "伤害加成：+2",
-
   "tooltip.update-ft.gold_arrow.1": "金光闪闪，可惜只是装饰。",
-  "tooltip.update-ft.gold_arrow.2": "伤害加成：-1",
-
-  "tooltip.update-ft.netherite_arrow.1": "下界合金箭头，几乎不会磨损。",
-  "tooltip.update-ft.netherite_arrow.2": "伤害加成：+4，本模组最强箭矢。",
-
+  "tooltip.update-ft.netherite_arrow.1": "下界合金箭头，几乎不会磨损，本模组最强箭矢。",
   "tooltip.update-ft.tnt_arrow.1": "命中后原地引爆。",
   "tooltip.update-ft.tnt_arrow.2": "半径 4 格，会破坏方块，也会伤到自己。",
-  "tooltip.update-ft.tnt_arrow.3": "伤害加成：-1",
-
   "tooltip.update-ft.redstone_arrow.1": "红石箭头，命中时噼啪作响。",
   "tooltip.update-ft.redstone_arrow.2": "命中方块后给目标通电，并触发周围的按钮、拉杆与门。",
-  "tooltip.update-ft.redstone_arrow.3": "伤害加成：-1",
-
   "tooltip.update-ft.pearl_arrow.1": "箭尖嵌着一颗末影珍珠。",
   "tooltip.update-ft.pearl_arrow.2": "命中处就是你落下的地方，代价是 3 点摔落伤害。",
-  "tooltip.update-ft.pearl_arrow.3": "伤害加成：±0",
-
   "tooltip.update-ft.web_arrow.1": "命中后在目标脚下留下一张网。",
   "tooltip.update-ft.web_arrow.2": "8 秒后自动消失。",
-  "tooltip.update-ft.web_arrow.3": "伤害加成：-1",
-
-  "tooltip.update-ft.fire_arrow.1": "点燃目标，并在落点铺开 3×3 的火。",
+  "tooltip.update-ft.fire_arrow.1": "点燃目标，并在落点周围铺开一片火。",
   "tooltip.update-ft.fire_arrow.2": "火会蔓延——别对着自家房子射。",
-  "tooltip.update-ft.fire_arrow.3": "伤害加成：-1",
-
   "tooltip.update-ft.bee_arrow.1": "召唤 2 只只攻击目标的蜜蜂。",
   "tooltip.update-ft.bee_arrow.2": "蜜蜂蜇完会死，30 秒后散场。",
-  "tooltip.update-ft.bee_arrow.3": "伤害加成：-1",
-
   "tooltip.update-ft.frost_arrow.1": "冻结目标 10 秒。",
   "tooltip.update-ft.frost_arrow.2": "把 3×3 水面冻成会融化的霜冰。",
-  "tooltip.update-ft.frost_arrow.3": "伤害加成：-1",
-
   "tooltip.update-ft.wind_charge_arrow.1": "落点炸开一次纯击退的风爆。",
   "tooltip.update-ft.wind_charge_arrow.2": "不造成伤害，不破坏方块。",
-  "tooltip.update-ft.wind_charge_arrow.3": "伤害加成：-1",
-
   "tooltip.update-ft.grapple_arrow.1": "命中方块把自己拉过去。",
   "tooltip.update-ft.grapple_arrow.2": "命中生物把它拉向你 5 格。",
-  "tooltip.update-ft.grapple_arrow.3": "伤害加成：-1",
   "jei.update-ft.fletching": "制箭台",
   "command.update-ft.dump": "已从制箭台倒出 %s 组物品",
-  "command.update-ft.reload": "已重新加载 fletching-works.json"
+  "command.update-ft.reload": "已重新加载 fletching-works.json",
+  "tooltip.update-ft.damage_bonus": "伤害加成：%s",
+  "gui.update-ft.slot_hint.0": "箭头材料：燧石、铁锭、TNT…",
+  "gui.update-ft.slot_hint.1": "木棍",
+  "gui.update-ft.slot_hint.2": "羽毛",
+  "jei.update-ft.fletching.info": "右上放箭头材料，中间放木棍，左下放羽毛。箭头材料决定产物。",
+  "advancement.update-ft.fletching.root.title": "制箭工艺",
+  "advancement.update-ft.fletching.root.description": "让制箭台真正派上用场",
+  "advancement.update-ft.fletching.first_arrow.title": "第一支箭",
+  "advancement.update-ft.fletching.first_arrow.description": "在制箭台合成一支箭",
+  "advancement.update-ft.fletching.redstone_arrow.title": "红石射手",
+  "advancement.update-ft.fletching.redstone_arrow.description": "合成一支红石箭",
+  "tag.item.update-ft.fletching_tips": "箭头材料",
+  "tag.item.update-ft.shafts": "箭杆",
+  "tag.item.update-ft.fletchings": "羽饰",
+  "tag.item.update-ft.arrows": "制箭工艺箭矢",
+  "advancement.update-ft.fletching.destroyer.title": "毁灭性打击",
+  "advancement.update-ft.fletching.destroyer.description": "获得一支 TNT 箭",
+  "advancement.update-ft.fletching.lightning_witchcraft.title": "雷电！是巫术！",
+  "advancement.update-ft.fletching.lightning_witchcraft.description": "用铜箭召唤一道闪电",
+  "advancement.update-ft.fletching.strongest_arrow.title": "最强之箭",
+  "advancement.update-ft.fletching.strongest_arrow.description": "获得一支下界合金箭"
 }
