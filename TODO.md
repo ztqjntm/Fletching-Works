@@ -11,6 +11,7 @@
 1. **配方查看器**：JEI 已支持；REI / EMI 未适配。
 2. **测试覆盖**：单元测试已覆盖配方匹配、栏位路由、存档 v1→v2 codec；箭矢效果和 `AbstractArrowMixin` 仍没有自动化测试（要 GameTest，成本更高）。
 3. **配置界面**：`config/fletching-works.json` 已覆盖主要数值，但没有游戏内 GUI（见 P1 第 2 条）。
+4. **无限 II/III 的概率**：战利品概率写在 `ModLootTables.RATES`，附魔台权重写在 JSON；没有进配置文件。
 
 ## P3 · 可选特性
 

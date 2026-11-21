@@ -65,5 +65,8 @@
   "advancement.update-ft.fletching.lightning_witchcraft.title": "Lightning! Witchcraft!",
   "advancement.update-ft.fletching.lightning_witchcraft.description": "Call down lightning with a copper arrow during a thunderstorm",
   "advancement.update-ft.fletching.strongest_arrow.title": "The Strongest Arrow",
-  "advancement.update-ft.fletching.strongest_arrow.description": "Obtain a netherite arrow"
+  "advancement.update-ft.fletching.strongest_arrow.description": "Obtain a netherite arrow",
+  "enchantment.update-ft.infinity_ii": "Infinity II",
+  "enchantment.update-ft.infinity_iii": "Infinity III",
+  "tag.item.update-ft.enchantable_infinity": "Infinity-enchantable"
 }

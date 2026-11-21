@@ -109,6 +109,8 @@ update-ft/
 | `recipe/FletchingRecipe.java` | 单个制箭台配方（`Recipe<FletchingRecipeInput>` 的 record）：保存箭头材料的 `Ingredient` 与产物；`matches()` 校验“中间在 `#update-ft:shafts` + 左下在 `#update-ft:fletchings` + 右上匹配箭头材料”（默认就是木棍/羽毛，整合包可通过标签扩展）；`placementInfo()` 必须给出三个栏位（返回空列表会被 `RecipeManager` 从展示数据里剔除并刷警告）；内部 `Serializer` 提供 JSON 的 `MapCodec` 与网络同步的 `StreamCodec`。 |
 | `recipe/FletchingRecipeInput.java` | 配方输入（`RecipeInput`）的三格快照：箭头材料 / 木棍 / 羽毛，下标与菜单槽位一致。 |
 | `recipe/ModRecipes.java` | 注册 `RecipeType<FletchingRecipe>` 与 `RecipeSerializer<FletchingRecipe>`，ID 都是 `update-ft:fletching`；配方本体不在这里，由数据包加载。 |
+| `enchantment/ModEnchantments.java` | 无限 II/III 的 `ResourceKey<Enchantment>`。附魔本体是数据包注册表条目（`data/update-ft/enchantment/*.json`），不需要 `Registry.register`，这里只给战利品代码引用。 |
+| `loot/ModLootTables.java` | 无限 II/III 的获取途径：监听 `LootTableEvents.MODIFY`，只改四张原版表（钓鱼宝藏、要塞走廊/交叉/图书馆），每种附魔各加一个 `ENCHANTED_BOOK` pool；概率见类里的 `RATES`。数据包覆盖过的表（`!source.isBuiltin()`）不碰。 |
 | `recipe/FletchingRecipes.java` | 栏位定义与查询入口：`TIP_SLOT`/`SHAFT_SLOT`/`FLETCHING_SLOT` 三个常量对应界面右上/中间/左下；`findResult(level, container)` **只在服务端**用 `RecipeManager.getRecipeFor()` 查 `update-ft:fletching` 配方并 `assemble()`（客户端没有配方表，产物格靠容器同步）；`isTipMaterial()` 给箭头格做 `mayPlace` 过滤，只查 `ModTags.FLETCHING_TIPS` 标签。 |
 | `client/UpdateFtClient.java` | **客户端入口**（`ClientModInitializer`）。调用 `MenuScreens.register` 把 `MenuType` 与 `FletchingTableScreen` 绑定。 |
 | `client/FletchingTableScreen.java` | 界面渲染：176×166 布局，背景用 `update-ft:textures/gui/ft_gui.png`（从 256×256 画布的 (0,0) 取 176×166）；`init()` 里把标题居中；`renderBg()` 在空槽上画半透明幽灵图标（箭头格每秒轮播 `fletching_tips` 里的一种材料），`render()` 末尾手动调 `renderTooltip`（1.21.11 的父类已不再自动调用）并给空槽补一句悬停说明。 |
@@ -134,6 +136,10 @@ update-ft/
 | `data/update-ft/tags/item/shafts.json` | 中间格的白名单：默认 `minecraft:stick`，可选并入 `#c:rods/wooden`（`required: false`，标签不存在也不会加载失败）。代码侧用 `ModTags.SHAFTS`。 |
 | `data/update-ft/tags/item/fletchings.json` | 左下格的白名单：默认 `minecraft:feather`，可选并入 `#c:feathers`。代码侧用 `ModTags.FLETCHINGS`。 |
 | `data/update-ft/tags/item/arrows.json` | 15 种模组箭，进度判定用（`#update-ft:arrows`）。新增箭种时要同步。 |
+| `data/update-ft/enchantment/infinity_ii.json` / `infinity_iii.json` | 无限 II/III 的定义：`supported_items` 指 `#update-ft:enchantable_infinity`（弓 + 弩），`exclusive_set` 指 `#minecraft:exclusive_set/bow`，效果用 `minecraft:ammo_use`：普通箭 `set 0`，特殊箭 `remove_binomial`（II 1/5，III 33/100）。 |
+| `data/update-ft/tags/item/enchantable_infinity.json` | 无限 II/III 的适用物品：`#minecraft:enchantable/bow` + `#minecraft:enchantable/crossbow`（`supported_items` 不能直接写标签列表，只能引一个标签）。 |
+| `data/minecraft/tags/enchantment/in_enchanting_table.json` | 把无限 II/III 加进附魔台候选池（`replace: false`，与原版合并）。 |
+| `data/minecraft/tags/enchantment/exclusive_set/bow.json` | 把无限 II/III 加入弓的互斥集：与彼此、原版无限、经验修补互斥。 |
 | `data/update-ft/tags/item/fletching_tips.json` | **箭头格的白名单**：能放进箭头格的物品。数据包可增删（支持嵌套标签），`/reload` 即生效，不用改代码；默认 16 条与 `data/update-ft/recipe/` 里的箭头材料一一对应。 |
 | `data/update-ft/advancement/fletching/*.json` | 引导进度：制箭工艺（制箭台）→ 第一支箭（任意模组箭）→ 红石射手 / 毁灭性打击 / 最强之箭（对应箭种）；雷电！是巫术！由 `LightningEffect` 直接授予（`minecraft:impossible` + `PlayerAdvancements.award`）。 |
 | `data/update-ft/recipe/*.json` | **制箭台配方**（16 条）：`{"type": "update-ft:fletching", "tip": ..., "result": {...}}`。数据包可增删改，`/reload` 生效；`tip` 用原版 `Ingredient` 编码，支持物品 ID、物品列表和 `#标签`。 |
@@ -149,7 +155,7 @@ update-ft/
 
 ## 关键流程
 
-**注册**：`UpdateFt.onInitialize()` → `ModConfig.initialize()`（读 `config/fletching-works.json`，没有就生成默认）→ `ModItems.initialize()`（触发静态字段注册物品、加入创造页签）→ `ModBlocks.initialize()`（注册红石脉冲/临时蛛网并登记可燃性）→ `ModBlockEntities.initialize()`（注册方块实体，必须在方块之后）→ `ModMenuTypes.initialize()`（触发 `MenuType` 注册）→ `ModRecipes.initialize()`（注册 `RecipeType` 与 `RecipeSerializer`，必须在配方加载之前）→ `RecipeSynchronization.synchronizeRecipeSerializer(ModRecipes.FLETCHING_SERIALIZER)`（让 Fabric 把我们的配方同步到客户端）→ `BeeArrowManager.register()` / `GrappleManager.register()`（蜜蜂寿命与钩爪 tick 循环）→ 注册右键、拆桌、每秒扫描事件，以及 `/fletchingworks dump|reload` 命令（`CommandRegistrationCallback`）。客户端 `UpdateFtClient.onInitializeClient()` → 绑定 `MenuType` 与 `Screen` → 注册临时蛛网的 `CUTOUT` 渲染层 → 监听 `ClientRecipeSynchronizedEvent` 缓存配方给 JEI。
+**注册**：`UpdateFt.onInitialize()` → `ModConfig.initialize()`（读 `config/fletching-works.json`，没有就生成默认）→ `ModItems.initialize()`（触发静态字段注册物品、加入创造页签）→ `ModBlocks.initialize()`（注册红石脉冲/临时蛛网并登记可燃性）→ `ModBlockEntities.initialize()`（注册方块实体，必须在方块之后）→ `ModMenuTypes.initialize()`（触发 `MenuType` 注册）→ `ModRecipes.initialize()`（注册 `RecipeType` 与 `RecipeSerializer`，必须在配方加载之前）→ `ModLootTables.initialize()`（无限 II/III 的钓鱼/要塞战利品注入）→ `RecipeSynchronization.synchronizeRecipeSerializer(ModRecipes.FLETCHING_SERIALIZER)`（让 Fabric 把我们的配方同步到客户端）→ `BeeArrowManager.register()` / `GrappleManager.register()`（蜜蜂寿命与钩爪 tick 循环）→ 注册右键、拆桌、每秒扫描事件，以及 `/fletchingworks dump|reload` 命令（`CommandRegistrationCallback`）。客户端 `UpdateFtClient.onInitializeClient()` → 绑定 `MenuType` 与 `Screen` → 注册临时蛛网的 `CUTOUT` 渲染层 → 监听 `ClientRecipeSynchronizedEvent` 缓存配方给 JEI。
 
 **开界面与合成**：主手右键制箭台 → 服务端 `UseBlockCallback` 返回 `SUCCESS` 并 `openMenu` → `FletchingTableData.get(level).getOrCreate(pos, 玩家UUID)` 取出**这个玩家**在这张桌子上的容器（第一次为空，之后是上次留下的东西）→ 创建 `FletchingTableMenu` → 发送 `ClientboundOpenScreenPacket` → 客户端用 `MenuType` 新建菜单与 `FletchingTableScreen`，槽位内容由 `AbstractContainerMenu` 自动同步 → 放入三样原料后容器监听触发 `FletchingRecipes.findResult(level, input)`：服务端用 `RecipeManager.getRecipeFor(update-ft:fletching)` 匹配配方并把产物写进产物格，客户端**不计算**，等槽位同步 → 取走产物时消耗每个原料 1 个 → 关界面把剩下的原料退回自己的背包、删掉自己那份条目（别人的材料不受影响）。
 

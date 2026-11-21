@@ -65,5 +65,8 @@
   "advancement.update-ft.fletching.lightning_witchcraft.title": "雷电！是巫术！",
   "advancement.update-ft.fletching.lightning_witchcraft.description": "在雷雨天用铜箭引下一道闪电",
   "advancement.update-ft.fletching.strongest_arrow.title": "最强之箭",
-  "advancement.update-ft.fletching.strongest_arrow.description": "获得一支下界合金箭"
+  "advancement.update-ft.fletching.strongest_arrow.description": "获得一支下界合金箭",
+  "enchantment.update-ft.infinity_ii": "无限 II",
+  "enchantment.update-ft.infinity_iii": "无限 III",
+  "tag.item.update-ft.enchantable_infinity": "无限附魔适用物品"
 }

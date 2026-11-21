@@ -115,6 +115,17 @@ A few rules:
 - **Breaking the table** while someone has it open drops whatever is inside at its position. The output slot is a preview and never drops.
 - **If the table is destroyed by an explosion or piston**, anything inside drops at its old position within about a second instead of being stranded in the save.
 
+## Infinity II and Infinity III
+
+Two independent enchantments for bows and crossbows, built on 1.21.11's `minecraft:ammo_use` component. Both keep normal arrows free; the difference only shows on the 15 special arrows (plus tipped and spectral arrows).
+
+| Enchantment | Normal arrows | Special arrows | Where to get |
+| --- | --- | --- | --- |
+| Infinity II | never consumed | 20% chance the arrow is not consumed | Enchanting table (min 20), fishing treasure (2% per treasure roll), stronghold loot (3–10%) |
+| Infinity III | never consumed | 33% chance the arrow is not consumed | Enchanting table (min 30), fishing treasure (0.5%), stronghold loot (1–4%) |
+
+Both are mutually exclusive with each other, with vanilla Infinity and with Mending. Firework rockets are never refunded. The refund is resolved at the ammo step, and a refunded arrow is marked creative-only — it cannot be picked up, so there is no duplication.
+
 ## Compatibility & known limitations
 
 - **Fabric and Minecraft 1.21.11 only.** No Forge / NeoForge plans.

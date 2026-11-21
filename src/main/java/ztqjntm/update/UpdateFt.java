@@ -34,6 +34,7 @@ import ztqjntm.update.config.ModConfig;
 import ztqjntm.update.entity.BeeArrowManager;
 import ztqjntm.update.entity.GrappleManager;
 import ztqjntm.update.item.ModItems;
+import ztqjntm.update.loot.ModLootTables;
 import ztqjntm.update.menu.FletchingTableData;
 import ztqjntm.update.menu.FletchingTableMenu;
 import ztqjntm.update.menu.ModMenuTypes;
@@ -56,6 +57,7 @@ public class UpdateFt implements ModInitializer {
 		ModBlockEntities.initialize();  // 红石脉冲的方块实体（要在方块之后）
 		ModMenuTypes.initialize();      // 注册 MenuType
 		ModRecipes.initialize();        // 注册制箭台的配方类型与序列化器（配方本体在 data/update-ft/recipe/）
+		ModLootTables.initialize();     // 无限 II/III 的要塞与钓鱼战利品注入
 		registerRecipeSelfCheck();      // 启动时检查配方箭头材料是否都在 fletching_tips 标签里
 		// 1.21.11 原版不再把配方同步给客户端；注册序列化器后 Fabric 会把我们的配方发过去，
 		// 客户端（JEI 和配方缓存）才能拿到 update-ft:fletching 的条目。必须两端都执行。

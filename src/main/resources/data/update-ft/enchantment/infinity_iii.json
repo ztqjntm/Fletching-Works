@@ -1,0 +1,75 @@
+{
+  "anvil_cost": 12,
+  "description": {
+    "translate": "enchantment.update-ft.infinity_iii"
+  },
+  "effects": {
+    "minecraft:ammo_use": [
+      {
+        "effect": {
+          "type": "minecraft:set",
+          "value": 0.0
+        },
+        "requirements": {
+          "condition": "minecraft:match_tool",
+          "predicate": {
+            "items": "minecraft:arrow"
+          }
+        }
+      },
+      {
+        "effect": {
+          "type": "minecraft:remove_binomial",
+          "chance": {
+            "type": "minecraft:fraction",
+            "denominator": {
+              "type": "minecraft:linear",
+              "base": 100.0,
+              "per_level_above_first": 0.0
+            },
+            "numerator": {
+              "type": "minecraft:linear",
+              "base": 33.0,
+              "per_level_above_first": 0.0
+            }
+          }
+        },
+        "requirements": {
+          "condition": "minecraft:inverted",
+          "term": {
+            "condition": "minecraft:any_of",
+            "terms": [
+              {
+                "condition": "minecraft:match_tool",
+                "predicate": {
+                  "items": "minecraft:arrow"
+                }
+              },
+              {
+                "condition": "minecraft:match_tool",
+                "predicate": {
+                  "items": "minecraft:firework_rocket"
+                }
+              }
+            ]
+          }
+        }
+      }
+    ]
+  },
+  "exclusive_set": "#minecraft:exclusive_set/bow",
+  "max_cost": {
+    "base": 60,
+    "per_level_above_first": 0
+  },
+  "max_level": 1,
+  "min_cost": {
+    "base": 30,
+    "per_level_above_first": 0
+  },
+  "slots": [
+    "hand"
+  ],
+  "supported_items": "#update-ft:enchantable_infinity",
+  "weight": 1
+}
