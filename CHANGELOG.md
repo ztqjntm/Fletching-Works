@@ -7,6 +7,7 @@
 
 ### 修复
 
+- **进度背景显示紫黑格**：1.21.11 的 `background` 是相对 `textures/` 的 id（原版写 `minecraft:gui/...`），原来写成带 `textures/` 前缀和 `.png` 的全路径，解析不到；改用 `minecraft:block/fletching_table_side`，背景是制箭台的木纹。
 - **空槽提示画到了屏幕左上角**：`renderBg` 不在面板平移矩阵里，幽灵图标和遮罩现在加上 `leftPos/topPos` 偏移，落回三个格子里。
 - **发射器射不出模组箭**：给 15 种箭补 `DispenserBlock.registerProjectileBehavior`，无主箭分支不再死代码。
 - **箭杆/箭羽槽不认标签**：槽位过滤改成和 Shift 路由同源（`inputSlotFor`），标签扩展的箭杆/箭羽不会出现“能路由、放不进”。
