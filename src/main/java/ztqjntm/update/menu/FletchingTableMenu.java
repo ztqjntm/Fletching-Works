@@ -76,10 +76,12 @@ public class FletchingTableMenu extends AbstractContainerMenu {
 		// 右上放箭头材料、中间只放木棍、左下只放羽毛
 		this.addSlot(new InputSlot(container, FletchingRecipes.TIP_SLOT, 66, 17,
 				FletchingRecipes::isTipMaterial));
+		// 过滤和 Shift 路由必须同源：都走 inputSlotFor，否则标签扩展的箭杆/箭羽
+		// 会被路由到这个槽又被 mayPlace 拒绝，表现为 Shift 点击静默失败。
 		this.addSlot(new InputSlot(container, FletchingRecipes.SHAFT_SLOT, 48, 35,
-				stack -> stack.is(Items.STICK)));
+				stack -> inputSlotFor(stack) == FletchingRecipes.SHAFT_SLOT));
 		this.addSlot(new InputSlot(container, FletchingRecipes.FLETCHING_SLOT, 30, 53,
-				stack -> stack.is(Items.FEATHER)));
+				stack -> inputSlotFor(stack) == FletchingRecipes.FLETCHING_SLOT));
 
 		// 产物格：底图是 24×24 的大框，16×16 物品居中
 		this.addSlot(new FletchingResultSlot(this.result, 0, 124, 35));

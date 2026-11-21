@@ -10,6 +10,7 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.item.CreativeModeTabs;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.level.block.DispenserBlock;
 import ztqjntm.update.UpdateFt;
 import ztqjntm.update.effect.BeeArrowEffect;
 import ztqjntm.update.effect.ExplosiveEffect;
@@ -22,6 +23,8 @@ import ztqjntm.update.effect.RedstonePulseEffect;
 import ztqjntm.update.effect.TeleportEffect;
 import ztqjntm.update.effect.WebArrowEffect;
 import ztqjntm.update.effect.WindArrowEffect;
+
+import java.util.List;
 
 import java.util.function.Function;
 
@@ -120,7 +123,19 @@ public class ModItems {
                     "tooltip.update-ft.grapple_arrow.2"),
             new Item.Properties());
 
+    /** 15 种箭，发射器注册和创造页签共用一份清单 */
+    private static final List<Item> ALL_ARROWS = List.of(
+            STONE_ARROW, COPPER_ARROW, IRON_ARROW, DIAMOND_ARROW, GOLD_ARROW,
+            NETHERITE_ARROW, TNT_ARROW, REDSTONE_ARROW, PEARL_ARROW, WEB_ARROW,
+            FIRE_ARROW, BEE_ARROW, FROST_ARROW, WIND_CHARGE_ARROW, GRAPPLE_ARROW);
+
     public static void initialize() {
+        // 发射器默认只注册了原版三种箭；不注册的话模组箭会被当成普通物品吐在地上，
+        // AbstractArrowMixin 和无主箭分支都不会触发。
+        for (Item arrow : ALL_ARROWS) {
+            DispenserBlock.registerProjectileBehavior(arrow);
+        }
+
         // 排到原版箭后面，而不是全部追加到页签末尾（那样会离原版箭很远）
         ItemGroupEvents.modifyEntriesEvent(CreativeModeTabs.COMBAT)
                 .register((itemGroup) -> itemGroup.addAfter(Items.ARROW,

@@ -60,7 +60,7 @@ That is all for singleplayer. **For a server, install it on both sides** — the
 | Web Arrow | −1 | Leaves an 8-second cobweb where it lands |
 | Fire Arrow | −1 | Ignites the target and spreads a 3x3 fire |
 | Bee Arrow | −1 | Summons 2 bees that only attack the target |
-| Frost Arrow | −1 | Freezes the target for 10 seconds; freezes 3x3 water |
+| Frost Arrow | −1 | Freezes the target for ~5 s (fully frozen ~1.5 s); freezes 3x3 water |
 | Wind Charge Arrow | −1 | Pure knockback in a 3x3x3 area |
 | Grapple Arrow | −1 | Pulls you to a block, or a creature 5 blocks toward you (1.5 s cooldown) |
 
@@ -78,7 +78,7 @@ The bonus is added **directly to vanilla's final damage** (vanilla rolls speed a
 - **Web Arrow** — leaves a cobweb that vanishes after 8 seconds. On an entity it goes under their feet; on a block it goes on the face you hit. If there is no replaceable spot, it only deals damage. The web traps the shooter too — point-blank shots are a bad idea.
 - **Fire Arrow** — ignites the target for 5 seconds and spreads a 3x3 fire at the impact. It is normal fire and **it spreads**, so do not shoot your own house. Rain, water and `doFireTick=false` limit it as usual.
 - **Bee Arrow** — on an entity, summons 2 bees that only attack that target and leave after 30 seconds. Bees die after stinging, so it is really 2 stings. Block hits and ownerless dispenser arrows spawn nothing.
-- **Frost Arrow** — freezes the target for 10 seconds and turns 3x3 water sources into frosted ice, which melts on its own. Only source water is frozen; any piece of leather armor makes a target immune. **The arrow is not consumed.**
+- **Frost Arrow** — freezes the target for about 5 seconds (fully frozen for the first ~1.5 s, since vanilla decays 2 ticks per tick) and turns 3x3 water sources into frosted ice, which melts on its own. Only source water is frozen; any piece of leather armor makes a target immune. **The arrow is not consumed.**
 - **Wind Charge Arrow** — pure knockback for every entity in a 3x3x3 area. No damage, no block destruction, no redstone triggers; it can push the shooter too.
 - **Grapple Arrow** — pulls you to a block within 32 blocks, or pulls a creature up to 5 blocks toward you. It moves per tick and stops at walls. Each successful pull has a **1.5 second cooldown** (the arrow in your inventory shows it); hits during the cooldown do nothing. **The arrow is not consumed**; ownerless dispenser arrows do not pull.
 
@@ -123,7 +123,7 @@ A few rules:
 - **The redstone pulse only powers the cell adjacent to the face it hit.** To light a lamp further away, route the signal with dust.
 - **TNT and fire arrows grief terrain.** On a multiplayer server that is infinite TNT and infinite fire; pair it with claim/protection plugins, or tune them down in `config/fletching-works.json` (`tntArrow.enabled`, `tntArrow.breaksBlocks`, `fireArrow.spread`). With `mobGriefing` off, TNT arrows only damage entities, and fire arrows no longer place any fire (they still ignite the creature they hit).
 - **The fletching table has no block entity**: contents are held in the level's saved data keyed by block position and player, so each player only sees their own materials, closing the UI returns them, and a crash does not eat them. Hoppers still cannot feed the table and nothing is displayed on it.
-- **Empty the tables before uninstalling the mod.** Contents live in `world/data/update_ft_fletching_tables.dat`, which only this mod reads. Run `/fletchingworks dump` (permission level 2) first — it drops everything in the current dimension at your feet.
+- **Empty the tables before uninstalling the mod.** Contents live per dimension in `world/dimensions/minecraft/<dimension>/data/update_ft_fletching_tables.dat` (overworld, the nether and the end each have one file), which only this mod reads. Run `/fletchingworks dump` (permission level 2) first — it drops everything in the current dimension at your feet.
 - **Infinity only works with vanilla arrows.** The enchantment predicate matches `minecraft:arrow`, not the `#minecraft:arrows` tag, so the 15 new arrows are always consumed.
 
 ## Configuration

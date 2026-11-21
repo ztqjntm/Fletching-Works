@@ -3,6 +3,18 @@
 > release 工作流会取 `## [版本]` 到下一个 `## ` 之间的内容，作为 GitHub Release 和 CurseForge 的更新说明。
 > 版本号必须与 `gradle.properties` 的 `mod_version` 完全一致。
 
+## [Unreleased]
+
+### 修复
+
+- **空槽提示画到了屏幕左上角**：`renderBg` 不在面板平移矩阵里，幽灵图标和遮罩现在加上 `leftPos/topPos` 偏移，落回三个格子里。
+- **发射器射不出模组箭**：给 15 种箭补 `DispenserBlock.registerProjectileBehavior`，无主箭分支不再死代码。
+- **箭杆/箭羽槽不认标签**：槽位过滤改成和 Shift 路由同源（`inputSlotFor`），标签扩展的箭杆/箭羽不会出现“能路由、放不进”。
+- **冰冻箭口径**：文档从“冻结 10 秒”改为“约 5 秒（完全冻结约 1.5 秒）”，代码只改注释，数值不动。
+- **存档路径文档**：改为按维度的 `world/dimensions/minecraft/<维度>/data/...`。
+- **`recommends.jei` 改为 `suggests.jei`**：纯净服务端不再每次启动都告警。
+- `docs/DEVELOPMENT.md` 刷新：Wrapper 官方源、`rootProject.name`、tooltip 数量、伤害倍率配置化、Mixin 失败行为，并新增“版本升级”检查清单。
+
 ## [1.0.9] - 2026-11-20
 
 ### 新增

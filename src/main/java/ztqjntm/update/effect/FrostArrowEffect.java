@@ -14,7 +14,10 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
 
 /**
- * 冰冻箭：命中实体冻结 10 秒；命中方块把周围 3×3 的水源冻成霜冰。
+ * 冰冻箭：命中实体写入 200 tick 冰冻；命中方块把周围 3×3 的水源冻成霜冰。
+ * <p>
+ * 注意 200 tick 不等于 10 秒：原版每 tick 衰减 2，实际维持约 5 秒；
+ * 完全冻结（140 tick）只持续约 1.5 秒。
  * <p>
  * 只处理水源（{@code isSource()}），不动流动水——否则瀑布会被冻成一堵冰墙。
  * 霜冰的融化交给原版 {@link FrostedIceBlock} 自己处理，不需要计划刻或方块实体。
@@ -24,7 +27,7 @@ import net.minecraft.world.phys.EntityHitResult;
 public final class FrostArrowEffect implements ArrowEffect {
     public static final FrostArrowEffect INSTANCE = new FrostArrowEffect();
 
-    /** 冻结时长（tick），10 秒 */
+    /** 写入的冰冻 tick；原版每 tick 衰减 2，实际约 5 秒 */
     private static final int FREEZE_TICKS = 200;
 
     private FrostArrowEffect() {

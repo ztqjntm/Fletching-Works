@@ -7,7 +7,7 @@ README 面向玩家（`README.md` 英文、`README.zh-CN.md` 中文），这里�
 ## 环境
 
 - JDK 21（`build.gradle` 里 `options.release = 21`）
-- Gradle 由 Wrapper 提供（`gradle/wrapper/gradle-wrapper.properties` 当前指向 Gradle 9.7.1 的腾讯云镜像，官方地址被注释掉；换网络环境时改这里）
+- Gradle 由 Wrapper 提供（`gradle/wrapper/gradle-wrapper.properties` 固定 Gradle 9.7.1，下载地址是官方 `services.gradle.org` 并带 `distributionSha256Sum`；需要镜像时在本机 `~/.gradle` 或 init script 覆盖，不要改仓库）
 
 ## 构建
 
@@ -62,10 +62,10 @@ update-ft/
 | --- | --- |
 | `build.gradle` | 应用 `net.fabricmc.fabric-loom-remap` 插件，声明 Minecraft / Fabric Loader / Fabric API 依赖、Java 21 编译目标；开头把 `mod_version` 显式赋给 `project.version`；`loom { splitEnvironmentSourceSets() }` 把 `main` / `client` 拆成两个源集（`mods { }` 里同时声明两者），`processResources` 把 `fabric.mod.json` 里的 `${version}` 展开成真实版本号，`jar` 任务把 `LICENSE` 一并打进包里。 |
 | `gradle.properties` | 所有版本号的唯一来源：`minecraft_version=1.21.11`、`loader_version=0.17.3`、`loom_version=1.17.20`、`fabric_api_version`、`jei_version`（可选兼容目标，只用于编译）、`mod_version`（模组版本，发布时必须与 tag 一致）、`group`（包名前缀）。JVM 内存与并行/配置缓存开关也在这里。 |
-| `settings.gradle` | 声明 Fabric Maven / Maven Central / Gradle Plugin Portal 三个插件仓库；`rootProject.name = 'update-ft'` 决定产物 jar 的文件名。 |
+| `settings.gradle` | 声明 Fabric Maven / Maven Central / Gradle Plugin Portal 三个插件仓库；`rootProject.name = 'fletching-works'` 决定产物 jar 的文件名（`fletching-works-<版本>.jar`）；mod id 仍是 `update-ft`。 |
 | `gradlew`、`gradlew.bat` | Gradle Wrapper 启动脚本（Linux/macOS 与 Windows），保证不装 Gradle 也能构建。 |
 | `gradle/wrapper/gradle-wrapper.jar` | Wrapper 引导程序本体。 |
-| `gradle/wrapper/gradle-wrapper.properties` | 指定 Gradle 版本（9.7.1）与下载地址，当前指向腾讯云镜像，官方地址被注释掉；换网络环境时改这里。 |
+| `gradle/wrapper/gradle-wrapper.properties` | 指定 Gradle 版本（9.7.1）、官方下载地址和 `distributionSha256Sum`；需要镜像时在本机覆盖，不要改仓库。 |
 | `.gitignore` | 忽略 `build/`、`.gradle/`、IDE 配置等。 |
 | `.gitattributes` | 统一换行符，避免 Windows 下 `gradlew` 被改成 CRLF 而无法执行。 |
 | `LICENSE` | Mozilla Public License 2.0 全文，构建时会被复制进 jar。 |
@@ -79,7 +79,7 @@ update-ft/
 | 文件 | 作用 |
 | --- | --- |
 | `UpdateFt.java` | **主入口**（`ModInitializer`）。持有 `MOD_ID = "update-ft"` 和 `id(path)` 工具方法；在 `onInitialize()` 里按 物品 → 方块 → 方块实体 → MenuType → 实体管理器 的顺序注册，并挂三个事件 + 一个命令：`UseBlockCallback`（主手右键制箭台 → 服务端 `openMenu`，容器从 `FletchingTableData` 按坐标 + 玩家取）、`PlayerBlockBreakEvents.AFTER`（拆桌时把内容物掉在原地并删条目）、`ServerTickEvents.END_SERVER_TICK`（每 20 tick 扫一次爆炸/活塞留下的残条目）、`/fletchingworks dump|reload`（卸载前清理残留 / 重读配置）。 |
-| `HalfExplosionDamageCalculator.java` | 自定义爆炸伤害计算器，单例 `INSTANCE`。覆写 `getEntityDamageAmount`，把实体受到的爆炸伤害乘 `0.5`；**不影响方块破坏和击退**。供 TNT 箭使用。 |
+| `HalfExplosionDamageCalculator.java` | 自定义爆炸伤害计算器，单例 `INSTANCE`。覆写 `getEntityDamageAmount`，按 `config/fletching-works.json` 的 `tntArrow.entityDamageMultiplier`（默认 0.5）缩放实体受到的爆炸伤害，每次爆炸现读，`/fletchingworks reload` 即时生效；**不影响方块破坏和击退**。供 TNT 箭使用。 |
 | `NoEntityDamageCalculator.java` | 另一个爆炸伤害计算器：`shouldDamageEntity` 返回 `false`、`getKnockbackMultiplier` 返回 `0`，让爆炸对实体完全无效。供红石箭的“脉冲”使用。 |
 | `block/ModBlocks.java` | 方块注册表：`update-ft:redstone_pulse`（隐形红石脉冲）和 `update-ft:temporary_cobweb`（临时蛛网）。两者都没有物品形态；临时蛛网的属性复制原版蛛网，并在 `initialize()` 里注册进 Fabric 的可燃方块表。 |
 | `block/RedstonePulseBlock.java` | 红石脉冲方块：不渲染（`RenderShape.INVISIBLE`）、无碰撞、可替换，`getSignal`/`getDirectSignal` 固定返回 15 并声明 `isSignalSource`；实现 `EntityBlock`，`newBlockEntity` + `getTicker` 把倒计时交给方块实体（不再用计划刻）。 |
@@ -89,7 +89,7 @@ update-ft/
 | `item/ModItems.java` | 15 种箭的注册表。`register()` 用 `Item.Properties.setId(ResourceKey)` 绑定 ID 后注册进 `BuiltInRegistries.ITEM`；`initialize()` 把 15 种箭加入创造模式「战斗」页签。数值（伤害加成、命中效果）与悬停介绍的语言键都写在这个文件里。 |
 | `item/ModArrowItem.java` | 自定义箭物品类，继承 `ArrowItem`，多三个字段：`damageBonus`（伤害加成）、`effect`（`ArrowEffect` 实例，决定命中后干什么）、`descriptionKeys`（悬停介绍的语言键列表）。覆写的 `appendHoverText` 会把每个键渲染成一行灰色小字。 |
 | `config/ModConfig.java` | 服务端配置：读写 `config/fletching-works.json`，Gson 缺失字段保留默认、`sanitize()` 钳制越界值；覆盖 TNT 箭开关/拆方块/伤害倍率、烈焰箭半径与点燃秒数、铜箭是否必须雷雨、钩爪冷却与最大距离、关界面是否退还材料。效果类每次触发时现读 `ModConfig.get()`，所以 `/fletchingworks reload` 立即生效。 |
-| `effect/ArrowEffect.java` | **命中行为的接口**：`onHitBlock` / `onHitEntity` 都返回 `boolean`，表示“这支箭是否应该被消耗”，默认 `false`。不引 `net.fabricmc.*`、不假设调用方一定拿得到 `ServerLevel`——效果层本身可以跨平台复用；每换一个版本真正要重写的是 `AbstractArrowMixin` 的注入点（`hurtOrSimulate` 的方法引用和 `onHitEntity` / `onHitBlock` 的签名），编译期不报错、运行期会静默失效。 |
+| `effect/ArrowEffect.java` | **命中行为的接口**：`onHitBlock` / `onHitEntity` 都返回 `boolean`，表示“这支箭是否应该被消耗”，默认 `false`。不引 `net.fabricmc.*`、不假设调用方一定拿得到 `ServerLevel`——效果层本身可以跨平台复用；每换一个版本真正要重写的是 `AbstractArrowMixin` 的注入点（`hurtOrSimulate` 的方法引用和 `onHitEntity` / `onHitBlock` 的签名），编译期不报错，运行期靠 `injectors.defaultRequire = 1` 直接崩，不会静默失效。 |
 | `effect/NoneEffect.java` | 普通箭：什么都不做，完全交给原版。 |
 | `effect/ExplosiveEffect.java` | TNT 箭：半径 4、不点火、实体伤害减半，`mobGriefing` 关闭时不破坏方块；命中方块或实体都消耗。 |
 | `effect/RedstonePulseEffect.java` | 红石箭：`TRIGGER_BLOCK` 触发 + 隐形脉冲方块通电（放在命中面外侧任意**可替换**方块上，同格续时）；命中实体不触发；不消耗。 |
@@ -105,7 +105,7 @@ update-ft/
 | `entity/GrappleManager.java` | 钩爪牵引会话：每 tick 移动 0.8 格、最多 40 tick、`noCollision` 撞墙即停；玩家每 tick 补速度包；退出/死亡/换维度/移除时清理。 |
 | `menu/ModMenuTypes.java` | 注册 `MenuType<FletchingTableMenu>`，ID 为 `update-ft:fletching_table`；客户端用它来决定打开哪个 `Screen`，服务端用它来反序列化菜单。 |
 | `menu/FletchingTableMenu.java` | 制箭台容器逻辑（`AbstractContainerMenu`）：3 个斜向原料格（`InputSlot` 用 `mayPlace` 做栏位限定）+ 1 个产物格 + 玩家背包（坐标与 `ft_gui.png` 一一对应）；监听原料容器变化重算产物；产物格自定义 `onTake` 消耗原料、`tryRemove` 强制整份取走；`quickMoveStack` 按物品类型把 Shift 点击的物品路由到对应原料格。服务端菜单额外保存建菜单时的 `ServerLevel`，`stillValid()`/`removed()` 都查这个维度而不是 `player.level()`，玩家换维度后旧菜单会立即失效、也不会删错维度的条目。`removed()` 用 `clearContainer` 把**自己这份**原料退回背包（装不下的掉在脚下），并删掉自己的存档条目——桌面不留东西。 |
-| `menu/FletchingTableData.java` | 制箭台的持久化（`SavedData`）：每个 `ServerLevel` 一份，内部 `Map<BlockPos, Map<UUID, SimpleContainer>>`，**每个玩家一份容器**，两人同开互不可见、也拿不走对方材料。codec 带 `version`（当前 2），同时能读 v1 的 `{"tables":[{pos, items}]}`：老数据挂在全零 UUID 下，等第一个打开桌子的玩家认领。每个容器挂了监听调 `setDirty()`，否则崩溃后内容会丢；`sweep()` 每 20 tick 扫描已加载区块，给爆炸/活塞/结构破坏留下的残条目兜底（所有玩家的内容物一起掉在原地）；`dropAndRemove` 掉内容物，`discard(pos, uuid)` 只删某个玩家自己的条目；`dumpTo(player)` 供 `/fletchingworks dump` 使用。 |
+| `menu/FletchingTableData.java` | 制箭台的持久化（`SavedData`）：每个维度一份（`DimensionDataStorage` 按维度隔离，同一维度只有一个实例），内部 `Map<BlockPos, Map<UUID, SimpleContainer>>`，**每个玩家一份容器**，两人同开互不可见、也拿不走对方材料。codec 带 `version`（当前 2），同时能读 v1 的 `{"tables":[{pos, items}]}`：老数据挂在全零 UUID 下，等第一个打开桌子的玩家认领。每个容器挂了监听调 `setDirty()`，否则崩溃后内容会丢；`sweep()` 每 20 tick 扫描已加载区块，给爆炸/活塞/结构破坏留下的残条目兜底（所有玩家的内容物一起掉在原地）；`dropAndRemove` 掉内容物，`discard(pos, uuid)` 只删某个玩家自己的条目；`dumpTo(player)` 供 `/fletchingworks dump` 使用。 |
 | `recipe/FletchingRecipe.java` | 单个制箭台配方（`Recipe<FletchingRecipeInput>` 的 record）：保存箭头材料的 `Ingredient` 与产物；`matches()` 校验“中间在 `#update-ft:shafts` + 左下在 `#update-ft:fletchings` + 右上匹配箭头材料”（默认就是木棍/羽毛，整合包可通过标签扩展）；`placementInfo()` 必须给出三个栏位（返回空列表会被 `RecipeManager` 从展示数据里剔除并刷警告）；内部 `Serializer` 提供 JSON 的 `MapCodec` 与网络同步的 `StreamCodec`。 |
 | `recipe/FletchingRecipeInput.java` | 配方输入（`RecipeInput`）的三格快照：箭头材料 / 木棍 / 羽毛，下标与菜单槽位一致。 |
 | `recipe/ModRecipes.java` | 注册 `RecipeType<FletchingRecipe>` 与 `RecipeSerializer<FletchingRecipe>`，ID 都是 `update-ft:fletching`；配方本体不在这里，由数据包加载。 |
@@ -129,7 +129,7 @@ update-ft/
 | `assets/update-ft/models/item/*.json` | **物品模型**：`parent` 为 `minecraft:item/generated`，`layer0` 指向对应贴图。15 个物品各一份。 |
 | `assets/update-ft/textures/item/*.png` | **物品贴图**，16×16，15 种箭各一张，文件名与物品 ID 一致。 |
 | `assets/update-ft/textures/gui/ft_gui.png` | **制箭台界面贴图**，256×256 画布、面板画在 (0,0) 的 176×166 区域；设计稿的坐标表与标注图可在 git 历史（提交 `627e937`）里找到。 |
-| `assets/update-ft/lang/zh_cn.json` | 简体中文文本：15 个 `item.update-ft.*` 物品名、`container.update-ft.fletching_table`（界面标题），以及 40 条 `tooltip.update-ft.*` 悬停介绍（每行一个键）。 |
+| `assets/update-ft/lang/zh_cn.json` | 简体中文文本：15 个 `item.update-ft.*` 物品名、`container.update-ft.fletching_table`（界面标题），以及 26 条 `tooltip.update-ft.*` 悬停介绍（每行一个键；伤害行由代码动态生成，不在 lang 里）。 |
 | `assets/update-ft/lang/en_us.json` | 英文文本，键名与中文文件一一对应。 |
 | `data/update-ft/tags/item/shafts.json` | 中间格的白名单：默认 `minecraft:stick`，可选并入 `#c:rods/wooden`（`required: false`，标签不存在也不会加载失败）。代码侧用 `ModTags.SHAFTS`。 |
 | `data/update-ft/tags/item/fletchings.json` | 左下格的白名单：默认 `minecraft:feather`，可选并入 `#c:feathers`。代码侧用 `ModTags.FLETCHINGS`。 |
@@ -200,6 +200,15 @@ JEI 是可选依赖，不写进 `depends`：
 发布正文也可以先在网页上手工建 Release 并自己写，工作流只补/更新 jar，不动标题和正文。`workflow_dispatch` 只用于重新发布已有 tag，不会构建任意分支。
 
 CurseForge 的 `CURSEFORGE_TOKEN` 存在仓库 Secrets 里（My Account → API Tokens 生成），**不要提交进仓库**；没配时那一步只 warning 并跳过，不影响 GitHub Release。
+
+## 版本升级
+
+升 Minecraft 版本时最先坏的是 `AbstractArrowMixin`，按顺序检查：
+
+1. `Entity.hurtOrSimulate(DamageSource, float)` 的方法引用和参数顺序（`@ModifyArg(index = 1)`）；
+2. `AbstractArrow.onHitBlock` / `onHitEntity` 的签名和所有 return 点；
+3. `update-ft.mixins.json` 的 `injectors.defaultRequire = 1` 会让注入失败直接崩——先在开发环境跑一次 `runServer` / `runClient`；
+4. 配方接口（`Recipe`、`PlacementInfo`）、`SavedDataType`、`Identifier` 这类 1.21.x 内部改版一起看。
 
 ## 技术债
 

@@ -43,25 +43,26 @@ public class FletchingTableScreen extends AbstractContainerScreen<FletchingTable
 
 	@Override
 	protected void renderBg(GuiGraphics graphics, float delta, int mouseX, int mouseY) {
-		int x = (this.width - this.imageWidth) / 2;
-		int y = (this.height - this.imageHeight) / 2;
+		// renderBg 不在 translate(leftPos, topPos) 的矩阵里，面板坐标必须自己加偏移
+		int x = this.leftPos;
+		int y = this.topPos;
 		graphics.blit(RenderPipelines.GUI_TEXTURED, CONTAINER_TEXTURE,
 				x, y, 0.0F, 0.0F,
 				this.imageWidth, this.imageHeight,
 				BACKGROUND_TEXTURE_WIDTH, BACKGROUND_TEXTURE_HEIGHT);
 
 		// 空槽提示：一眼看出三个格子该放什么，不用装 JEI 或翻 README
-		drawGhost(graphics, FletchingRecipes.TIP_SLOT, currentTip());
-		drawGhost(graphics, FletchingRecipes.SHAFT_SLOT, new ItemStack(Items.STICK));
-		drawGhost(graphics, FletchingRecipes.FLETCHING_SLOT, new ItemStack(Items.FEATHER));
+		drawGhost(graphics, x, y, FletchingRecipes.TIP_SLOT, currentTip());
+		drawGhost(graphics, x, y, FletchingRecipes.SHAFT_SLOT, new ItemStack(Items.STICK));
+		drawGhost(graphics, x, y, FletchingRecipes.FLETCHING_SLOT, new ItemStack(Items.FEATHER));
 	}
 
-	private void drawGhost(GuiGraphics graphics, int index, ItemStack hint) {
+	private void drawGhost(GuiGraphics graphics, int originX, int originY, int index, ItemStack hint) {
 		if (hint.isEmpty() || !this.menu.getSlot(index).getItem().isEmpty()) {
 			return;
 		}
-		int slotX = this.menu.getSlot(index).x;
-		int slotY = this.menu.getSlot(index).y;
+		int slotX = originX + this.menu.getSlot(index).x;
+		int slotY = originY + this.menu.getSlot(index).y;
 		graphics.renderItem(hint, slotX, slotY);
 		graphics.fill(slotX, slotY, slotX + 16, slotY + 16, GHOST_WASH);
 	}
