@@ -110,6 +110,8 @@ update-ft/
 | `recipe/FletchingRecipeInput.java` | 配方输入（`RecipeInput`）的三格快照：箭头材料 / 木棍 / 羽毛，下标与菜单槽位一致。 |
 | `recipe/ModRecipes.java` | 注册 `RecipeType<FletchingRecipe>` 与 `RecipeSerializer<FletchingRecipe>`，ID 都是 `update-ft:fletching`；配方本体不在这里，由数据包加载。 |
 | `enchantment/ModEnchantments.java` | 无限 II/III 的 `ResourceKey<Enchantment>`。附魔本体是数据包注册表条目（`data/update-ft/enchantment/*.json`），不需要 `Registry.register`，这里只给战利品代码引用。 |
+| `log/StartupLog.java` | 启动日志工具：`begin`/`end`/`mark`/`run`/`fail`，输出 `[boot]` 前缀的结构化行（阶段名、事件、`t=+…s`、`elapsed`、线程、`ts`、任意上下文）。`run()` 在异常时打 `fail` 并原样抛出；shutdown hook 会补一条 `lastPhase` 和未完成阶段。 |
+| `log/BootDiagnostics.java` | 服务端生命周期日志：`SERVER_STARTING`/`SERVER_STARTED` 包住世界加载并记录维度/配方/进度数量，`SERVER_STOPPING`/`STOPPED` 记录停服，`END_DATA_PACK_RELOAD` 记录 `/reload` 结果。 |
 | `loot/ModLootTables.java` | 无限 II/III 的获取途径：监听 `LootTableEvents.MODIFY`，只改四张原版表（钓鱼宝藏、要塞走廊/交叉/图书馆），每种附魔各加一个 `ENCHANTED_BOOK` pool；概率见类里的 `RATES`。数据包覆盖过的表（`!source.isBuiltin()`）不碰。 |
 | `recipe/FletchingRecipes.java` | 栏位定义与查询入口：`TIP_SLOT`/`SHAFT_SLOT`/`FLETCHING_SLOT` 三个常量对应界面右上/中间/左下；`findResult(level, container)` **只在服务端**用 `RecipeManager.getRecipeFor()` 查 `update-ft:fletching` 配方并 `assemble()`（客户端没有配方表，产物格靠容器同步）；`isTipMaterial()` 给箭头格做 `mayPlace` 过滤，只查 `ModTags.FLETCHING_TIPS` 标签。 |
 | `client/UpdateFtClient.java` | **客户端入口**（`ClientModInitializer`）。调用 `MenuScreens.register` 把 `MenuType` 与 `FletchingTableScreen` 绑定。 |
@@ -215,6 +217,19 @@ CurseForge 的 `CURSEFORGE_TOKEN` 存在仓库 Secrets 里（My Account → API 
 2. `AbstractArrow.onHitBlock` / `onHitEntity` 的签名和所有 return 点；
 3. `update-ft.mixins.json` 的 `injectors.defaultRequire = 1` 会让注入失败直接崩——先在开发环境跑一次 `runServer` / `runClient`；
 4. 配方接口（`Recipe`、`PlacementInfo`）、`SavedDataType`、`Identifier` 这类 1.21.x 内部改版一起看。
+
+## 日志与排查
+
+启动/关闭日志统一带 `[boot]` 前缀，按阶段成对输出，排查崩溃时直接 `grep "\[boot\]"`：
+
+| 阶段 | 范围 |
+| --- | --- |
+| `mod-init` | 整个 `onInitialize`，内部再细分 `config-load`、`item/block/block-entity/menu/recipe-registration`、`loot-injection`、`recipe-sync`、`runtime-hooks` |
+| `client-init` / `client-ready` | 客户端初始化、首帧完成（带窗口尺寸） |
+| `server-start` / `server-ready` / `server-stop` | 世界加载（带世界名）、启动完成（维度/配方/进度数量/首 tick）、停服 |
+| `datapack-reload` | `/reload` 是否成功、重载后的配方与进度数量 |
+
+每条都带 `t=+…s`（相对模组初始化）、`elapsed`、线程和 `ts`，关键步骤前后成对。崩溃时最后一条 `begin` 就是出事阶段；JVM 异常退出时 shutdown hook 会补 `phase=shutdown lastPhase=… unfinished=…`。`fail` 事件会带完整堆栈。
 
 ## 技术债
 

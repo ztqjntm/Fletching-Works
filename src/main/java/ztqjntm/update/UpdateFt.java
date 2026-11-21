@@ -34,6 +34,8 @@ import ztqjntm.update.config.ModConfig;
 import ztqjntm.update.entity.BeeArrowManager;
 import ztqjntm.update.entity.GrappleManager;
 import ztqjntm.update.item.ModItems;
+import ztqjntm.update.log.BootDiagnostics;
+import ztqjntm.update.log.StartupLog;
 import ztqjntm.update.loot.ModLootTables;
 import ztqjntm.update.menu.FletchingTableData;
 import ztqjntm.update.menu.FletchingTableMenu;
@@ -51,23 +53,33 @@ public class UpdateFt implements ModInitializer {
 
 	@Override
 	public void onInitialize() {
-		ModConfig.initialize();         // 读 config/fletching-works.json，没有就生成默认的
-		ModItems.initialize();          // 注册物品
-		ModBlocks.initialize();         // 注册方块（红石脉冲）
-		ModBlockEntities.initialize();  // 红石脉冲的方块实体（要在方块之后）
-		ModMenuTypes.initialize();      // 注册 MenuType
-		ModRecipes.initialize();        // 注册制箭台的配方类型与序列化器（配方本体在 data/update-ft/recipe/）
-		ModLootTables.initialize();     // 无限 II/III 的要塞与钓鱼战利品注入
-		registerRecipeSelfCheck();      // 启动时检查配方箭头材料是否都在 fletching_tips 标签里
+		StartupLog.installShutdownHook();
+		StartupLog.begin("mod-init", StartupLog.env());
+
+		StartupLog.run("config-load", ModConfig::initialize, "file=config/fletching-works.json");
+		StartupLog.run("item-registration", ModItems::initialize);
+		StartupLog.run("block-registration", ModBlocks::initialize);
+		StartupLog.run("block-entity-registration", ModBlockEntities::initialize);
+		StartupLog.run("menu-registration", ModMenuTypes::initialize);
+		StartupLog.run("recipe-registration", ModRecipes::initialize);
+		StartupLog.run("loot-injection", ModLootTables::initialize);
+
 		// 1.21.11 原版不再把配方同步给客户端；注册序列化器后 Fabric 会把我们的配方发过去，
 		// 客户端（JEI 和配方缓存）才能拿到 update-ft:fletching 的条目。必须两端都执行。
-		RecipeSynchronization.synchronizeRecipeSerializer(ModRecipes.FLETCHING_SERIALIZER);
-		BeeArrowManager.register();     // 蜜蜂箭召唤的蜜蜂 30 秒后散场
-		GrappleManager.register();      // 钩爪箭的逐 tick 牵引
+		StartupLog.run("recipe-sync", () ->
+				RecipeSynchronization.synchronizeRecipeSerializer(ModRecipes.FLETCHING_SERIALIZER));
+
+		StartupLog.run("runtime-hooks", () -> {
+			registerRecipeSelfCheck();  // 启动时检查配方箭头材料是否都在 fletching_tips 标签里
+			BeeArrowManager.register(); // 蜜蜂箭召唤的蜜蜂 30 秒后散场
+			GrappleManager.register();  // 钩爪箭的逐 tick 牵引
+			BootDiagnostics.register(); // 服务端启动/停服/数据包重载的阶段日志
+		});
 
 		// 卸载模组前忘记清桌子时，管理员至少有一条路把残留内容物取回来
-		CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess, environment) ->
-				dispatcher.register(Commands.literal("fletchingworks")
+		CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess, environment) -> {
+			StartupLog.mark("command-registration", "environment=" + environment);
+			dispatcher.register(Commands.literal("fletchingworks")
 						.then(Commands.literal("dump")
 								// 权限等级 2（管理员），和 README 写的一致
 								.requires(Commands.hasPermission(Commands.LEVEL_GAMEMASTERS))
@@ -85,7 +97,8 @@ public class UpdateFt implements ModInitializer {
 									context.getSource().sendSuccess(
 											() -> Component.translatable("command.update-ft.reload"), false);
 									return 1;
-								}))));
+								})));
+		});
 
 
 		// 右键制箭台 → 打开 GUI（不需要方块实体，也不需要 Mixin）
@@ -153,6 +166,8 @@ public class UpdateFt implements ModInitializer {
 				FletchingTableData.get(level).sweep(level);
 			}
 		});
+
+		StartupLog.end("mod-init");
 	}
 
 	public static Identifier id(String path) {

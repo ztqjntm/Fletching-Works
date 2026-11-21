@@ -3,6 +3,12 @@
 > release 工作流会取 `## [版本]` 到下一个 `## ` 之间的内容，作为 GitHub Release 和 CurseForge 的更新说明。
 > 版本号必须与 `gradle.properties` 的 `mod_version` 完全一致。
 
+## [Unreleased]
+
+### 工程
+
+- **启动/关闭阶段日志**：新增带 `[boot]` 前缀的结构化日志（`StartupLog` / `BootDiagnostics`），把 `mod-init`、`config-load`、`item-registration` … `runtime-hooks`、`client-init`/`client-ready`、`server-start`/`server-ready`/`server-stop`、`datapack-reload` 成对记录，包含阶段名、相对/绝对时间、耗时、线程和上下文；崩溃时最后一条 `begin` 就是出事位置，JVM 异常退出时 shutdown hook 会补 `lastPhase` 和未完成阶段。
+
 ## [1.0.11] - 2026-11-21
 
 ### 新增
