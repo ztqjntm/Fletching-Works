@@ -28,7 +28,7 @@
 
 1. 安装 **Fabric Loader ≥ 0.17.3**（Minecraft **1.21.11**），需要 Java 21。
 2. 把 [Fabric API](https://modrinth.com/mod/fabric-api) 放进 `mods/`。
-3. 把 `fletching-works-1.1.0.jar` 放进 `mods/`。
+3. 把 `fletching-works-1.1.1.jar` 放进 `mods/`。
 
 单人游戏这样就够了。**开服的话服务端也要装**——模组会注册方块、物品和菜单，只有客户端装是连不上的。
 
@@ -36,13 +36,13 @@
 
 | 渠道 | 版本 | 说明 |
 | --- | --- | --- |
-| [GitHub Releases](https://github.com/ztqjntm/Fletching-Works/releases) | 1.1.0 | 在 `Assets` 里下 jar |
-| [CurseForge](https://www.curseforge.com/minecraft/mc-mods/fletching-works) | 1.1.0 | 支持 CurseForge App 一键安装 |
+| [GitHub Releases](https://github.com/ztqjntm/Fletching-Works/releases) | 1.1.1 | 在 `Assets` 里下 jar |
+| [CurseForge](https://www.curseforge.com/minecraft/mc-mods/fletching-works) | 1.1.1 | 支持 CurseForge App 一键安装 |
 | Modrinth | — | 未上架 |
 
 | 模组版本 | Minecraft | 加载器 |
 | --- | --- | --- |
-| 1.1.0 | 1.21.11 | Fabric |
+| 1.1.1 | 1.21.11 | Fabric |
 
 ## 十五种箭
 
@@ -195,7 +195,7 @@
 ./gradlew test         # 只跑单元测试
 ```
 
-产物在 `build/libs/`：`fletching-works-1.1.0.jar`（实际用的）和 `-sources.jar`（源码包）。需要 JDK 21。
+产物在 `build/libs/`：`fletching-works-1.1.1.jar`（实际用的）和 `-sources.jar`（源码包）。需要 JDK 21。
 
 目录结构、每个文件干什么、注册与合成流程、发布流程，都在 [docs/DEVELOPMENT.md](docs/DEVELOPMENT.md)。
 
@@ -216,7 +216,7 @@
 | 项目 | 值 |
 | --- | --- |
 | 模组 ID | `update-ft` |
-| 版本 | 1.1.0 |
+| 版本 | 1.1.1 |
 | Minecraft | 1.21.11 |
 | Fabric Loader | ≥ 0.17.3 |
 | Fabric API | ≥ 0.139.4 |
