@@ -115,6 +115,24 @@ A few rules:
 - **Breaking the table** while someone has it open drops whatever is inside at its position. The output slot is a preview and never drops.
 - **If the table is destroyed by an explosion or piston**, anything inside drops at its old position within about a second instead of being stranded in the save.
 
+## The quiver
+
+Crafted on a crafting table from **5 leather + 1 string**. A quiver has **six slots of 16 arrows each** and only accepts what is in `#minecraft:arrows` (vanilla arrows, tipped arrows, spectral arrows, all fifteen modded arrows) — never fireworks.
+
+| Action | Default input |
+| --- | --- |
+| Open the UI | Right-click air (always opens while sneaking) |
+| Quick top-up | Hold arrows in the offhand and right-click the quiver: fills a matching slot first, then an empty one, one slot per click |
+| Switch the current arrow | `V` to cycle, `Shift + V` backwards, hold `V` then `1–6` to pick |
+| Switch while drawing | Mouse wheel (live by default) |
+| Set the current slot | Click the triangle above a slot in the UI, or `Ctrl + left click` |
+
+- Shooting **only consumes from the quiver**; matching arrows in your inventory are left alone and are used only when the quiver is empty.
+- Multishot never borrows from another slot: two arrows left means two arrows loaded.
+- Filling all six slots to 16 grants the "Quiver Full" advancement.
+- Only **one quiver is active**: the first one in the hotbar, then the main inventory. Other quivers can still be opened and organised, but do not feed the bow.
+- A quiver cannot go into the fletching table's input slots, and dispensers do not read it.
+
 ## Infinity II and Infinity III
 
 Two independent enchantments for bows and crossbows, built on 1.21.11's `minecraft:ammo_use` component. Both keep normal arrows free; the difference only shows on the 15 special arrows (plus tipped and spectral arrows).

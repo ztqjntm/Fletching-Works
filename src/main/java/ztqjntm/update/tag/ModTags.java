@@ -42,6 +42,13 @@ public final class ModTags {
             TagKey.create(Registries.ITEM, UpdateFt.id("arrows"));
 
     /**
+     * 箭袋黑名单：从 {@code #minecraft:arrows} 里排除“在标签里但不该随身带”的个别物品。
+     * 默认空，定义在 {@code data/update-ft/tags/item/quiver_blacklist.json}。
+     */
+    public static final TagKey<Item> QUIVER_BLACKLIST =
+            TagKey.create(Registries.ITEM, UpdateFt.id("quiver_blacklist"));
+
+    /**
      * 安全版 {@link ItemStack#is(TagKey)}：标签尚未绑定（单测、注册表早期）时按“不匹配”处理。
      * <p>
      * 正常游戏里标签在数据包加载后一定存在，不会走到 catch；这里主要让逻辑在没有数据包的环境

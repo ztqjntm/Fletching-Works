@@ -1,0 +1,22 @@
+{
+  "parent": "update-ft:fletching/root",
+  "display": {
+    "icon": {
+      "id": "update-ft:quiver"
+    },
+    "title": {
+      "translate": "advancement.update-ft.fletching.quiver_full.title"
+    },
+    "description": {
+      "translate": "advancement.update-ft.fletching.quiver_full.description"
+    },
+    "frame": "goal",
+    "show_toast": true,
+    "announce_to_chat": true
+  },
+  "criteria": {
+    "fill_quiver": {
+      "trigger": "update-ft:quiver_full"
+    }
+  }
+}

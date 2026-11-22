@@ -14,6 +14,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.ModifyArg;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import ztqjntm.update.item.ModArrowItem;
+import ztqjntm.update.item.ModItems;
 
 /**
  * 箭矢与原版的唯一接缝：认出手里这支箭是哪个物品，然后把“命中后干什么”整段交给它的
@@ -76,6 +77,25 @@ public abstract class AbstractArrowMixin {
         }
         if (arrowItem.effect().onHitEntity(level, self, hitResult)) {
             self.discard();
+        }
+    }
+
+    /**
+     * 钩爪箭不可回收：无论命中方块、命中实体还是落空插地，都禁止被玩家捡起。
+     * <p>
+     * 放在 {@code tick} 的 HEAD 而不是构造器里，是因为 {@code pickup} 会在读档、
+     * {@code setPickupItemStack} 等路径被重新赋值；每 tick 盖一次最稳，而且 {@code tryPickup}
+     * 只会在本 tick 的移动/碰撞里发生，改在它之前一定生效。
+     */
+    @Inject(method = "tick", at = @At("HEAD"))
+    private void updateft$blockGrapplePickup(CallbackInfo ci) {
+        AbstractArrow self = (AbstractArrow) (Object) this;
+        if (self.pickup == AbstractArrow.Pickup.DISALLOWED) {
+            return;
+        }
+        ItemStack pickup = self.getPickupItemStackOrigin();
+        if (pickup != null && pickup.is(ModItems.GRAPPLE_ARROW)) {
+            self.pickup = AbstractArrow.Pickup.DISALLOWED;
         }
     }
 

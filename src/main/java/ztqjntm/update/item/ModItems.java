@@ -23,6 +23,8 @@ import ztqjntm.update.effect.RedstonePulseEffect;
 import ztqjntm.update.effect.TeleportEffect;
 import ztqjntm.update.effect.WebArrowEffect;
 import ztqjntm.update.effect.WindArrowEffect;
+import ztqjntm.update.item.quiver.ModComponents;
+import ztqjntm.update.item.quiver.QuiverContents;
 
 import java.util.List;
 
@@ -123,6 +125,22 @@ public class ModItems {
                     "tooltip.update-ft.grapple_arrow.2"),
             new Item.Properties());
 
+    /**
+     * 箭袋。
+     * <p>
+     * 必须 {@code stacksTo(1)}：内容不同的两个箭袋不能叠，写成 1 比“靠组件比较”更明确。
+     * 默认组件给一份空内容，这样 tooltip / 界面 / 模型都不必到处判 null。
+     * <p>
+     * **不要**把它注册进 {@code #minecraft:arrows}，也不要给它注册发射器弹射行为——
+     * 否则弓会把箭袋当成弹药射出去。
+     */
+    public static final QuiverItem QUIVER = register("quiver",
+            QuiverItem::new,
+            new Item.Properties()
+                    .stacksTo(1)
+                    .component(ModComponents.QUIVER_CONTENTS, QuiverContents.EMPTY)
+                    .component(ModComponents.QUIVER_STATE, 0));
+
     /** 15 种箭，发射器注册和创造页签共用一份清单 */
     private static final List<Item> ALL_ARROWS = List.of(
             STONE_ARROW, COPPER_ARROW, IRON_ARROW, DIAMOND_ARROW, GOLD_ARROW,
@@ -153,7 +171,8 @@ public class ModItems {
                         ModItems.BEE_ARROW,
                         ModItems.FROST_ARROW,
                         ModItems.WIND_CHARGE_ARROW,
-                        ModItems.GRAPPLE_ARROW
+                        ModItems.GRAPPLE_ARROW,
+                        ModItems.QUIVER
                 ));
     }
 }

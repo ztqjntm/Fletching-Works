@@ -30,16 +30,20 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ztqjntm.update.block.ModBlockEntities;
 import ztqjntm.update.block.ModBlocks;
+import ztqjntm.update.advancement.ModAdvancements;
 import ztqjntm.update.config.ModConfig;
 import ztqjntm.update.entity.BeeArrowManager;
 import ztqjntm.update.entity.GrappleManager;
 import ztqjntm.update.item.ModItems;
+import ztqjntm.update.item.quiver.ModComponents;
+import ztqjntm.update.item.quiver.QuiverHelper;
 import ztqjntm.update.log.BootDiagnostics;
 import ztqjntm.update.log.StartupLog;
 import ztqjntm.update.loot.ModLootTables;
 import ztqjntm.update.menu.FletchingTableData;
 import ztqjntm.update.menu.FletchingTableMenu;
 import ztqjntm.update.menu.ModMenuTypes;
+import ztqjntm.update.network.ModNetworking;
 import ztqjntm.update.recipe.FletchingRecipe;
 import ztqjntm.update.recipe.ModRecipes;
 import ztqjntm.update.tag.ModTags;
@@ -57,10 +61,12 @@ public class UpdateFt implements ModInitializer {
 		StartupLog.begin("mod-init", StartupLog.env());
 
 		StartupLog.run("config-load", ModConfig::initialize, "file=config/fletching-works.json");
+		StartupLog.run("component-registration", ModComponents::initialize);
 		StartupLog.run("item-registration", ModItems::initialize);
 		StartupLog.run("block-registration", ModBlocks::initialize);
 		StartupLog.run("block-entity-registration", ModBlockEntities::initialize);
 		StartupLog.run("menu-registration", ModMenuTypes::initialize);
+		StartupLog.run("advancement-registration", ModAdvancements::initialize);
 		StartupLog.run("recipe-registration", ModRecipes::initialize);
 		StartupLog.run("loot-injection", ModLootTables::initialize);
 
@@ -74,6 +80,7 @@ public class UpdateFt implements ModInitializer {
 			BeeArrowManager.register(); // 蜜蜂箭召唤的蜜蜂 30 秒后散场
 			GrappleManager.register();  // 钩爪箭的逐 tick 牵引
 			BootDiagnostics.register(); // 服务端启动/停服/数据包重载的阶段日志
+			ModNetworking.initialize(); // 箭袋切换请求（C2S）
 		});
 
 		// 卸载模组前忘记清桌子时，管理员至少有一条路把残留内容物取回来
@@ -164,6 +171,31 @@ public class UpdateFt implements ModInitializer {
 			}
 			for (ServerLevel level : server.getAllLevels()) {
 				FletchingTableData.get(level).sweep(level);
+			}
+		});
+
+		// 箭袋自动归位：每 5 tick 一次。刻意不拦截掉落物拾取——箭先真的进背包，
+		// 再从这里搬进箭袋，这样 inventory_changed 进度和别的模组的拾取逻辑都不受影响。
+		ServerTickEvents.END_SERVER_TICK.register(server -> {
+			if (server.getTickCount() % 5 != 0) {
+				return;
+			}
+			if (!ModConfig.get().quiver.enabled || !ModConfig.get().quiver.autoCollect) {
+				return;
+			}
+			for (ServerPlayer player : server.getPlayerList().getPlayers()) {
+				QuiverHelper.autoCollect(player);
+			}
+		});
+
+		// lockOnDraw：拉弓那一刻记住当前槽，拉弓期间滚轮只改“下一发”。
+		// 默认关闭，关着的时候这个监听器每 tick 只做一次配置读取就返回。
+		ServerTickEvents.END_SERVER_TICK.register(server -> {
+			if (!ModConfig.get().quiver.enabled || !ModConfig.get().quiver.lockOnDraw) {
+				return;
+			}
+			for (ServerPlayer player : server.getPlayerList().getPlayers()) {
+				QuiverHelper.tickLock(player);
 			}
 		});
 

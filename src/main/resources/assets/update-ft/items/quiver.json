@@ -1,0 +1,34 @@
+{
+  "model": {
+    "type": "minecraft:select",
+    "property": "minecraft:component",
+    "component": "update-ft:quiver_state",
+    "cases": [
+      {
+        "when": 0,
+        "model": {
+          "type": "minecraft:model",
+          "model": "update-ft:item/quiver_empty"
+        }
+      },
+      {
+        "when": 1,
+        "model": {
+          "type": "minecraft:model",
+          "model": "update-ft:item/quiver_one"
+        }
+      },
+      {
+        "when": 2,
+        "model": {
+          "type": "minecraft:model",
+          "model": "update-ft:item/quiver_two"
+        }
+      }
+    ],
+    "fallback": {
+      "type": "minecraft:model",
+      "model": "update-ft:item/quiver"
+    }
+  }
+}

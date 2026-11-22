@@ -38,6 +38,7 @@ public final class ModConfig {
     public LightningArrow lightningArrow = new LightningArrow();
     public GrappleArrow grappleArrow = new GrappleArrow();
     public Table table = new Table();
+    public Quiver quiver = new Quiver();
 
     private ModConfig() {
     }
@@ -100,12 +101,21 @@ public final class ModConfig {
         if (this.table == null) {
             this.table = new Table();
         }
+        if (this.quiver == null) {
+            this.quiver = new Quiver();
+        }
 
         this.tntArrow.entityDamageMultiplier = clamp(this.tntArrow.entityDamageMultiplier, 0.0D, 10.0D);
         this.fireArrow.spread = (int) clamp(this.fireArrow.spread, 0, 3);
         this.fireArrow.igniteSeconds = (int) clamp(this.fireArrow.igniteSeconds, 0, 60);
         this.grappleArrow.cooldownTicks = (int) clamp(this.grappleArrow.cooldownTicks, 0, 600);
         this.grappleArrow.maxDistance = clamp(this.grappleArrow.maxDistance, 1.0D, 128.0D);
+
+        // 每槽上限在设计上是 16，配置只能往下调：往上调会让箭袋变成移动弹药库
+        this.quiver.stackLimit = (int) clamp(this.quiver.stackLimit, 1, 16);
+        this.quiver.switchCooldownTicks = (int) clamp(this.quiver.switchCooldownTicks, 0, 200);
+        this.quiver.hudOffsetX = (int) clamp(this.quiver.hudOffsetX, -200, 200);
+        this.quiver.hudOffsetY = (int) clamp(this.quiver.hudOffsetY, -200, 200);
     }
 
     private static double clamp(double value, double min, double max) {
@@ -148,5 +158,26 @@ public final class ModConfig {
     public static final class Table {
         /** 关界面时是否把材料退回玩家；false = 留在桌子里，下次打开还在 */
         public boolean returnItemsOnClose = true;
+    }
+
+    /**
+     * 箭袋。默认值就是设计文档里的基线：6 槽 × 16、实时切换、拾取后归位。
+     */
+    public static final class Quiver {
+        /** 总开关；关掉后箭袋退化为普通物品，不响应任何交互 */
+        public boolean enabled = true;
+        /** 每槽上限，钳到 1–16；只能往下调（12 / 8 可收紧总容量） */
+        public int stackLimit = 16;
+        /** 拾取后归位：只补箭袋里已有且未满的同类槽 */
+        public boolean autoCollect = true;
+        /** 拉弓瞬间锁定箭种；true 时拉弓期间切换请求会被拒绝（PVP / 竞技服） */
+        public boolean lockOnDraw = false;
+        /** 两次切换的最小间隔（tick），0 = 无冷却 */
+        public int switchCooldownTicks = 0;
+        /** 是否显示 HUD */
+        public boolean hud = true;
+        /** HUD 相对准星的偏移（像素） */
+        public int hudOffsetX = 12;
+        public int hudOffsetY = 8;
     }
 }
