@@ -25,7 +25,7 @@ import java.util.UUID;
  */
 public final class QuiverHelper {
 
-    /** 生效箭袋只在这 36 个槽里找：快捷栏 0–8 优先，然后主背包 9–35 */
+    /** 生效箭袋的候选范围：快捷栏 0–8 + 主背包 9–35；副手槽不在这段里，单独判一次 */
     private static final int EFFECTIVE_RANGE = Inventory.INVENTORY_SIZE;
 
     /** {@code lockOnDraw} 用：玩家 UUID → 拉弓那一刻锁定的槽位（-1 表示当时没有箭袋） */
@@ -44,9 +44,25 @@ public final class QuiverHelper {
         return contents == null ? QuiverContents.EMPTY : contents;
     }
 
-    /** 生效箭袋在背包里的下标；没有则 -1。快捷栏序号天然小于背包，扫描顺序就是优先级 */
+    /**
+     * 生效箭袋在背包里的下标；没有则 -1。
+     * <p>
+     * 优先级：<b>主手 → 副手 → 快捷栏 → 主背包</b>。手里拿着的箭袋排最前，因为“拿着”是最明确的
+     * 意图，也和原版 {@code getProjectile} 先看手持弹药的结构一致；副手拿的是箭时，原版会先用手持
+     * 的箭，轮不到箭袋（{@code getHeldProjectile} 在 mixin 里先跑）。
+     * <p>
+     * 副手槽 {@link Inventory#SLOT_OFFHAND} 不在 0–35 里，必须单独判一次，否则“副手箭袋”永远
+     * 不会成为生效箭袋，HUD、按键、弹药查询都会当它不存在。
+     */
     public static int findEffectiveSlot(Player player) {
         Inventory inventory = player.getInventory();
+        int mainHand = inventory.getSelectedSlot();
+        if (isQuiver(inventory.getItem(mainHand))) {
+            return mainHand;
+        }
+        if (isQuiver(inventory.getItem(Inventory.SLOT_OFFHAND))) {
+            return Inventory.SLOT_OFFHAND;
+        }
         for (int i = 0; i < EFFECTIVE_RANGE; i++) {
             if (isQuiver(inventory.getItem(i))) {
                 return i;
@@ -247,58 +263,6 @@ public final class QuiverHelper {
     public static void checkFull(ServerPlayer player, QuiverContents contents) {
         if (contents.isFull(slotLimit())) {
             ModAdvancements.QUIVER_FULL.trigger(player);
-        }
-    }
-
-    /**
-     * 拾取后归位：只补箭袋里**已有**且未满的同类槽，不会新建重复槽。
-     * <p>
-     * 刻意不拦截掉落物拾取，而是在箭真的进过一次背包之后再搬——否则
-     * {@code inventory_changed} 进度（例如“第一支箭”）和别的模组的拾取逻辑都会失效。
-     */
-    public static void autoCollect(ServerPlayer player) {
-        if (!ModConfig.get().quiver.autoCollect) {
-            return;
-        }
-        int quiverSlot = findEffectiveSlot(player);
-        if (quiverSlot < 0) {
-            return;
-        }
-        Inventory inventory = player.getInventory();
-        ItemStack quiver = inventory.getItem(quiverSlot);
-        QuiverContents contents = contents(quiver);
-        int limit = slotLimit();
-        boolean changed = false;
-
-        for (int i = 0; i < EFFECTIVE_RANGE; i++) {
-            if (i == quiverSlot) {
-                continue;
-            }
-            ItemStack source = inventory.getItem(i);
-            if (!isAllowedAmmo(source)) {
-                continue;
-            }
-            for (int q = 0; q < QuiverContents.SLOT_COUNT; q++) {
-                ItemStack inSlot = contents.get(q);
-                if (inSlot.isEmpty() || !ItemStack.isSameItemSameComponents(inSlot, source)) {
-                    continue;
-                }
-                int space = limit - inSlot.getCount();
-                if (space <= 0) {
-                    continue;
-                }
-                int moved = Math.min(space, source.getCount());
-                contents = contents.with(q, inSlot.copyWithCount(inSlot.getCount() + moved));
-                source.shrink(moved);
-                changed = true;
-                break;
-            }
-        }
-
-        if (changed) {
-            contents.writeTo(quiver);
-            inventory.setChanged();
-            checkFull(player, contents);
         }
     }
 

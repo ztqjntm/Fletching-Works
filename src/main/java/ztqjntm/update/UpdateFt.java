@@ -174,20 +174,6 @@ public class UpdateFt implements ModInitializer {
 			}
 		});
 
-		// 箭袋自动归位：每 5 tick 一次。刻意不拦截掉落物拾取——箭先真的进背包，
-		// 再从这里搬进箭袋，这样 inventory_changed 进度和别的模组的拾取逻辑都不受影响。
-		ServerTickEvents.END_SERVER_TICK.register(server -> {
-			if (server.getTickCount() % 5 != 0) {
-				return;
-			}
-			if (!ModConfig.get().quiver.enabled || !ModConfig.get().quiver.autoCollect) {
-				return;
-			}
-			for (ServerPlayer player : server.getPlayerList().getPlayers()) {
-				QuiverHelper.autoCollect(player);
-			}
-		});
-
 		// lockOnDraw：拉弓那一刻记住当前槽，拉弓期间滚轮只改“下一发”。
 		// 默认关闭，关着的时候这个监听器每 tick 只做一次配置读取就返回。
 		ServerTickEvents.END_SERVER_TICK.register(server -> {

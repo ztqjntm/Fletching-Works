@@ -161,15 +161,13 @@ public final class ModConfig {
     }
 
     /**
-     * 箭袋。默认值就是设计文档里的基线：6 槽 × 16、实时切换、拾取后归位。
+     * 箭袋。默认值就是设计文档里的基线：6 槽 × 16、实时切换。
      */
     public static final class Quiver {
         /** 总开关；关掉后箭袋退化为普通物品，不响应任何交互 */
         public boolean enabled = true;
         /** 每槽上限，钳到 1–16；只能往下调（12 / 8 可收紧总容量） */
         public int stackLimit = 16;
-        /** 拾取后归位：只补箭袋里已有且未满的同类槽 */
-        public boolean autoCollect = true;
         /** 拉弓瞬间锁定箭种；true 时拉弓期间切换请求会被拒绝（PVP / 竞技服） */
         public boolean lockOnDraw = false;
         /** 两次切换的最小间隔（tick），0 = 无冷却 */

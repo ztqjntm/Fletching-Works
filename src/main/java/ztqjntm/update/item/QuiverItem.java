@@ -42,8 +42,8 @@ public class QuiverItem extends Item {
     /**
      * 右键：
      * <ul>
-     *   <li>潜行 → 总是打开界面（副手有箭也一样）；</li>
-     *   <li>副手有箭 → 装填一个槽，装满为止；</li>
+     *   <li>潜行 → 总是打开界面（另一只手有箭也一样）；</li>
+     *   <li>另一只手有箭 → 装填一个槽，装满为止；</li>
      *   <li>其余情况 → 打开界面。</li>
      * </ul>
      * 对着箱子这类可交互方块右键时，原版根本不会走到这里，所以不需要额外判断“是不是方块”。
@@ -67,9 +67,13 @@ public class QuiverItem extends Item {
         }
 
         if (!player.isShiftKeyDown()) {
-            ItemStack offhand = player.getOffhandItem();
-            if (QuiverHelper.isAllowedAmmo(offhand)) {
-                if (QuiverHelper.insertFrom(player, stack, offhand)) {
+            // 主手拿箭袋就从副手取箭，箭袋在副手就从主手取箭：两只手对称，
+            // 不会出现“箭袋换到副手就装不进去”的死角。
+            ItemStack source = hand == InteractionHand.MAIN_HAND
+                    ? player.getOffhandItem()
+                    : player.getMainHandItem();
+            if (QuiverHelper.isAllowedAmmo(source)) {
+                if (QuiverHelper.insertFrom(player, stack, source)) {
                     level.playSound(null, player.getX(), player.getY(), player.getZ(),
                             SoundEvents.BUNDLE_INSERT, SoundSource.PLAYERS, 0.8F, 1.0F);
                     return InteractionResult.SUCCESS;
