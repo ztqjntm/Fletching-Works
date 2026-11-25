@@ -8,8 +8,11 @@
 		"ProjectileWeaponItemMixin"
 	],
 	"client": [
+		"client.ArrowRendererMixin",
+		"client.ArrowRenderStateMixin",
 		"client.MinecraftMixin",
-		"client.MouseHandlerMixin"
+		"client.MouseHandlerMixin",
+		"client.TippableArrowRendererMixin"
 	],
 	"injectors": {
 		"defaultRequire": 1

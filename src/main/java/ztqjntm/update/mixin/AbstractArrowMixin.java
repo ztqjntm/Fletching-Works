@@ -2,9 +2,15 @@
 
 package ztqjntm.update.mixin;
 
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.network.syncher.EntityDataAccessor;
+import net.minecraft.network.syncher.EntityDataSerializers;
+import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.projectile.arrow.AbstractArrow;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
 import org.spongepowered.asm.mixin.Mixin;
@@ -13,6 +19,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.ModifyArg;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import ztqjntm.update.entity.ArrowTypeHolder;
 import ztqjntm.update.item.ModArrowItem;
 import ztqjntm.update.item.ModItems;
 
@@ -24,7 +31,60 @@ import ztqjntm.update.item.ModItems;
  * 这里不碰任何数值，也不做平台相关的调用。
  */
 @Mixin(AbstractArrow.class)
-public abstract class AbstractArrowMixin {
+public abstract class AbstractArrowMixin implements ArrowTypeHolder {
+
+    /**
+     * 客户端唯一拿得到的“这支箭是哪个物品”。原版只把 pickupItemStack 存在服务端，
+     * 不写进 SynchedEntityData，所以客户端的 getPickupItemStackOrigin() 永远是空栈。
+     * <p>
+     * 字段在 {@code AbstractArrow} 的静态初始化里分配 ID：原版三个（0–2）先分配，
+     * 这里拿到 3，{@code Arrow} 子类随后拿到 4，不会撞号。
+     */
+    @Unique
+    private static final EntityDataAccessor<String> updateft$arrowType =
+            SynchedEntityData.defineId(AbstractArrow.class, EntityDataSerializers.STRING);
+
+    @Inject(method = "defineSynchedData", at = @At("TAIL"))
+    private void updateft$defineArrowType(SynchedEntityData.Builder builder, CallbackInfo ci) {
+        builder.define(updateft$arrowType, "");
+    }
+
+    /**
+     * 创建时就写入。构造器直接给 {@code pickupItemStack} 赋值、不走 setter，
+     * 所以这里必须单独挂一次；读档路径由下面的 setter 覆盖。
+     */
+    @Inject(
+            method = "<init>(Lnet/minecraft/world/entity/EntityType;DDDLnet/minecraft/world/level/Level;"
+                    + "Lnet/minecraft/world/item/ItemStack;Lnet/minecraft/world/item/ItemStack;)V",
+            at = @At("TAIL")
+    )
+    private void updateft$syncArrowTypeOnCreate(EntityType<?> type, double x, double y, double z,
+                                                Level level, ItemStack pickup, ItemStack weapon,
+                                                CallbackInfo ci) {
+        updateft$setArrowType(pickup);
+    }
+
+    @Inject(method = "setPickupItemStack", at = @At("TAIL"))
+    private void updateft$syncArrowTypeOnSet(ItemStack stack, CallbackInfo ci) {
+        updateft$setArrowType(stack);
+    }
+
+    /** 只写服务端；客户端等实体数据同步，不本地伪造 */
+    @Unique
+    private void updateft$setArrowType(ItemStack stack) {
+        AbstractArrow self = (AbstractArrow) (Object) this;
+        if (self.level().isClientSide()) {
+            return;
+        }
+        String id = stack.isEmpty() ? ""
+                : BuiltInRegistries.ITEM.getKey(stack.getItem()).toString();
+        self.getEntityData().set(updateft$arrowType, id);
+    }
+
+    @Override
+    public String updateft$getArrowTypeId() {
+        return ((AbstractArrow) (Object) this).getEntityData().get(updateft$arrowType);
+    }
 
     @ModifyArg(
             method = "onHitEntity",
