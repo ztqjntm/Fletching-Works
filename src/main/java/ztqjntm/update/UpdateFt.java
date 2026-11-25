@@ -47,6 +47,7 @@ import ztqjntm.update.network.ModNetworking;
 import ztqjntm.update.recipe.FletchingRecipe;
 import ztqjntm.update.recipe.ModRecipes;
 import ztqjntm.update.tag.ModTags;
+import ztqjntm.update.trade.FletcherTrades;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -69,6 +70,7 @@ public class UpdateFt implements ModInitializer {
 		StartupLog.run("advancement-registration", ModAdvancements::initialize);
 		StartupLog.run("recipe-registration", ModRecipes::initialize);
 		StartupLog.run("loot-injection", ModLootTables::initialize);
+		StartupLog.run("trade-registration", FletcherTrades::register);
 
 		// 1.21.11 原版不再把配方同步给客户端；注册序列化器后 Fabric 会把我们的配方发过去，
 		// 客户端（JEI 和配方缓存）才能拿到 update-ft:fletching 的条目。必须两端都执行。

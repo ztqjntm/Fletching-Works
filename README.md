@@ -115,6 +115,24 @@ A few rules:
 - **Breaking the table** while someone has it open drops whatever is inside at its position. The output slot is a preview and never drops.
 - **If the table is destroyed by an explosion or piston**, anything inside drops at its old position within about a second instead of being stranded in the save.
 
+## Fletcher trades
+
+The fletcher has a new set of arrow-only trades; **every vanilla trade is untouched**. Prices are deliberately a little worse than crafting: one fletching-table batch yields 2–4 arrows, so buying here is a top-up, not a cheaper source.
+
+| Level | Cost | Result | Uses before restock |
+| --- | --- | --- | --- |
+| Novice | 1 emerald | 8 stone arrows | 16 |
+| Novice | 1 emerald | 4 copper arrows | 12 |
+| Apprentice | 2 emeralds | 2 TNT arrows | 6 |
+| Apprentice | 2 emeralds | 4 iron arrows | 8 |
+| Journeyman | 2 emeralds | 3 redstone arrows | 8 |
+| Journeyman | 3 emeralds | 2 frost arrows | 6 |
+| Journeyman | 4 emeralds | 2 pearl arrows | 4 |
+
+- Emeralds only — no second ingredient such as flint or feathers, so you never have to dig through your inventory to buy arrows.
+- Stone arrows deal the same damage as vanilla arrows, hence only 8 per emerald (vanilla gives 16 normal arrows); copper, iron and redstone arrows all cost more than their materials.
+- TNT arrows come two at a time: one arrow takes a whole TNT block (five gunpowder), so one emerald each is already a convenience price.
+
 ## The quiver
 
 Crafted on a crafting table from **5 leather + 1 string**. A quiver has **six slots of 16 arrows each** and only accepts what is in `#minecraft:arrows` (vanilla arrows, tipped arrows, spectral arrows, all fifteen modded arrows) — never fireworks.
